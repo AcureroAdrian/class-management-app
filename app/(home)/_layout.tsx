@@ -1,30 +1,17 @@
 import React from 'react'
-import { Tabs } from 'expo-router'
-import AntDesign from '@expo/vector-icons/AntDesign'
+import { Stack } from 'expo-router'
 
-const TabsLayout = () => {
+const StackLayout = () => {
 	return (
-		<Tabs screenOptions={{ headerShown: false }}>
-			<Tabs.Screen
-				name='index'
-				options={{
-					tabBarLabel: 'Login',
-					tabBarIcon: () => <AntDesign name='login' size={24} color='black' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='signup'
-				options={{
-					tabBarLabel: 'Signup',
-					tabBarIcon: () => <AntDesign name='form' size={24} color='black' />,
-				}}
-			/>
-		</Tabs>
+		<Stack screenOptions={{ headerShown: false }}>
+			<Stack.Screen name='index' />
+			<Stack.Screen name='info' />
+		</Stack>
 	)
 }
 
 const HomeLayout = () => {
-	return <TabsLayout />
+	return <StackLayout />
 }
 
 export default HomeLayout

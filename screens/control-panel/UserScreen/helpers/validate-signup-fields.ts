@@ -1,5 +1,5 @@
 import { isDate } from 'date-fns'
-import { validEmail } from '../../../../shared/validators/input-validators'
+import { validEmail } from '@/shared/validators/input-validators'
 
 type TLevel = 'novice' | 'beginner' | 'intermediate' | 'elite'
 

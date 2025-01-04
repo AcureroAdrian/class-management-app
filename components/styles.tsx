@@ -11,12 +11,13 @@ export const Colors = {
 	secondary: '#E5E7EB',
 	tertiary: '#1F2937',
 	darkLight: '#9CA3AF',
-	brand: '#6D28D9',
+	brand: '#172D4C',
 	green: '#10B981',
 	red: '#EF4444',
+	link: '#0976B4',
 }
 
-const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors
+const { primary, secondary, tertiary, darkLight, brand, green, red, link } = Colors
 
 export const StyledContainer = styled(View)`
 	flex: 1;
@@ -35,7 +36,7 @@ export const InnerContainer = styled(View)`
 
 export const PageLogo = styled(Image)`
 	width: 250px;
-	height: 200px;
+	height: 150px;
 `
 
 export const PageTitle = styled(Text)`
@@ -98,21 +99,11 @@ export const StyledButton = styled(Pressable)`
 	border-radius: 5px;
 	margin-vertical: 5px;
 	height: 60px;
-
-	${(props) =>
-		props?.google &&
-		`
-      background-color: ${green};
-      flex-direction: row;
-      justify-content: center;
-  `}
 `
 
 export const ButtonText = styled(Text)`
 	color: ${primary};
 	font-size: 16px;
-
-	${(props) => props?.google && `padding-left: 25px;`}
 `
 
 export const MsgBox = styled(Text)`
@@ -148,8 +139,9 @@ export const TextLink = styled(Pressable)`
 `
 
 export const TextLinkContent = styled(Text)`
-	color: ${brand};
+	color: ${link};
 	font-size: 15px;
+	font-weight: bold;
 `
 
 export const CustomDropdown = styled(Dropdown)`
@@ -161,4 +153,11 @@ export const CustomDropdown = styled(Dropdown)`
 	margin-vertical: 3px;
 	margin-bottom: 10px;
 	color: ${tertiary};
+`
+
+export const StyledParagraph = styled(Text)`
+	color: ${tertiary};
+	font-size: 15px;
+	text-align: flex-start;
+	width: 100%;
 `

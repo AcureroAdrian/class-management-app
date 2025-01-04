@@ -35,7 +35,7 @@ interface IAuthPros {
 		dateOfBirth: Date | null,
 		level: TLevel,
 	) => Promise<any>
-	onLogin?: (email: string, password: string) => Promise<any>
+	onLogin?: (name: string, lastName: string, dob: Date) => Promise<any>
 	onLogout?: () => Promise<any>
 }
 
@@ -112,9 +112,9 @@ export const AuthProvider = ({ children }: any) => {
 			return { error: true, message: errorMessage }
 		}
 	}
-	const login = async (email: string, password: string) => {
+	const login = async (name: string, lastName: string, dob: Date) => {
 		try {
-			const result = await axios.post(`${API_URL}/api/auth/login`, { email, password })
+			const result = await axios.post(`${API_URL}/api/auth/login`, { name, lastName, dateOfBirth: dob })
 			const token = result.data.token
 
 			if (token) {

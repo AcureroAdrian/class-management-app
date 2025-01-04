@@ -1,4 +1,5 @@
 export interface ILoginValues {
-	email: string
-	password: string
+	name: string
+	lastName: string
+	dateOfBirth: string
 }
