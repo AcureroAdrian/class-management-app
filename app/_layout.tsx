@@ -1,15 +1,23 @@
 import React, { useEffect } from 'react'
+import { Provider, useSelector } from 'react-redux'
+import axios from 'axios'
+import { StatusBar } from 'expo-status-bar'
 import { Stack, useRouter } from 'expo-router'
-import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { API_URL } from '@/contexts/AuthContext'
+import { RootState, store } from '@/redux/store'
+
+axios.defaults.baseURL = API_URL
 
 const StackLayout = () => {
-	const { authState } = useAuth()
 	const router = useRouter()
 
+	const { userInfo } = useSelector((state: RootState) => state?.userLogin)
+
 	useEffect(() => {
-		const newPath = authState?.authenticated ? '/(protected)' : '/(home)'
+		const newPath = userInfo ? '/(protected)' : '/(home)'
 		router.replace(newPath)
-	}, [authState])
+	}, [userInfo])
 
 	return (
 		<Stack screenOptions={{ headerShown: false }}>
@@ -21,9 +29,12 @@ const StackLayout = () => {
 
 const RootLayout = () => {
 	return (
-		<AuthProvider>
-			<StackLayout />
-		</AuthProvider>
+		<Provider store={store}>
+			<SafeAreaProvider>
+				<StatusBar style='auto' />
+				<StackLayout />
+			</SafeAreaProvider>
+		</Provider>
 	)
 }
 

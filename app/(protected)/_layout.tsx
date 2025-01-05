@@ -8,8 +8,15 @@ const TabsLayout = () => {
 			<Tabs.Screen
 				name='index'
 				options={{
-					tabBarLabel: 'Home',
-					tabBarIcon: () => <AntDesign name='home' size={24} color='black' />,
+					tabBarLabel: 'Classes',
+					tabBarIcon: () => <AntDesign name='filetext1' size={24} color='blue' />,
+				}}
+			/>
+			<Tabs.Screen
+				name='students'
+				options={{
+					tabBarLabel: 'Students',
+					tabBarIcon: () => <AntDesign name='user' size={24} color='blue' />,
 				}}
 			/>
 		</Tabs>

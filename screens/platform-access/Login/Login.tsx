@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
+import { Formik } from 'formik'
+import { ActivityIndicator } from 'react-native'
 import { Link } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { Formik, FormikHelpers } from 'formik'
 import {
 	StyledContainer,
 	InnerContainer,
@@ -23,20 +23,28 @@ import {
 } from '@/components/styles'
 import TextInputForm from '@/components/TextInputForm/TextInputForm'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
-import { useAuth } from '@/contexts/AuthContext'
 import { ILoginValues } from './helpers/login-screen-interfaces'
+import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
+import { login } from '@/redux/actions/userActions'
 
 const { darkLight, primary } = Colors
 
 const Login = () => {
-	const { onLogin } = useAuth()
+	const dispatch = useAppDispatch()
 
-	const [hidePassword, setHidePassword] = useState(true)
 	const [showDate, setShowDate] = useState<boolean>(false)
 	const [date, setDate] = useState(new Date(2000, 0, 1))
 	const [dob, setDob] = useState<Date | null>(null)
 	const [message, setMessage] = useState<string | null>(null)
 	const [messageType, setMessageType] = useState<string | null>(null)
+
+	const { loadingUserLogin, errorUserLogin } = useAppSelector((state: RootState) => state.userLogin)
+
+	useEffect(() => {
+		if (errorUserLogin) {
+			handleMessage(errorUserLogin)
+		}
+	}, [errorUserLogin])
 
 	const onChangeDatePicker = (event, selectedDate) => {
 		const currentDate = selectedDate || date
@@ -51,29 +59,15 @@ const Login = () => {
 		setMessage(message)
 		setMessageType(type)
 	}
-	const handleFormikSubmit = (values: ILoginValues, { setSubmitting }: FormikHelpers<ILoginValues>) => {
+	const handleFormikSubmit = (values: ILoginValues) => {
 		//VALIDATIONS
 		if (!values.name.length || !values.lastName.length || !dob) {
 			handleMessage('Please fill all the fields')
-			setSubmitting(false)
 			return
 		}
-
 		handleMessage(null)
 
-		onLogin!(values.name, values.lastName, dob)
-			.then((result) => {
-				if (result.error) {
-					handleMessage(result.message)
-				}
-			})
-			.catch((error) => {
-				const errorMessage = error.response && error.response.data.message ? error.response.data.message : error.message
-				handleMessage(errorMessage || 'An error occurred. Please try again.')
-			})
-			.finally(() => {
-				setSubmitting(false)
-			})
+		dispatch(login({ name: values.name, lastName: values.lastName, dateOfBirth: dob }))
 	}
 
 	return (
@@ -81,7 +75,7 @@ const Login = () => {
 			<StyledContainer>
 				<StatusBar style='auto' />
 				<InnerContainer>
-					<PageLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
+					<PageLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
 					<PageTitle>MIYAGI KEN</PageTitle>
 					<SubTitle>International Academy</SubTitle>
 					<SubTitle>Account Login</SubTitle>
@@ -98,7 +92,7 @@ const Login = () => {
 					)}
 
 					<Formik initialValues={{ name: '', lastName: '', dateOfBirth: '' }} onSubmit={handleFormikSubmit}>
-						{({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
+						{({ handleChange, handleBlur, handleSubmit, values }) => (
 							<StyledFormArea>
 								<TextInputForm
 									label='Name'
@@ -131,8 +125,12 @@ const Login = () => {
 									showDatePicker={showDatePicker}
 								/>
 								<MsgBox type={messageType}>{message}</MsgBox>
-								<StyledButton disabled={isSubmitting} onPress={(e) => handleSubmit(e)}>
-									{isSubmitting ? <ActivityIndicator size='large' color={primary} /> : <ButtonText>Login</ButtonText>}
+								<StyledButton disabled={loadingUserLogin} onPress={(e) => handleSubmit(e)}>
+									{loadingUserLogin ? (
+										<ActivityIndicator size='large' color={primary} />
+									) : (
+										<ButtonText>Login</ButtonText>
+									)}
 								</StyledButton>
 								<Line />
 								<ExtraView>

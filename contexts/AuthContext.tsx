@@ -12,7 +12,6 @@ interface IUser {
 	email: string
 	level: TLevel
 	dateOfBirth: string
-	age: number
 	avatar?: string
 	isAdmin: boolean
 	createdAt: string
@@ -27,14 +26,6 @@ interface IAuthState {
 interface IAuthPros {
 	authState?: IAuthState
 	isLoading?: boolean
-	onRegister?: (
-		name: string,
-		lastName: string,
-		email: string,
-		password: string,
-		dateOfBirth: Date | null,
-		level: TLevel,
-	) => Promise<any>
 	onLogin?: (name: string, lastName: string, dob: Date) => Promise<any>
 	onLogout?: () => Promise<any>
 }
@@ -76,42 +67,6 @@ export const AuthProvider = ({ children }: any) => {
 		loadToken()
 	}, [])
 
-	const register = async (
-		name: string,
-		lastName: string,
-		email: string,
-		password: string,
-		dateOfBirth: Date,
-		level: TLevel,
-	) => {
-		try {
-			const result = await axios.post(`${API_URL}/api/auth/register`, {
-				name,
-				lastName,
-				email,
-				password,
-				dateOfBirth,
-				level,
-			})
-			const token = result.data.token
-
-			if (token) {
-				const userData = parseJwt(token)
-				setAuthState({
-					userInfo: userData,
-					token: result.data.token,
-					authenticated: true,
-				})
-
-				axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
-				await SecureStore.setItemAsync(TOKEN_KEY, token)
-			}
-		} catch (error: any) {
-			const errorMessage = error.response && error.response.data.message ? error.response.data.message : error.message
-			return { error: true, message: errorMessage }
-		}
-	}
 	const login = async (name: string, lastName: string, dob: Date) => {
 		try {
 			const result = await axios.post(`${API_URL}/api/auth/login`, { name, lastName, dateOfBirth: dob })
@@ -150,7 +105,6 @@ export const AuthProvider = ({ children }: any) => {
 	const value = {
 		authState,
 		isLoading: loadingLocalToken,
-		onRegister: register,
 		onLogin: login,
 		onLogout: logout,
 	}

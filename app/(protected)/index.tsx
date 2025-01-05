@@ -1,8 +1,8 @@
 import React from 'react'
-import HomeScreen from '@/screens/control-panel/HomeScreen/HomeScreen'
+import ClassesScreen from '@/screens/control-panel/ClassesScreen/ClassesScreen'
 
 const index = () => {
-	return <HomeScreen />
+	return <ClassesScreen />
 }
 
 export default index
