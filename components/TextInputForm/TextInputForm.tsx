@@ -22,11 +22,12 @@ const TextInputForm = ({
 				<Octicons name={icon} size={30} color={brand} />
 			</LeftIcon>
 			<StyledInputLabel>{label}</StyledInputLabel>
-			{!isDate && <StyledTextInput {...props} />}
-			{isDate && (
+			{isDate ? (
 				<TouchableOpacity onPress={showDatePicker}>
 					<StyledTextInput {...props} />
 				</TouchableOpacity>
+			) : (
+				<StyledTextInput {...props} />
 			)}
 			{isPassword && (
 				<RightIcon onPress={() => setHidePassword && setHidePassword(!hidePassword)}>

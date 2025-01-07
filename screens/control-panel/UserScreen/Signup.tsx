@@ -19,14 +19,11 @@ import {
 } from '@/components/styles'
 import TextInputForm from '@/components/TextInputForm/TextInputForm'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
-import { useAuth } from '@/contexts/AuthContext'
 import validateSignupFields, { ISignUpValues } from './helpers/validate-signup-fields'
 
 const { darkLight } = Colors
 
 const Signup = () => {
-	const { onRegister } = useAuth()
-
 	const [message, setMessage] = useState<string | null>(null)
 	const [messageType, setMessageType] = useState<string | null>(null)
 	const [hidePassword, setHidePassword] = useState<boolean>(true)
@@ -60,19 +57,19 @@ const Signup = () => {
 
 		const { name, lastName, email, dateOfBirth, level, password } = credentials
 
-		onRegister!(name, lastName, email, password, dateOfBirth, level)
-			.then((response) => {
-				if (response.error) {
-					handleMessage(response.message)
-				}
-			})
-			.catch((error) => {
-				const errorMessage = error.response && error.response.data.message ? error.response.data.message : error.message
-				handleMessage(errorMessage || 'An error occurred. Please try again.')
-			})
-			.finally(() => {
-				setSubmitting(false)
-			})
+		// onRegister!(name, lastName, email, password, dateOfBirth, level)
+		// 	.then((response) => {
+		// 		if (response.error) {
+		// 			handleMessage(response.message)
+		// 		}
+		// 	})
+		// 	.catch((error) => {
+		// 		const errorMessage = error.response && error.response.data.message ? error.response.data.message : error.message
+		// 		handleMessage(errorMessage || 'An error occurred. Please try again.')
+		// 	})
+		// 	.finally(() => {
+		// 		setSubmitting(false)
+		// 	})
 	}
 	return (
 		<KeyboardAvoidingWrapper>

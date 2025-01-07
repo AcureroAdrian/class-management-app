@@ -4,10 +4,9 @@ import axios from 'axios'
 import { StatusBar } from 'expo-status-bar'
 import { Stack, useRouter } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { API_URL } from '@/contexts/AuthContext'
 import { RootState, store } from '@/redux/store'
 
-axios.defaults.baseURL = API_URL
+axios.defaults.baseURL = 'http://192.168.100.38:8000'
 
 const StackLayout = () => {
 	const router = useRouter()

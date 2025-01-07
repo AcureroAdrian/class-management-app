@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getKarateClassesByAdminReducer } from './karateClassReducers'
+import { getKarateClassesByAdminReducer, registerKarateClassReducer } from './karateClassReducers'
 import { getStudentUsersReducer, userLoginReducer } from './userReducers'
 
 const persistConfig = {
@@ -11,7 +11,8 @@ const persistConfig = {
 }
 
 export default combineReducers({
-	userLogin: persistReducer(persistConfig, userLoginReducer),
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
 	getStudentUsers: getStudentUsersReducer,
+	registerKarateClass: registerKarateClassReducer,
+	userLogin: persistReducer(persistConfig, userLoginReducer),
 })

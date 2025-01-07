@@ -161,3 +161,9 @@ export const StyledParagraph = styled(Text)`
 	text-align: flex-start;
 	width: 100%;
 `
+
+export const ErrorMsgBox = styled(Text)`
+	text-align: center;
+	font-size: 13px;
+	color: red;
+`
