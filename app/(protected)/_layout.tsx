@@ -19,6 +19,13 @@ const TabsLayout = () => {
 					tabBarIcon: () => <AntDesign name='user' size={24} color='blue' />,
 				}}
 			/>
+			<Tabs.Screen
+				name='settings'
+				options={{
+					tabBarLabel: 'Settings',
+					tabBarIcon: () => <AntDesign name='setting' size={24} color='blue' />,
+				}}
+			/>
 		</Tabs>
 	)
 }

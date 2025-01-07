@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AntDesign } from '@expo/vector-icons'
 import { ButtonContainer, HeaderContainer, HeaderTitle, ButtonText } from './styles/headerScreenStyles'
+import { IHeaderScreenProps } from './helpers/header-screen-interfaces'
 
 const HeaderScreen = ({
 	label = '',
@@ -12,7 +13,7 @@ const HeaderScreen = ({
 	iconName,
 	showBackButton = false,
 	handleBack = () => {},
-}) => {
+}: IHeaderScreenProps) => {
 	const insets = useSafeAreaInsets()
 
 	return (
