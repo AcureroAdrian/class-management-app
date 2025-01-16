@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react'
 import { Provider, useSelector } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
 import axios from 'axios'
 import { StatusBar } from 'expo-status-bar'
 import { Stack, useRouter } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { RootState, store } from '@/redux/store'
+import { persistor, RootState, store } from '@/redux/store'
 
-axios.defaults.baseURL = 'http://192.168.100.38:8000'
+axios.defaults.baseURL = 'http://192.168.1.106:8000'
+// axios.defaults.baseURL = 'http://localhost:8000'
 
 const StackLayout = () => {
 	const router = useRouter()
@@ -29,10 +31,12 @@ const StackLayout = () => {
 const RootLayout = () => {
 	return (
 		<Provider store={store}>
-			<SafeAreaProvider>
-				<StatusBar style='auto' />
-				<StackLayout />
-			</SafeAreaProvider>
+			<PersistGate loading={null} persistor={persistor}>
+				<SafeAreaProvider>
+					<StatusBar style='auto' />
+					<StackLayout />
+				</SafeAreaProvider>
+			</PersistGate>
 		</Provider>
 	)
 }

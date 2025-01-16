@@ -52,12 +52,53 @@ export const getStudentUsers = () => async (dispatch: Dispatch, getState: AppSto
 			},
 		}
 
-		const { data } = await axios.get('/api/users', config)
+		// const { data } = await axios.get('/api/users', config)
+		/* TEST */
+		const promise = new Promise((response, reject) => {
+			setTimeout(() => {
+				axios
+					.get('/api/users', config)
+					.then((res) => {
+						response(res.data)
+					})
+					.catch((err) => {
+						reject(err)
+					})
+			}, 2000)
+		})
+
+		const data = await promise
+		/* TEST */
 
 		dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
 	} catch (error: any) {
 		dispatch({
 			type: types.GET_STUDENT_USERS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}
+
+export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.REGISTER_STUDENTS_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await axios.post('/api/users', dataToSend, config)
+
+		dispatch({ type: types.REGISTER_STUDENTS_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.REGISTER_STUDENTS_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		})
 	}

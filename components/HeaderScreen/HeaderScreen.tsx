@@ -24,7 +24,7 @@ const HeaderScreen = ({
 						<AntDesign name='arrowleft' size={24} color='white' />
 					</Pressable>
 				)}
-				<HeaderTitle>{label}</HeaderTitle>
+				<HeaderTitle>{label?.length > 17 ? label.substring(0, 17) + '...' : label}</HeaderTitle>
 			</View>
 			<Pressable onPress={handleOnPress} disabled={disabledButton}>
 				<ButtonContainer>

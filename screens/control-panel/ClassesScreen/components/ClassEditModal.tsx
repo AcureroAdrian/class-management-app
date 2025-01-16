@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Modal } from 'react-native'
-import { format, isDate } from 'date-fns'
+import { format, isDate, setHours } from 'date-fns'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
@@ -9,13 +9,24 @@ import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsMod
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
+import getDataToUpdate from '../helpers/get-data-to-update'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
 import { TDaysOfWeek, TUserLevel } from '@/shared/common-types'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
-import { registerKarateClass } from '@/redux/actions/karateClassActions'
-import { REGISTER_KARATE_CLASS_RESET } from '@/redux/constants/karateClassConstants'
+import { getkarateClassById, updatekarateClassById } from '@/redux/actions/karateClassActions'
+import { GET_KARATE_CLASS_BY_ID_RESET, UPDATE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
 
-const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
+const ClassEditModal = ({
+	openModal,
+	closeModal,
+	className,
+	classId,
+}: {
+	openModal: boolean
+	closeModal: () => void
+	className: string
+	classId: string
+}) => {
 	const dispatch = useAppDispatch()
 
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -29,21 +40,36 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
 
-	const { loadingRegisterKarateClass, errorRegisterKarateClass } = useAppSelector(
-		(state: RootState) => state.registerKarateClass,
+	const { loadingGetKarateClassById, successGetKarateClassById, karateClassById, errorGetKarateClassById } =
+		useAppSelector((state: RootState) => state.getKarateClassById)
+	const { loadingUpdateKarateClassById, errorUpdateKarateClassById } = useAppSelector(
+		(state: RootState) => state.updateKarateClassById,
 	)
 
 	useEffect(() => {
 		return () => {
-			dispatch({ type: REGISTER_KARATE_CLASS_RESET })
+			dispatch({ type: GET_KARATE_CLASS_BY_ID_RESET })
+			dispatch({ type: UPDATE_KARATE_CLASS_BY_ID_RESET })
 			closeModal()
 		}
 	}, [])
 	useEffect(() => {
-		if (errorRegisterKarateClass) {
-			setErrorMessage(errorRegisterKarateClass)
+		if (classId) {
+			dispatch(getkarateClassById(classId))
 		}
-	}, [errorRegisterKarateClass])
+	}, [classId])
+	useEffect(() => {
+		if (successGetKarateClassById) {
+			setName(karateClassById.name)
+			setDescription(karateClassById.description)
+			setWeekDays(karateClassById.weekDays)
+			setLevels(karateClassById.levels)
+			setStudentsAssigned(karateClassById.students)
+			const date = new Date()
+			date.setHours(karateClassById.startTime.hour, karateClassById.startTime.minute)
+			setStartTime(date)
+		}
+	}, [successGetKarateClassById])
 
 	const onChange = (event, selectedDate) => {
 		setErrorMessage(null)
@@ -51,7 +77,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		setShowDate(false)
 		setStartTime(currentDate)
 	}
-	const handleRegisterClass = () => {
+	const handleUpdateClass = () => {
 		setErrorMessage(null)
 		if (!weekDays?.length) {
 			setErrorMessage('Please select at least one day')
@@ -66,37 +92,37 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 			return
 		}
 
-		const hour = startTime.getHours()
-		const minute = startTime.getMinutes()
-		dispatch(
-			registerKarateClass({
-				name,
-				description,
-				startTime: {
-					hour,
-					minute,
-				},
-				weekDays,
-				students: studentsAssigned,
-				minAge: 0,
-				maxAge: 100,
-				levels,
-			}),
-		)
+		const { needUpdate, dataToUpdate } = getDataToUpdate(karateClassById, {
+			name,
+			description,
+			startTime: {
+				hour: startTime.getHours(),
+				minute: startTime.getMinutes(),
+			},
+			weekDays,
+			levels,
+			students: studentsAssigned,
+		})
+
+		if (!needUpdate) {
+			return closeModal()
+		}
+
+		dispatch(updatekarateClassById(classId, dataToUpdate))
 	}
 
 	return (
 		<>
 			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				{loadingRegisterKarateClass && <CustomBackdrop openBackdrop={loadingRegisterKarateClass} label='Loading ...' />}
+				{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
 				<KeyboardAvoidingWrapper>
 					<View>
 						<HeaderScreen
-							label='New Class'
+							label={className}
 							labelButton='Save'
 							iconName='save'
-							disabledButton={loadingRegisterKarateClass}
-							handleOnPress={handleRegisterClass}
+							disabledButton={loadingUpdateKarateClassById}
+							handleOnPress={handleUpdateClass}
 							showBackButton={true}
 							handleBack={closeModal}
 						/>
@@ -160,7 +186,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									editable={false}
 									onPress={() => setOpenLevelsModal(true)}
 								/>
-								<ErrorMsgBox>{errorMessage}</ErrorMsgBox>
+								<ErrorMsgBox>{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}</ErrorMsgBox>
 							</StyledFormArea>
 						</InnerContainer>
 					</View>
@@ -190,4 +216,4 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	)
 }
 
-export default ClassRegisterModal
+export default ClassEditModal

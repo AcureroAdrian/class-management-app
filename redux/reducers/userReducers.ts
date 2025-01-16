@@ -33,8 +33,16 @@ interface IGetStudentUsersState {
 	errorGetStudentUsers?: string
 }
 
+interface IRegisterStudentsState {
+	loadingRegisterStudents?: boolean
+	successRegisterStudents?: boolean
+	studentRegisteredList?: IStudent[]
+	errorRegisterStudents?: string
+}
+
 type TUserLoginReducer = Reducer<ILoginState, any>
 type TGetStudentUsersReducer = Reducer<IGetStudentUsersState, any>
+type TRegisterStudentsReducer = Reducer<IRegisterStudentsState, any>
 
 export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -74,6 +82,28 @@ export const getStudentUsersReducer: TGetStudentUsersReducer = (state = {}, acti
 				errorGetStudentUsers: action.payload,
 			}
 		case types.GET_STUDENT_USERS_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const registerStudentsReducer: TRegisterStudentsReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.REGISTER_STUDENTS_REQUEST:
+			return { loadingRegisterStudents: true }
+		case types.REGISTER_STUDENTS_SUCCESS:
+			return {
+				loadingRegisterStudents: false,
+				successRegisterStudents: true,
+				studentRegisteredList: action.payload,
+			}
+		case types.REGISTER_STUDENTS_FAIL:
+			return {
+				loadingRegisterStudents: false,
+				errorRegisterStudents: action.payload,
+			}
+		case types.REGISTER_STUDENTS_RESET:
 			return {}
 		default:
 			return state

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
 import { InnerContainer } from '@/components/styles'
 import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
-import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import ClassRegisterModal from './components/ClassRegisterModal'
+import ClassEditModal from './components/ClassEditModal'
 import { IClass } from './helpers/karate-classes-interfaces'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getkarateClassesByAdmin } from '@/redux/actions/karateClassActions'
@@ -14,9 +14,11 @@ const ClassesScreen = () => {
 	const dispatch = useAppDispatch()
 	const segments = useSegments()
 
-	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 	const [karateClasses, setKarateClasses] = useState<IClass[]>([])
 	const [openClassRegisterModal, setOpenClassRegisterModal] = useState<boolean>(false)
+	const [openClassEditModal, setOpenClassEditModal] = useState<boolean>(false)
+	const [classIdSelected, setClassIdSelected] = useState<string>('')
+	const [classNameSelected, setClassNameSelected] = useState<string>('')
 
 	const {
 		loadingKarateClassesByAdmin,
@@ -27,9 +29,13 @@ const ClassesScreen = () => {
 	const { successRegisterKarateClass, karateClassRegistered } = useAppSelector(
 		(state: RootState) => state.registerKarateClass,
 	)
+	const { successUpdateKarateClassById, karateClassByIdUpdated } = useAppSelector(
+		(state: RootState) => state.updateKarateClassById,
+	)
 
 	useEffect(() => {
 		if (segments?.length < 2) {
+			setKarateClasses([])
 			dispatch(getkarateClassesByAdmin())
 		}
 	}, [segments])
@@ -39,19 +45,31 @@ const ClassesScreen = () => {
 		}
 	}, [successKarateClassesByAdmin])
 	useEffect(() => {
-		if (errorKarateClassesByAdmin) {
-			handleMessageError(errorKarateClassesByAdmin)
-		}
-	}, [errorKarateClassesByAdmin])
-	useEffect(() => {
 		if (successRegisterKarateClass) {
 			setKarateClasses((prev) => [...prev, karateClassRegistered])
 			setOpenClassRegisterModal(false)
 		}
 	}, [successRegisterKarateClass])
+	useEffect(() => {
+		if (successUpdateKarateClassById) {
+			setKarateClasses((prev) =>
+				prev.map((karateClass) => {
+					if (karateClass._id === karateClassByIdUpdated._id) {
+						karateClass.name = karateClassByIdUpdated.name
+						karateClass.description = karateClassByIdUpdated.description
+						karateClass.students = karateClassByIdUpdated.students
+					}
+					return karateClass
+				}),
+			)
+			setOpenClassEditModal(false)
+		}
+	}, [successUpdateKarateClassById])
 
-	const handleMessageError = (message: string | null) => {
-		setErrorMessage(message)
+	const handleClassSelect = (classId: string, className: string) => {
+		setClassIdSelected(classId)
+		setClassNameSelected(className)
+		setOpenClassEditModal(true)
 	}
 
 	return (
@@ -59,52 +77,65 @@ const ClassesScreen = () => {
 			{loadingKarateClassesByAdmin && (
 				<CustomBackdrop openBackdrop={loadingKarateClassesByAdmin} label='Loading data ...' />
 			)}
-			<KeyboardAvoidingWrapper>
-				<View
-					style={{
-						flex: 1,
-						flexDirection: 'column',
-						justifyContent: 'flex-start',
-						alignItems: 'center',
-					}}
-				>
-					<HeaderScreen
-						label='Classes'
-						labelButton='Add'
-						handleOnPress={() => setOpenClassRegisterModal(true)}
-						disabledButton={loadingKarateClassesByAdmin}
-						iconName='plus'
-					/>
-					<InnerContainer>
-						<ScrollView>
-							{errorMessage ? (
-								<Text>{errorMessage}</Text>
-							) : (
-								<ScrollView>
-									{karateClasses.map((karateClass) => (
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'column',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+				}}
+			>
+				<HeaderScreen
+					label='Classes'
+					labelButton='Add'
+					handleOnPress={() => setOpenClassRegisterModal(true)}
+					disabledButton={loadingKarateClassesByAdmin}
+					iconName='plus'
+				/>
+				<InnerContainer>
+					<ScrollView>
+						{errorKarateClassesByAdmin && !karateClasses?.length ? (
+							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+								<Text style={{ fontSize: 16, color: 'red' }}>{errorKarateClassesByAdmin}</Text>
+							</View>
+						) : (
+							<FlatList
+								data={karateClasses}
+								keyExtractor={(item) => item._id}
+								nestedScrollEnabled={true}
+								scrollEnabled={false}
+								renderItem={({ item }) => (
+									<Pressable onPress={() => handleClassSelect(item._id, item.name)}>
 										<View
 											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-											key={karateClass._id}
+											key={item._id}
 										>
 											<View style={{ justifyContent: 'space-between', width: '100%', flexDirection: 'row' }}>
-												<Text style={{ fontWeight: 400, fontSize: 16 }}>{karateClass.name}</Text>
-												<Text style={{ color: karateClass.students.length ? '' : 'red' }}>
-													{karateClass.students.length} student{karateClass.students.length ? 's' : ''}
+												<Text style={{ fontWeight: 400, fontSize: 16 }}>{item.name}</Text>
+												<Text style={{ color: item.students.length ? '' : 'red' }}>
+													{item.students.length} student{item.students.length ? 's' : ''}
 												</Text>
 											</View>
-											<Text style={{ fontSize: 15, color: 'grey' }}>{karateClass?.description}</Text>
+											<Text style={{ fontSize: 15, color: 'grey' }}>{item?.description}</Text>
 											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
-									))}
-								</ScrollView>
-							)}
-						</ScrollView>
-						{/* )} */}
-					</InnerContainer>
-				</View>
-			</KeyboardAvoidingWrapper>
+									</Pressable>
+								)}
+							/>
+						)}
+					</ScrollView>
+				</InnerContainer>
+			</View>
 			{openClassRegisterModal && (
 				<ClassRegisterModal openModal={openClassRegisterModal} closeModal={() => setOpenClassRegisterModal(false)} />
+			)}
+			{openClassEditModal && (
+				<ClassEditModal
+					openModal={openClassEditModal}
+					closeModal={() => [setOpenClassEditModal(false), setClassIdSelected('')]}
+					classId={classIdSelected}
+					className={classNameSelected}
+				/>
 			)}
 		</>
 	)
