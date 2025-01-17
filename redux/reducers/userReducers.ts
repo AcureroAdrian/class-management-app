@@ -1,13 +1,20 @@
 import { Reducer } from 'redux'
 import * as types from '../constants/userConstants'
+import { TUserLevel } from '@/shared/common-types'
 
 interface IUser {
 	_id: string
 	name: string
 	lastName: string
-	dateOfBirth?: string
-	level?: string
+	dateOfBirth?: {
+		year: number
+		month: number
+		day: number
+	}
+	level?: TUserLevel
 	email?: string
+	phone?: string
+	notes?: string
 	avatar?: string
 	isAdmin: boolean
 	createdAt: string
@@ -25,24 +32,36 @@ interface ILoginState {
 	userInfo?: IUser
 	errorUserLogin?: string
 }
-
 interface IGetStudentUsersState {
 	loadingGetStudentUsers?: boolean
 	successGetStudentUsers?: boolean
 	studentUsersList?: IStudent[]
 	errorGetStudentUsers?: string
 }
-
 interface IRegisterStudentsState {
 	loadingRegisterStudents?: boolean
 	successRegisterStudents?: boolean
 	studentRegisteredList?: IStudent[]
 	errorRegisterStudents?: string
 }
+interface IGetStudentUserByIdState {
+	loadingGetStudentUserById?: boolean
+	successGetStudentUserById?: boolean
+	studentUserById?: Omit<IUser, 'token | createdAt | isAdmin'>
+	errorGetStudentUserById?: string
+}
+interface IUpdateStudentUserByIdState {
+	loadingUpdateStudentUserById?: boolean
+	successUpdateStudentUserById?: boolean
+	studentUserByIdUpdated?: Omit<IUser, 'token | createdAt | isAdmin'>
+	errorUpdateStudentUserById?: string
+}
 
 type TUserLoginReducer = Reducer<ILoginState, any>
 type TGetStudentUsersReducer = Reducer<IGetStudentUsersState, any>
 type TRegisterStudentsReducer = Reducer<IRegisterStudentsState, any>
+type TGetStudentUserByIdReducer = Reducer<IGetStudentUserByIdState, any>
+type TUpdateStudentUserByIdReducer = Reducer<IUpdateStudentUserByIdState, any>
 
 export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -104,6 +123,50 @@ export const registerStudentsReducer: TRegisterStudentsReducer = (state = {}, ac
 				errorRegisterStudents: action.payload,
 			}
 		case types.REGISTER_STUDENTS_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const getStudentUserByIdReducer: TGetStudentUserByIdReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.GET_STUDENT_USER_BY_ID_REQUEST:
+			return { loadingGetStudentUserById: true }
+		case types.GET_STUDENT_USER_BY_ID_SUCCESS:
+			return {
+				loadingGetStudentUserById: false,
+				successGetStudentUserById: true,
+				studentUserById: action.payload,
+			}
+		case types.GET_STUDENT_USER_BY_ID_FAIL:
+			return {
+				loadingGetStudentUserById: false,
+				errorGetStudentUserById: action.payload,
+			}
+		case types.GET_STUDENT_USER_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const updateStudentUserByIdReducer: TUpdateStudentUserByIdReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.UPDATE_STUDENT_USER_BY_ID_REQUEST:
+			return { loadingUpdateStudentUserById: true }
+		case types.UPDATE_STUDENT_USER_BY_ID_SUCCESS:
+			return {
+				loadingUpdateStudentUserById: false,
+				successUpdateStudentUserById: true,
+				studentUserByIdUpdated: action.payload,
+			}
+		case types.UPDATE_STUDENT_USER_BY_ID_FAIL:
+			return {
+				loadingUpdateStudentUserById: false,
+				errorUpdateStudentUserById: action.payload,
+			}
+		case types.UPDATE_STUDENT_USER_BY_ID_RESET:
 			return {}
 		default:
 			return state

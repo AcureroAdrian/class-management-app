@@ -7,7 +7,13 @@ import {
 	registerKarateClassReducer,
 	updateKarateClassByIdReducer,
 } from './karateClassReducers'
-import { getStudentUsersReducer, registerStudentsReducer, userLoginReducer } from './userReducers'
+import {
+	getStudentUserByIdReducer,
+	getStudentUsersReducer,
+	registerStudentsReducer,
+	updateStudentUserByIdReducer,
+	userLoginReducer,
+} from './userReducers'
 
 const loginPersistConfig = {
 	key: 'root',
@@ -18,9 +24,11 @@ const loginPersistConfig = {
 export default combineReducers({
 	getKarateClassById: getKarateClassByIdReducer,
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
+	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
 	registerKarateClass: registerKarateClassReducer,
 	registerStudents: registerStudentsReducer,
 	updateKarateClassById: updateKarateClassByIdReducer,
+	updateStudentUserById: updateStudentUserByIdReducer,
 	userLogin: persistReducer(loginPersistConfig, userLoginReducer),
 })

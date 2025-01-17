@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, FlatList, TextInput } from 'react-native'
+import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
 import { InnerContainer } from '@/components/styles'
 import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import StudentsRegisterModal from './components/StudentsRegisterModal'
+import StudentEditModal from './components/StudentEditModal'
 import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
@@ -18,12 +19,17 @@ const StudentsScreen = () => {
 	const [filteredStudents, setFilteredStudents] = useState<IStudent[]>([])
 	const [openStudentsRegisterModal, setOpenStudentsRegisterModal] = useState<boolean>(false)
 	const [textSearch, setTextSearch] = useState<string>('')
+	const [openStudentEditModal, setOpenStudentEditModal] = useState<boolean>(false)
+	const [studentIdSelected, setStudentIdSelected] = useState<string>('')
 
 	const { loadingGetStudentUsers, studentUsersList, successGetStudentUsers, errorGetStudentUsers } = useAppSelector(
 		(state: RootState) => state.getStudentUsers,
 	)
 	const { successRegisterStudents, studentRegisteredList } = useAppSelector(
 		(state: RootState) => state.registerStudents,
+	)
+	const { successUpdateStudentUserById, studentUserByIdUpdated } = useAppSelector(
+		(state) => state.updateStudentUserById,
 	)
 
 	useEffect(() => {
@@ -52,6 +58,25 @@ const StudentsScreen = () => {
 		}
 		setFilteredStudents(filteredStudents)
 	}, [textSearch, students])
+	useEffect(() => {
+		if (successUpdateStudentUserById) {
+			setStudents((prev) =>
+				prev.map((student) => {
+					if (student._id === studentUserByIdUpdated?._id) {
+						student.name = studentUserByIdUpdated?.name
+						student.lastName = studentUserByIdUpdated?.lastName
+					}
+					return student
+				}),
+			)
+			setOpenStudentEditModal(false)
+		}
+	}, [successUpdateStudentUserById])
+
+	const handleSelectStudent = (student: IStudent) => {
+		setStudentIdSelected(student._id)
+		setOpenStudentEditModal(true)
+	}
 
 	return (
 		<>
@@ -99,30 +124,32 @@ const StudentsScreen = () => {
 								scrollEnabled={false}
 								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
 								renderItem={({ item }) => (
-									<View
-										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-										key={item._id}
-									>
-										<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
-											<Image
-												source={require('@/assets/img/default-avatar.png')}
-												style={{ width: 50, height: 50, borderRadius: 50 }}
-												resizeMode='contain'
-											/>
-											<View
-												style={{
-													justifyContent: 'center',
-													alignItems: 'flex-start',
-													width: '100%',
-													flexDirection: 'column',
-												}}
-											>
-												<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-												<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+									<Pressable onPress={() => handleSelectStudent(item)}>
+										<View
+											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
+											key={item._id}
+										>
+											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
+												<Image
+													source={require('@/assets/img/default-avatar.png')}
+													style={{ width: 50, height: 50, borderRadius: 50 }}
+													resizeMode='contain'
+												/>
+												<View
+													style={{
+														justifyContent: 'center',
+														alignItems: 'flex-start',
+														width: '100%',
+														flexDirection: 'column',
+													}}
+												>
+													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+												</View>
 											</View>
+											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-									</View>
+									</Pressable>
 								)}
 								keyExtractor={(item) => item._id}
 							/>
@@ -134,6 +161,13 @@ const StudentsScreen = () => {
 				<StudentsRegisterModal
 					openModal={openStudentsRegisterModal}
 					closeModal={() => setOpenStudentsRegisterModal(false)}
+				/>
+			)}
+			{openStudentEditModal && (
+				<StudentEditModal
+					openModal={openStudentEditModal}
+					closeModal={() => [setOpenStudentEditModal(false), setStudentIdSelected('')]}
+					studentId={studentIdSelected}
 				/>
 			)}
 		</>

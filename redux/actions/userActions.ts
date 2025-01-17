@@ -87,3 +87,54 @@ export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, 
 		})
 	}
 }
+
+export const getStudentUserById = (studentId: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.GET_STUDENT_USER_BY_ID_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await axios.get('/api/users/' + studentId, config)
+
+		dispatch({ type: types.GET_STUDENT_USER_BY_ID_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.GET_STUDENT_USER_BY_ID_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}
+
+export const updateStudentUserById =
+	(studentId: string, dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.UPDATE_STUDENT_USER_BY_ID_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await axios.patch('/api/users/' + studentId, dataToSend, config)
+
+			dispatch({ type: types.UPDATE_STUDENT_USER_BY_ID_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.UPDATE_STUDENT_USER_BY_ID_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}
