@@ -4,3 +4,9 @@ export interface IClass {
 	description?: string
 	students: string[]
 }
+
+export interface IStudent {
+	_id: string
+	name: string
+	lastName: string
+}

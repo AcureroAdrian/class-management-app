@@ -97,7 +97,7 @@ const StudentsScreen = () => {
 							<FlatList
 								nestedScrollEnabled={true}
 								scrollEnabled={false}
-								data={filteredStudents}
+								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
 								renderItem={({ item }) => (
 									<View
 										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}

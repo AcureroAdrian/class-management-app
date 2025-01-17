@@ -52,23 +52,7 @@ export const getStudentUsers = () => async (dispatch: Dispatch, getState: AppSto
 			},
 		}
 
-		// const { data } = await axios.get('/api/users', config)
-		/* TEST */
-		const promise = new Promise((response, reject) => {
-			setTimeout(() => {
-				axios
-					.get('/api/users', config)
-					.then((res) => {
-						response(res.data)
-					})
-					.catch((err) => {
-						reject(err)
-					})
-			}, 2000)
-		})
-
-		const data = await promise
-		/* TEST */
+		const { data } = await axios.get('/api/users', config)
 
 		dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
 	} catch (error: any) {

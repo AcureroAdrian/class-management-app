@@ -105,20 +105,38 @@ const ClassesScreen = () => {
 								nestedScrollEnabled={true}
 								scrollEnabled={false}
 								renderItem={({ item }) => (
-									<Pressable onPress={() => handleClassSelect(item._id, item.name)}>
+									<Pressable key={item._id} onPress={() => handleClassSelect(item._id, item.name)}>
 										<View
-											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-											key={item._id}
+											style={{
+												width: '100%',
+												flex: 1,
+												flexDirection: 'row',
+												alignItems: 'center',
+												justifyContent: 'space-between',
+											}}
 										>
-											<View style={{ justifyContent: 'space-between', width: '100%', flexDirection: 'row' }}>
-												<Text style={{ fontWeight: 400, fontSize: 16 }}>{item.name}</Text>
+											<View style={{ flex: 1, padding: 10, paddingHorizontal: 15, alignItems: 'flex-start' }}>
+												<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
+													{item.name}
+												</Text>
+												<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
+													{item?.description}
+												</Text>
+											</View>
+											<View
+												style={{
+													flexDirection: 'row',
+													alignItems: 'center',
+													padding: 10,
+													paddingHorizontal: 15,
+												}}
+											>
 												<Text style={{ color: item.students.length ? '' : 'red' }}>
 													{item.students.length} student{item.students.length ? 's' : ''}
 												</Text>
 											</View>
-											<Text style={{ fontSize: 15, color: 'grey' }}>{item?.description}</Text>
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
+										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 									</Pressable>
 								)}
 							/>

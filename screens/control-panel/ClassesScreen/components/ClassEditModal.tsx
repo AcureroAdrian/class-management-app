@@ -8,6 +8,7 @@ import { InnerContainer, StyledFormArea, Colors, ErrorMsgBox } from '@/component
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
+import AssignedStudentsModal from './AssignedStudentsModal'
 import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
 import getDataToUpdate from '../helpers/get-data-to-update'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
@@ -39,6 +40,7 @@ const ClassEditModal = ({
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
+	const [openAssignedStudentsModal, setOpenAssignedStudentsModal] = useState<boolean>(false)
 
 	const { loadingGetKarateClassById, successGetKarateClassById, karateClassById, errorGetKarateClassById } =
 		useAppSelector((state: RootState) => state.getKarateClassById)
@@ -110,6 +112,9 @@ const ClassEditModal = ({
 
 		dispatch(updatekarateClassById(classId, dataToUpdate))
 	}
+	const handleAssignStudents = (students: string[]) => {
+		setStudentsAssigned(students)
+	}
 
 	return (
 		<>
@@ -166,7 +171,7 @@ const ClassEditModal = ({
 									placeholderTextColor={Colors.darkLight}
 									value={`${studentsAssigned?.length} students (Tap to add students)`}
 									editable={false}
-									onPress={() => {}}
+									onPress={() => setOpenAssignedStudentsModal(true)}
 								/>
 								<CustomInputForm
 									label='Weekdays'
@@ -210,6 +215,14 @@ const ClassEditModal = ({
 					options={levelsInitialValues}
 					selected={levels}
 					handleSaveOptions={(selected: any) => setLevels(selected)}
+				/>
+			)}
+			{openAssignedStudentsModal && (
+				<AssignedStudentsModal
+					openModal={openAssignedStudentsModal}
+					closeModal={() => setOpenAssignedStudentsModal(false)}
+					studentsAssigned={studentsAssigned}
+					handleAssignStudents={handleAssignStudents}
 				/>
 			)}
 		</>

@@ -8,6 +8,7 @@ import { InnerContainer, StyledFormArea, Colors, ErrorMsgBox } from '@/component
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
+import AssignedStudentsModal from './AssignedStudentsModal'
 import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
 import { TDaysOfWeek, TUserLevel } from '@/shared/common-types'
@@ -28,6 +29,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
+	const [openAssignedStudentsModal, setOpenAssignedStudentsModal] = useState<boolean>(false)
 
 	const { loadingRegisterKarateClass, errorRegisterKarateClass } = useAppSelector(
 		(state: RootState) => state.registerKarateClass,
@@ -83,6 +85,9 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 				levels,
 			}),
 		)
+	}
+	const handleAssignStudents = (students: string[]) => {
+		setStudentsAssigned(students)
 	}
 
 	return (
@@ -140,7 +145,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									placeholderTextColor={Colors.darkLight}
 									value={`${studentsAssigned?.length} students (Tap to add students)`}
 									editable={false}
-									onPress={() => {}}
+									onPress={() => setOpenAssignedStudentsModal(true)}
 								/>
 								<CustomInputForm
 									label='Weekdays'
@@ -184,6 +189,14 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					options={levelsInitialValues}
 					selected={levels}
 					handleSaveOptions={(selected: any) => setLevels(selected)}
+				/>
+			)}
+			{openAssignedStudentsModal && (
+				<AssignedStudentsModal
+					openModal={openAssignedStudentsModal}
+					closeModal={() => setOpenAssignedStudentsModal(false)}
+					studentsAssigned={studentsAssigned}
+					handleAssignStudents={handleAssignStudents}
 				/>
 			)}
 		</>

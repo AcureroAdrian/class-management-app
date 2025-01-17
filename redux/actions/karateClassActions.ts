@@ -17,23 +17,7 @@ export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState
 			},
 		}
 
-		// const { data } = await axios.get('/api/karate-classes', config)
-		/* TEST */
-		const promise = new Promise((response, reject) => {
-			setTimeout(() => {
-				axios
-					.get('/api/karate-classes', config)
-					.then((res) => {
-						response(res.data)
-					})
-					.catch((err) => {
-						reject(err)
-					})
-			}, 2000)
-		})
-
-		const data = await promise
-		/* TEST */
+		const { data } = await axios.get('/api/karate-classes', config)
 
 		dispatch({ type: types.GET_KARATE_CLASS_BY_ADMIN_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -58,23 +42,7 @@ export const registerKarateClass = (dataToSend: any) => async (dispatch: Dispatc
 			},
 		}
 
-		// const { data } = await axios.post('/api/karate-classes',dataToSend, config)
-		/* TEST */
-		const promise = new Promise((response, reject) => {
-			setTimeout(() => {
-				axios
-					.post('/api/karate-classes', dataToSend, config)
-					.then((res) => {
-						response(res.data)
-					})
-					.catch((err) => {
-						reject(err)
-					})
-			}, 2000)
-		})
-
-		const data = await promise
-		/* TEST */
+		const { data } = await axios.post('/api/karate-classes', dataToSend, config)
 
 		dispatch({ type: types.REGISTER_KARATE_CLASS_SUCCESS, payload: data })
 	} catch (error: any) {
