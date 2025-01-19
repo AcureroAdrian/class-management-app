@@ -17,6 +17,9 @@ android/
 *.p12
 *.key
 *.mobileprovision
+# local env files
+.env*
+
 
 # Metro
 .metro-health-check*

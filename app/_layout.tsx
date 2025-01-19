@@ -7,8 +7,7 @@ import { Stack, useRouter } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { persistor, RootState, store } from '@/redux/store'
 
-axios.defaults.baseURL = 'http://192.168.1.106:8000'
-// axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = process.env.API_URL
 
 const StackLayout = () => {
 	const router = useRouter()
