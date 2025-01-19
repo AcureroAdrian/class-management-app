@@ -1,8 +1,8 @@
-import axios from 'axios'
 import { Dispatch } from 'redux'
 import parseJwt from '@/shared/parseJwt'
 import * as types from '../constants/userConstants'
 import { AppStore } from '../store'
+import customAxios from '@/config/axios'
 
 interface IDataLogin {
 	name: string
@@ -20,7 +20,7 @@ export const login = (dataLogin: IDataLogin) => async (dispatch: Dispatch, getSt
 			},
 		}
 
-		const { data } = await axios.post('/api/auth/login', dataLogin, config)
+		const { data } = await customAxios.post('/api/auth/login', dataLogin, config)
 
 		const decoded = parseJwt(data.token)
 
@@ -52,7 +52,7 @@ export const getStudentUsers = () => async (dispatch: Dispatch, getState: AppSto
 			},
 		}
 
-		const { data } = await axios.get('/api/users', config)
+		const { data } = await customAxios.get('/api/users', config)
 
 		dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -77,7 +77,7 @@ export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, 
 			},
 		}
 
-		const { data } = await axios.post('/api/users', dataToSend, config)
+		const { data } = await customAxios.post('/api/users', dataToSend, config)
 
 		dispatch({ type: types.REGISTER_STUDENTS_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -102,7 +102,7 @@ export const getStudentUserById = (studentId: string) => async (dispatch: Dispat
 			},
 		}
 
-		const { data } = await axios.get('/api/users/' + studentId, config)
+		const { data } = await customAxios.get('/api/users/' + studentId, config)
 
 		dispatch({ type: types.GET_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -128,7 +128,7 @@ export const updateStudentUserById =
 				},
 			}
 
-			const { data } = await axios.patch('/api/users/' + studentId, dataToSend, config)
+			const { data } = await customAxios.patch('/api/users/' + studentId, dataToSend, config)
 
 			dispatch({ type: types.UPDATE_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 		} catch (error: any) {

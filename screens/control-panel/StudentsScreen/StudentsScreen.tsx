@@ -81,14 +81,7 @@ const StudentsScreen = () => {
 	return (
 		<>
 			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
-			<View
-				style={{
-					flex: 1,
-					flexDirection: 'column',
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-				}}
-			>
+			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<HeaderScreen
 					label='Students'
 					labelButton='Add'

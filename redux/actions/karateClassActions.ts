@@ -1,7 +1,7 @@
-import axios from 'axios'
 import { Dispatch } from 'redux'
 import * as types from '../constants/karateClassConstants'
 import { AppStore } from '../store'
+import customAxios from '@/config/axios'
 
 export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState: AppStore['getState']) => {
 	try {
@@ -17,7 +17,7 @@ export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState
 			},
 		}
 
-		const { data } = await axios.get('/api/karate-classes', config)
+		const { data } = await customAxios.get('/api/karate-classes', config)
 
 		dispatch({ type: types.GET_KARATE_CLASS_BY_ADMIN_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -42,7 +42,7 @@ export const registerKarateClass = (dataToSend: any) => async (dispatch: Dispatc
 			},
 		}
 
-		const { data } = await axios.post('/api/karate-classes', dataToSend, config)
+		const { data } = await customAxios.post('/api/karate-classes', dataToSend, config)
 
 		dispatch({ type: types.REGISTER_KARATE_CLASS_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -67,7 +67,7 @@ export const getkarateClassById = (id: string) => async (dispatch: Dispatch, get
 			},
 		}
 
-		const { data } = await axios.get('/api/karate-classes/' + id, config)
+		const { data } = await customAxios.get('/api/karate-classes/' + id, config)
 
 		dispatch({ type: types.GET_KARATE_CLASS_BY_ID_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -93,7 +93,7 @@ export const updatekarateClassById =
 				},
 			}
 
-			const { data } = await axios.patch('/api/karate-classes/' + id, dataToSend, config)
+			const { data } = await customAxios.patch('/api/karate-classes/' + id, dataToSend, config)
 
 			dispatch({ type: types.UPDATE_KARATE_CLASS_BY_ID_SUCCESS, payload: data })
 		} catch (error: any) {

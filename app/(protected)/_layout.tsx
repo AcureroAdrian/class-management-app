@@ -13,6 +13,13 @@ const TabsLayout = () => {
 				}}
 			/>
 			<Tabs.Screen
+				name='attendance'
+				options={{
+					tabBarLabel: 'Attendance',
+					tabBarIcon: () => <AntDesign name='calendar' size={24} color='blue' />,
+				}}
+			/>
+			<Tabs.Screen
 				name='students'
 				options={{
 					tabBarLabel: 'Students',

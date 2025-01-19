@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import axios from 'axios'
 import { StatusBar } from 'expo-status-bar'
 import { Stack, useRouter } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { persistor, RootState, store } from '@/redux/store'
-
-axios.defaults.baseURL = process.env.API_URL
 
 const StackLayout = () => {
 	const router = useRouter()
