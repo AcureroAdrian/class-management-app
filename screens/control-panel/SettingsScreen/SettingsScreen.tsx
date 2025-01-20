@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Button } from 'react-native'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { USER_LOGOUT } from '@/redux/constants/userConstants'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
 
 const SettingsScreen = () => {
@@ -16,7 +16,7 @@ const SettingsScreen = () => {
 
 	return (
 		<View>
-			<HeaderScreen label='Settings' />
+			<ScreenHeader label='Settings' />
 			<View style={{ gap: 10, marginTop: 20, marginBottom: 20, padding: 20 }}>
 				<Text>Name: {capitalizeWords(userInfo?.name || '')}</Text>
 				<Text>Last Name: {capitalizeWords(userInfo?.lastName || '')}</Text>

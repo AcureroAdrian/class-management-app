@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable, Modal } from 'react-native'
-import { InnerContainer } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudent } from '../helpers/karate-classes-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 
@@ -42,7 +41,7 @@ const PickStudentsModal = ({
 					alignItems: 'center',
 				}}
 			>
-				<HeaderScreen label='Pick Students' showBackButton={true} handleBack={closeModal} />
+				<ScreenHeader label='Pick Students' showBackButton={true} handleBack={closeModal} />
 				<TextInput
 					value={textSearch}
 					onChangeText={setTextSearch}
@@ -59,7 +58,7 @@ const PickStudentsModal = ({
 						color: '#1F2937',
 					}}
 				/>
-				<InnerContainer>
+				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						<FlatList
 							nestedScrollEnabled={true}
@@ -96,7 +95,7 @@ const PickStudentsModal = ({
 							keyExtractor={(item) => item._id}
 						/>
 					</ScrollView>
-				</InnerContainer>
+				</View>
 			</View>
 		</Modal>
 	)

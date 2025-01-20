@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Image } from 'react-native'
+import { View, Modal, Image, Text } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { Colors, ErrorMsgBox, StyledFormArea } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import getStudentDataToUpdate from '../helpers/get-student-data-to-update'
@@ -12,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUserById, updateStudentUserById } from '@/redux/actions/userActions'
 import { GET_STUDENT_USER_BY_ID_RESET, UPDATE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 import capitalizeWords from '@/shared/capitalize-words'
+import colors from '@/theme/colors'
 
 const StudentEditModal = ({
 	openModal,
@@ -133,7 +133,7 @@ const StudentEditModal = ({
 			)}
 			<View>
 				<View>
-					<HeaderScreen
+					<ScreenHeader
 						label='Student Info'
 						labelButton='Save'
 						iconName='save'
@@ -158,7 +158,7 @@ const StudentEditModal = ({
 								alignItems: 'center',
 								justifyContent: 'center',
 								marginHorizontal: 20,
-								borderColor: Colors.brand,
+								borderColor: colors.brand,
 								borderWidth: 2,
 								borderRadius: 10,
 								marginTop: 10,
@@ -167,34 +167,34 @@ const StudentEditModal = ({
 						>
 							<Image
 								resizeMode='contain'
-								style={{ width: 90, height: 90, tintColor: Colors.brand }}
+								style={{ width: 90, height: 90, tintColor: colors.brand }}
 								source={require('@/assets/img/camera.png')}
 							/>
 						</View>
 						<View style={{ width: '60%', alignItems: 'center' }}>
-							<StyledFormArea>
+							<View style={{ width: '90%' }}>
 								<CustomInputForm
 									label='First Name'
 									placeholder='Manuel'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setName}
 									value={name}
 								/>
 								<CustomInputForm
 									label='Last Name'
 									placeholder='Smith'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setLastName}
 									value={lastName}
 								/>
-							</StyledFormArea>
+							</View>
 						</View>
 					</View>
 					<View style={{ padding: 20 }}>
 						<CustomInputForm
 							label='Date of Birth'
 							placeholder='YYY - MM - DD'
-							placeholderTextColor={Colors.darkLight}
+							placeholderTextColor={colors.darkLight}
 							value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
 							editable={false}
 							onPress={() => setShowDatePicker(true)}
@@ -202,26 +202,34 @@ const StudentEditModal = ({
 						<CustomInputForm
 							label='Email'
 							placeholder='manuel@gmail.com'
-							placeholderTextColor={Colors.darkLight}
+							placeholderTextColor={colors.darkLight}
 							onChangeText={setEmail}
 							value={email}
 						/>
 						<CustomInputForm
 							label='Phone'
 							placeholder='+506 1234 5678'
-							placeholderTextColor={Colors.darkLight}
+							placeholderTextColor={colors.darkLight}
 							onChangeText={setPhone}
 							value={phone}
 						/>
 						<CustomInputForm
 							label='Notes'
 							placeholder='This student has 3 brothers...'
-							placeholderTextColor={Colors.darkLight}
+							placeholderTextColor={colors.darkLight}
 							onChangeText={setNotes}
 							value={notes}
 						/>
 					</View>
-					<ErrorMsgBox>{errorMessage || errorGetStudentUserById || errorUpdateStudentUserById}</ErrorMsgBox>
+					<Text
+						style={{
+							textAlign: 'center',
+							fontSize: 13,
+							color: 'red',
+						}}
+					>
+						{errorMessage || errorGetStudentUserById || errorUpdateStudentUserById}
+					</Text>
 				</View>
 			</View>
 		</Modal>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
-import { InnerContainer } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import ClassRegisterModal from './components/ClassRegisterModal'
 import ClassEditModal from './components/ClassEditModal'
@@ -85,14 +84,14 @@ const ClassesScreen = () => {
 					alignItems: 'center',
 				}}
 			>
-				<HeaderScreen
+				<ScreenHeader
 					label='Classes'
 					labelButton='Add'
 					handleOnPress={() => setOpenClassRegisterModal(true)}
 					disabledButton={loadingKarateClassesByAdmin}
 					iconName='plus'
 				/>
-				<InnerContainer>
+				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						{errorKarateClassesByAdmin && !karateClasses?.length ? (
 							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
@@ -142,7 +141,7 @@ const ClassesScreen = () => {
 							/>
 						)}
 					</ScrollView>
-				</InnerContainer>
+				</View>
 			</View>
 			{openClassRegisterModal && (
 				<ClassRegisterModal openModal={openClassRegisterModal} closeModal={() => setOpenClassRegisterModal(false)} />

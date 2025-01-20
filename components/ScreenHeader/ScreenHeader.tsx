@@ -2,10 +2,10 @@ import React from 'react'
 import { Pressable, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AntDesign } from '@expo/vector-icons'
-import { ButtonContainer, HeaderContainer, HeaderTitle, ButtonText } from './styles/headerScreenStyles'
-import { IHeaderScreenProps } from './helpers/header-screen-interfaces'
+import { IScreenHeaderProps } from './helpers/screen-header-interfaces'
+import { ButtonContainer, HeaderContainer, HeaderTitle, ButtonText } from './screen-header-styles'
 
-const HeaderScreen = ({
+const ScreenHeader = ({
 	label = '',
 	labelButton = '',
 	handleOnPress = () => {},
@@ -13,7 +13,7 @@ const HeaderScreen = ({
 	iconName,
 	showBackButton = false,
 	handleBack = () => {},
-}: IHeaderScreenProps) => {
+}: IScreenHeaderProps) => {
 	const insets = useSafeAreaInsets()
 
 	return (
@@ -38,4 +38,4 @@ const HeaderScreen = ({
 	)
 }
 
-export default HeaderScreen
+export default ScreenHeader

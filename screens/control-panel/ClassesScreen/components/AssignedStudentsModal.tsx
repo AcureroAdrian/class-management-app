@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, Modal, Button } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
-import { InnerContainer } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import { IStudent } from '../helpers/karate-classes-interfaces'
 import PickStudentsModal from './PickStudentsModal'
@@ -76,7 +75,7 @@ const AssignedStudentsModal = ({
 						alignItems: 'center',
 					}}
 				>
-					<HeaderScreen
+					<ScreenHeader
 						label='Class Students'
 						labelButton='Add'
 						handleOnPress={() => setOpenPickStudentsModal(true)}
@@ -85,7 +84,7 @@ const AssignedStudentsModal = ({
 						showBackButton={true}
 						handleBack={handleSaveStudentsSelected}
 					/>
-					<InnerContainer>
+					<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 						<ScrollView>
 							{!studentsSelected?.length && (
 								<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
@@ -152,7 +151,7 @@ const AssignedStudentsModal = ({
 								/>
 							)}
 						</ScrollView>
-					</InnerContainer>
+					</View>
 				</View>
 			</Modal>
 			{openPickStudentsModal && (

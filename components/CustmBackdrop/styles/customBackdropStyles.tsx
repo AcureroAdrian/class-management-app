@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native'
 import styled from 'styled-components'
-import { Colors } from '@/components/styles'
+import colors from '@/theme/colors'
 
 export const BackdropContainer = styled(View)`
 	background-color: rgba(0, 0, 0, 0.5);
@@ -11,7 +11,7 @@ export const BackdropContainer = styled(View)`
 
 export const BackdropLabel = styled(Text)`
 	text-align: center;
-	color: ${Colors.brand};
+	color: ${colors.brand};
 	font-size: 16px;
 	font-weight: 500;
 `

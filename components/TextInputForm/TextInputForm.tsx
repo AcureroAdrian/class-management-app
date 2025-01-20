@@ -1,10 +1,9 @@
 import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { Octicons, Ionicons } from '@expo/vector-icons'
-import { LeftIcon, RightIcon, StyledInputLabel, StyledTextInput, Colors } from '../styles'
 import { ITextInputFormProps } from './helpers/text-input-form-interface'
-
-const { darkLight, brand } = Colors
+import colors from '@/theme/colors'
+import { LeftIconContainer, RightIconContainer, TextInputFormInput, TextInputFormLabel } from './text-input-form-styles'
 
 const TextInputForm = ({
 	label,
@@ -18,21 +17,21 @@ const TextInputForm = ({
 }: ITextInputFormProps) => {
 	return (
 		<View>
-			<LeftIcon>
-				<Octicons name={icon} size={30} color={brand} />
-			</LeftIcon>
-			<StyledInputLabel>{label}</StyledInputLabel>
+			<LeftIconContainer>
+				<Octicons name={icon} size={30} color={colors.brand} />
+			</LeftIconContainer>
+			<TextInputFormLabel>{label}</TextInputFormLabel>
 			{isDate ? (
-				<TouchableOpacity onPress={showDatePicker}>
-					<StyledTextInput {...props} />
-				</TouchableOpacity>
+				<Pressable onPress={showDatePicker}>
+					<TextInputFormInput {...props} />
+				</Pressable>
 			) : (
-				<StyledTextInput {...props} />
+				<TextInputFormInput {...props} />
 			)}
 			{isPassword && (
-				<RightIcon onPress={() => setHidePassword && setHidePassword(!hidePassword)}>
-					<Ionicons name={hidePassword ? 'eye-off' : 'eye'} size={30} color={darkLight} />
-				</RightIcon>
+				<RightIconContainer onPress={() => setHidePassword && setHidePassword(!hidePassword)}>
+					<Ionicons name={hidePassword ? 'eye-off' : 'eye'} size={30} color={colors.darkLight} />
+				</RightIconContainer>
 			)}
 		</View>
 	)

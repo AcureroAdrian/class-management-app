@@ -1,20 +1,15 @@
-import { View, Text, ScrollView, SafeAreaView, FlatList } from 'react-native'
-import React, { useCallback, useState } from 'react'
-import {
-	Calendar,
-	CalendarList,
-	AgendaList,
-	DateData,
-	CalendarProvider,
-	WeekCalendar,
-	ExpandableCalendar,
-} from 'react-native-calendars'
+import { View, Text, FlatList } from 'react-native'
+import React, { useState } from 'react'
+import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
 import { format } from 'date-fns'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import AgendaItem from './components/AgendaItem'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
 
 const AttendanceScreen = () => {
+	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
+	ExpandableCalendar.defaultProps = undefined
+
 	const [currentDate, setCurrentDate] = useState(format(new Date(), 'yyyy-MM-dd'))
 	const [items, setItems] = useState<any[]>([])
 
@@ -36,7 +31,7 @@ const AttendanceScreen = () => {
 
 	return (
 		<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-			<HeaderScreen label='Attendance' />
+			<ScreenHeader label='Attendance' />
 			<CalendarProvider date={currentDate} onDateChanged={handleDayChange}>
 				<ExpandableCalendar
 					initialPosition={'open' as Positions}

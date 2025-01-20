@@ -1,61 +1,61 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { Link } from 'expo-router'
-import {
-	StyledContainer,
-	InnerContainer,
-	PageTitle,
-	SubTitle,
-	Line,
-	ExtraView,
-	ExtraText,
-	TextLinkContent,
-	PageLogo,
-	StyledParagraph,
-} from '@/components/styles'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import {
+	CenterAlignContainer,
+	CenterTextConcated,
+	ConcatTextContainer,
+	ContainerWithoutHeader,
+	Line,
+	LoginLogo,
+	LoginSubTitle,
+	LoginTitle,
+	TextLinkContent,
+	SimpleTextLine,
+} from '@/theme/styles'
 
 const Info = () => {
 	return (
 		<KeyboardAvoidingWrapper>
-			<StyledContainer>
+			<ContainerWithoutHeader>
 				<StatusBar style='auto' />
-				<InnerContainer>
-					<PageLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
-					<PageTitle>MIYAGI KEN</PageTitle>
-					<SubTitle>International Academy</SubTitle>
-					<SubTitle>Account Sign Up</SubTitle>
+				<CenterAlignContainer>
+					<LoginLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
+					<LoginTitle>MIYAGI KEN</LoginTitle>
+					<LoginSubTitle>International Academy</LoginSubTitle>
+					<LoginSubTitle>Account Sign Up</LoginSubTitle>
 
-					<StyledParagraph>To register, please contact Miyagi Ken International directly.</StyledParagraph>
-					<StyledParagraph>
+					<SimpleTextLine>To register, please contact Miyagi Ken International directly.</SimpleTextLine>
+					<SimpleTextLine>
 						Registration is handled exclusively through our official channels to ensure a smooth enrollment process.
-					</StyledParagraph>
-					<StyledParagraph></StyledParagraph>
-					<StyledParagraph>You can reach us at any of our locations:</StyledParagraph>
-					<StyledParagraph></StyledParagraph>
-					<StyledParagraph>Spring Location</StyledParagraph>
-					<StyledParagraph>22936 Kuykendahl Rd, Suite A, Spring TX 77389</StyledParagraph>
-					<StyledParagraph>Email: dojo.miyagiken@gmail.com</StyledParagraph>
-					<StyledParagraph>Phone: (936) 217-3081</StyledParagraph>
-					<StyledParagraph></StyledParagraph>
-					<StyledParagraph>Katy Location</StyledParagraph>
-					<StyledParagraph>5206 E 3rd St, Katy, TX 77493</StyledParagraph>
-					<StyledParagraph>Email: info@miyagikeninternational.com</StyledParagraph>
-					<StyledParagraph>Phone: (936) 217-3155</StyledParagraph>
-					<StyledParagraph></StyledParagraph>
-					<StyledParagraph>Stay connected with us on social media:</StyledParagraph>
-					<StyledParagraph>Instagram | Facebook</StyledParagraph>
-					<StyledParagraph></StyledParagraph>
-					<StyledParagraph>We look forward to welcoming you!</StyledParagraph>
+					</SimpleTextLine>
+					<SimpleTextLine></SimpleTextLine>
+					<SimpleTextLine>You can reach us at any of our locations:</SimpleTextLine>
+					<SimpleTextLine></SimpleTextLine>
+					<SimpleTextLine>Spring Location</SimpleTextLine>
+					<SimpleTextLine>22936 Kuykendahl Rd, Suite A, Spring TX 77389</SimpleTextLine>
+					<SimpleTextLine>Email: dojo.miyagiken@gmail.com</SimpleTextLine>
+					<SimpleTextLine>Phone: (936) 217-3081</SimpleTextLine>
+					<SimpleTextLine></SimpleTextLine>
+					<SimpleTextLine>Katy Location</SimpleTextLine>
+					<SimpleTextLine>5206 E 3rd St, Katy, TX 77493</SimpleTextLine>
+					<SimpleTextLine>Email: info@miyagikeninternational.com</SimpleTextLine>
+					<SimpleTextLine>Phone: (936) 217-3155</SimpleTextLine>
+					<SimpleTextLine></SimpleTextLine>
+					<SimpleTextLine>Stay connected with us on social media:</SimpleTextLine>
+					<SimpleTextLine>Instagram | Facebook</SimpleTextLine>
+					<SimpleTextLine></SimpleTextLine>
+					<SimpleTextLine>We look forward to welcoming you!</SimpleTextLine>
 					<Line />
-					<ExtraView>
-						<ExtraText>Already have an account? </ExtraText>
+					<ConcatTextContainer>
+						<CenterTextConcated>Already have an account? </CenterTextConcated>
 						<Link href='/' replace>
 							<TextLinkContent>Login</TextLinkContent>
 						</Link>
-					</ExtraView>
-				</InnerContainer>
-			</StyledContainer>
+					</ConcatTextContainer>
+				</CenterAlignContainer>
+			</ContainerWithoutHeader>
 		</KeyboardAvoidingWrapper>
 	)
 }

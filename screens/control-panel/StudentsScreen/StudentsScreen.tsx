@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
-import { InnerContainer } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import StudentsRegisterModal from './components/StudentsRegisterModal'
 import StudentEditModal from './components/StudentEditModal'
@@ -82,7 +81,7 @@ const StudentsScreen = () => {
 		<>
 			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-				<HeaderScreen
+				<ScreenHeader
 					label='Students'
 					labelButton='Add'
 					handleOnPress={() => setOpenStudentsRegisterModal(true)}
@@ -105,7 +104,7 @@ const StudentsScreen = () => {
 						color: '#1F2937',
 					}}
 				/>
-				<InnerContainer>
+				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						{errorGetStudentUsers && !students?.length ? (
 							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
@@ -148,7 +147,7 @@ const StudentsScreen = () => {
 							/>
 						)}
 					</ScrollView>
-				</InnerContainer>
+				</View>
 			</View>
 			{openStudentsRegisterModal && (
 				<StudentsRegisterModal

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Modal, FlatList, Pressable, ScrollView } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
-import { Colors, ErrorMsgBox, StyledFormArea } from '@/components/styles'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerStudents } from '@/redux/actions/userActions'
 import { REGISTER_STUDENTS_RESET } from '@/redux/constants/userConstants'
+import colors from '@/theme/colors'
 
 const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -61,7 +61,7 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 			{loadingRegisterStudents && <CustomBackdrop openBackdrop={loadingRegisterStudents} label='Loading ...' />}
 			<View>
 				<View>
-					<HeaderScreen
+					<ScreenHeader
 						label='Add Students'
 						labelButton='Save'
 						iconName='save'
@@ -72,34 +72,42 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 					/>
 					<View style={{ width: '100%', alignItems: 'center', flexDirection: 'row' }}>
 						<View style={{ width: '60%', alignItems: 'center' }}>
-							<StyledFormArea>
+							<View style={{ width: '90%' }}>
 								<CustomInputForm
 									label='First Name'
 									placeholder='Manuel'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setStudentName}
 									value={studentName}
 								/>
 								<CustomInputForm
 									label='Last Name'
 									placeholder='Smith'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setStudentLastName}
 									value={studentLastName}
 								/>
-							</StyledFormArea>
+							</View>
 						</View>
 						<View style={{ width: '40%', alignItems: 'center' }}>
 							<Pressable
-								style={{ backgroundColor: Colors.brand, padding: 10, paddingHorizontal: 30, borderRadius: 10 }}
+								style={{ backgroundColor: colors.brand, padding: 10, paddingHorizontal: 30, borderRadius: 10 }}
 								onPress={handleAddStudent}
 							>
-								<Text style={{ color: Colors.primary }}>Add</Text>
+								<Text style={{ color: colors.primary }}>Add</Text>
 							</Pressable>
 						</View>
 					</View>
-					<ErrorMsgBox>{errorMessage || errorRegisterStudents}</ErrorMsgBox>
-					<Text style={{ paddingLeft: 10, backgroundColor: Colors.brand, color: Colors.primary, marginBottom: 10 }}>
+					<Text
+						style={{
+							textAlign: 'center',
+							fontSize: 13,
+							color: 'red',
+						}}
+					>
+						{errorMessage || errorRegisterStudents}
+					</Text>
+					<Text style={{ paddingLeft: 10, backgroundColor: colors.brand, color: colors.primary, marginBottom: 10 }}>
 						Total Added: {studentsAdded?.length}
 					</Text>
 					<View style={{ width: '100%', alignItems: 'center', marginBottom: 10, height: '70%' }}>
@@ -129,7 +137,7 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 										<View
 											style={{
 												height: 1,
-												backgroundColor: Colors.darkLight,
+												backgroundColor: colors.darkLight,
 												marginBottom: 10,
 												marginLeft: 10,
 												marginRight: 10,

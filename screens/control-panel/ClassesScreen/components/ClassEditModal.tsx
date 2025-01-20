@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal } from 'react-native'
+import { View, Modal, Text } from 'react-native'
 import { format, isDate, setHours } from 'date-fns'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import HeaderScreen from '@/components/HeaderScreen/HeaderScreen'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
-import { InnerContainer, StyledFormArea, Colors, ErrorMsgBox } from '@/components/styles'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
@@ -16,6 +15,7 @@ import { TDaysOfWeek, TUserLevel } from '@/shared/common-types'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getkarateClassById, updatekarateClassById } from '@/redux/actions/karateClassActions'
 import { GET_KARATE_CLASS_BY_ID_RESET, UPDATE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
+import colors from '@/theme/colors'
 
 const ClassEditModal = ({
 	openModal,
@@ -122,7 +122,7 @@ const ClassEditModal = ({
 				{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
 				<KeyboardAvoidingWrapper>
 					<View>
-						<HeaderScreen
+						<ScreenHeader
 							label={className}
 							labelButton='Save'
 							iconName='save'
@@ -131,7 +131,7 @@ const ClassEditModal = ({
 							showBackButton={true}
 							handleBack={closeModal}
 						/>
-						<InnerContainer>
+						<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
 							{showDate && (
 								<DateTimePicker
 									testID='dateTimePicker'
@@ -142,25 +142,25 @@ const ClassEditModal = ({
 									onChange={onChange}
 								/>
 							)}
-							<StyledFormArea>
+							<View style={{ width: '90%' }}>
 								<CustomInputForm
 									label='Class Name'
 									placeholder='Mon 7 PM Class'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setName}
 									value={name}
 								/>
 								<CustomInputForm
 									label='Additional Info'
 									placeholder='Its a description ...'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									onChangeText={setDescription}
 									value={description}
 								/>
 								<CustomInputForm
 									label='Start Time'
 									placeholder='12:00 p.m.'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
 									editable={false}
 									onPress={() => setShowDate(true)}
@@ -168,7 +168,7 @@ const ClassEditModal = ({
 								<CustomInputForm
 									label='Class Students'
 									placeholder='Tap to add students'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									value={`${studentsAssigned?.length} students (Tap to add students)`}
 									editable={false}
 									onPress={() => setOpenAssignedStudentsModal(true)}
@@ -176,7 +176,7 @@ const ClassEditModal = ({
 								<CustomInputForm
 									label='Weekdays'
 									placeholder='Tap to manage class days'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									value={
 										weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
 									}
@@ -186,14 +186,22 @@ const ClassEditModal = ({
 								<CustomInputForm
 									label='Levels'
 									placeholder='Tap to manage student levels'
-									placeholderTextColor={Colors.darkLight}
+									placeholderTextColor={colors.darkLight}
 									value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
 									editable={false}
 									onPress={() => setOpenLevelsModal(true)}
 								/>
-								<ErrorMsgBox>{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}</ErrorMsgBox>
-							</StyledFormArea>
-						</InnerContainer>
+								<Text
+									style={{
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
+									}}
+								>
+									{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}
+								</Text>
+							</View>
+						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
 			</Modal>
