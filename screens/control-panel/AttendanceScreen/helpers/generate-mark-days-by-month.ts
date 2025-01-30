@@ -18,15 +18,11 @@ interface IMarkDateValue {
 type TMarkDates = Record<string, IMarkDateValue>
 
 const generateMarkDatesByMonth = (month: number, year: number, weekDays: TDaysOfWeek[] = []) => {
-	console.log('weekDays', weekDays)
-	console.log('month', month)
-	console.log('year', year)
 	const startDayToIterate = subDays(new Date(year, month - 1, 1), 10)
 
 	const validDaysNumber = weekDays.map((e) => weekdaysMap[e])
 
 	const markDates: TMarkDates = {}
-	//'2012-03-01': {selected: true, marked: true, selectedColor: 'blue'},
 
 	for (let i = 0; i < 50; i++) {
 		const dateSelected = addDays(startDayToIterate, i)
