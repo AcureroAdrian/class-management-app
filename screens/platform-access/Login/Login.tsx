@@ -16,10 +16,13 @@ import {
 	ContainerWithoutHeader,
 	ErrorMsgBox,
 	Line,
+	LoginLogo,
+	LoginSubTitle,
+	LoginTitle,
 	TextLinkContent,
 } from '@/theme/styles'
 import colors from '@/theme/colors'
-import { LoginButton, LoginButtonText, LoginInputArea, LoginLogo, LoginSubTitle, LoginTitle } from './login-styles'
+import { LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
 
 const { darkLight, primary } = colors
 

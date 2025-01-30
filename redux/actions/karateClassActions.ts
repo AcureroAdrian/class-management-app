@@ -103,3 +103,28 @@ export const updatekarateClassById =
 			})
 		}
 	}
+
+export const getKarateClassesToAdminAttendance = () => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.GET_CLASSES_TO_ADMIN_ATTENDANCE_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.get('/api/karate-classes/admin/attendance', config)
+
+		dispatch({ type: types.GET_CLASSES_TO_ADMIN_ATTENDANCE_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.GET_CLASSES_TO_ADMIN_ATTENDANCE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}

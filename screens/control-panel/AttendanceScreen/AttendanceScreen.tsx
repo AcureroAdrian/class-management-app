@@ -1,17 +1,50 @@
+import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, FlatList } from 'react-native'
-import React, { useState } from 'react'
-import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
+import { CalendarProvider, DateData, ExpandableCalendar } from 'react-native-calendars'
+import { Positions } from 'react-native-calendars/src/expandableCalendar'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import AgendaItem from './components/AgendaItem'
-import { Positions } from 'react-native-calendars/src/expandableCalendar'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
+import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
+import { TDaysOfWeek } from '@/shared/common-types'
+import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons'
 
 const AttendanceScreen = () => {
 	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 	ExpandableCalendar.defaultProps = undefined
+	const dispatch = useAppDispatch()
 
 	const [currentDate, setCurrentDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+	// const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>([])
+	const [markedDates, setMarkedDates] = useState<any>({})
 	const [items, setItems] = useState<any[]>([])
+
+	const {
+		loadingGetKarateClassesToAdminAttendance,
+		successGetKarateClassesToAdminAttendance,
+		karateClassesToAdminAttendance,
+	} = useAppSelector((state) => state.getKarateClassesToAdminAttendance)
+
+	useEffect(() => {
+		dispatch(getKarateClassesToAdminAttendance())
+	}, [])
+	useEffect(() => {
+		if (successGetKarateClassesToAdminAttendance) {
+			// const weekDays = new Set()
+			// karateClassesToAdminAttendance.forEach((item: any) => {
+			// 	item.weekDays.forEach((day: string) => {
+			// 		weekDays.add(day)
+			// 	})
+			// })
+			// // setWeekDays(Array.from(weekDays) as TDaysOfWeek[])
+			const year = new Date().getFullYear()
+			const month = new Date().getMonth() + 1
+			const markedDates = generateMarkDatesByMonth(month, year, Array.from(weekDays) as TDaysOfWeek[])
+			setMarkedDates(markedDates)
+		}
+	}, [successGetKarateClassesToAdminAttendance])
 
 	const handleDayChange = (date: string) => {
 		setCurrentDate(date)
@@ -28,13 +61,33 @@ const AttendanceScreen = () => {
 				})),
 		)
 	}
+	const handleChangeMonth = (date: DateData, updateSource: UpdateSources) => {
+		const markedDates = generateMarkDatesByMonth(date.month, date.year, weekDays)
+		setMarkedDates(markedDates)
+	}
+	//MEMORIZE CONSTANTS
+	const weekDays = useMemo(() => {
+		let result: TDaysOfWeek[] = []
+		if (karateClassesToAdminAttendance?.length) {
+			const weekDays = new Set()
+			karateClassesToAdminAttendance.forEach((item: any) => {
+				item.weekDays.forEach((day: string) => {
+					weekDays.add(day)
+				})
+			})
+			result = Array.from(weekDays) as TDaysOfWeek[]
+		}
+
+		return result
+	}, [karateClassesToAdminAttendance])
 
 	return (
 		<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 			<ScreenHeader label='Attendance' />
-			<CalendarProvider date={currentDate} onDateChanged={handleDayChange}>
+			<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 				<ExpandableCalendar
 					initialPosition={'open' as Positions}
+					markedDates={markedDates}
 					allowShadow={false}
 					closeOnDayPress={false}
 					hideArrows={true}

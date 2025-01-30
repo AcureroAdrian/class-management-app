@@ -1,23 +1,6 @@
 import colors from '@/theme/colors'
 import styled from 'styled-components/native'
 
-export const LoginLogo = styled.Image`
-	width: 250px;
-	height: 150px;
-`
-export const LoginTitle = styled.Text`
-	font-size: 30px;
-	text-align: center;
-	font-weight: bold;
-	color: ${colors.brand};
-`
-export const LoginSubTitle = styled.Text`
-	font-size: 18px;
-	margin-bottom: 20px;
-	letter-spacing: 1px;
-	font-weight: bold;
-	color: ${colors.tertiary};
-`
 export const LoginInputArea = styled.View`
 	width: 90%;
 `

@@ -25,11 +25,18 @@ interface IUpdateKarateClassByIdState {
 	karateClassByIdUpdated?: any
 	errorUpdateKarateClassById?: string
 }
+interface IGetKarateClassesToAdminAttendanceState {
+	loadingGetKarateClassesToAdminAttendance?: boolean
+	successGetKarateClassesToAdminAttendance?: boolean
+	karateClassesToAdminAttendance?: any
+	errorGetKarateClassesToAdminAttendance?: string
+}
 
 type TGetKarateClassesByAdminReducer = Reducer<IGetKarateClassesByAdminState, any>
 type TRegisterKarateClassReducer = Reducer<IRegisterKarateClassState, any>
 type TGetKarateClassByIdReducer = Reducer<IGetKarateClassByIdState, any>
 type TUpdateKarateClassByIdReducer = Reducer<IUpdateKarateClassByIdState, any>
+type TGetKarateClassesToAdminAttendanceReducer = Reducer<IGetKarateClassesToAdminAttendanceState, any>
 
 export const getKarateClassesByAdminReducer: TGetKarateClassesByAdminReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -113,6 +120,31 @@ export const updateKarateClassByIdReducer: TUpdateKarateClassByIdReducer = (stat
 				errorUpdateKarateClassById: action.payload,
 			}
 		case types.UPDATE_KARATE_CLASS_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const getKarateClassesToAdminAttendanceReducer: TGetKarateClassesToAdminAttendanceReducer = (
+	state = {},
+	action,
+) => {
+	switch (action.type) {
+		case types.GET_CLASSES_TO_ADMIN_ATTENDANCE_REQUEST:
+			return { loadingGetKarateClassesToAdminAttendance: true }
+		case types.GET_CLASSES_TO_ADMIN_ATTENDANCE_SUCCESS:
+			return {
+				loadingGetKarateClassesToAdminAttendance: false,
+				successGetKarateClassesToAdminAttendance: true,
+				karateClassesToAdminAttendance: action.payload,
+			}
+		case types.GET_CLASSES_TO_ADMIN_ATTENDANCE_FAIL:
+			return {
+				loadingGetKarateClassesToAdminAttendance: false,
+				errorGetKarateClassesToAdminAttendance: action.payload,
+			}
+		case types.GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET:
 			return {}
 		default:
 			return state

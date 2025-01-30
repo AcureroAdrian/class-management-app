@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	getKarateClassByIdReducer,
 	getKarateClassesByAdminReducer,
+	getKarateClassesToAdminAttendanceReducer,
 	registerKarateClassReducer,
 	updateKarateClassByIdReducer,
 } from './karateClassReducers'
@@ -24,6 +25,7 @@ const loginPersistConfig = {
 export default combineReducers({
 	getKarateClassById: getKarateClassByIdReducer,
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
+	getKarateClassesToAdminAttendance: getKarateClassesToAdminAttendanceReducer,
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
 	registerKarateClass: registerKarateClassReducer,
