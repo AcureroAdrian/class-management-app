@@ -26,11 +26,11 @@ const AgendaItem = (props: ItemProps) => {
 			}}
 		>
 			<Text style={{ color: 'blue', marginRight: 15 }}>{startTime}</Text>
-			<View style={{ flex: 1, backgroundColor: 'skyblue', padding: 10, borderRadius: 10 }}>
-				<Text numberOfLines={1} style={{ fontSize: 12 }}>
+			<View style={{ flex: 1, backgroundColor: '#aed4f7', padding: 10, borderRadius: 10 }}>
+				<Text numberOfLines={1} style={{ fontSize: 12, fontWeight: 400 }}>
 					{item.name}
 				</Text>
-				<Text numberOfLines={1} style={{ fontSize: 10, color: 'grey' }}>
+				<Text numberOfLines={1} style={{ fontSize: 10, color: '#373535' }}>
 					{item.description}
 				</Text>
 			</View>

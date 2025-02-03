@@ -70,3 +70,8 @@ export const SimpleTextLine = styled.Text`
 	text-align: flex-start;
 	width: 100%;
 `
+export const CenterContainer = styled.View`
+	flex: 1;
+	justify-content: center;
+	align-items: center;
+`

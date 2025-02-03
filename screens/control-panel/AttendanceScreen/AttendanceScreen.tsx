@@ -1,15 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { View, Text, FlatList } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { format } from 'date-fns'
+import { View, Text, FlatList, ActivityIndicator } from 'react-native'
 import { CalendarProvider, DateData, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
-import { format } from 'date-fns'
+import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import AgendaItem from './components/AgendaItem'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
 import { TDaysOfWeek } from '@/shared/common-types'
-import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
+import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
+import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActions'
+import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
+import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
+import colors from '@/theme/colors'
 
 const AttendanceScreen = () => {
 	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
@@ -29,9 +34,18 @@ const AttendanceScreen = () => {
 		successGetKarateClassesToAdminAttendance,
 		karateClassesToAdminAttendance,
 	} = useAppSelector((state) => state.getKarateClassesToAdminAttendance)
+	const {
+		loadingStudentAttendanceByDay,
+		successStudentAttendanceByDay,
+		studentAttendanceByDayList,
+		errorStudentAttendanceByDay,
+	} = useAppSelector((state) => state.getStudentAttendanceByDay)
 
 	useEffect(() => {
 		dispatch(getKarateClassesToAdminAttendance())
+		return () => {
+			dispatch({ type: GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET })
+		}
 	}, [])
 	useEffect(() => {
 		if (successGetKarateClassesToAdminAttendance) {
@@ -54,21 +68,32 @@ const AttendanceScreen = () => {
 			setMarkedDates(markedDates)
 		}
 	}, [month, year, weekDays])
+	useEffect(() => {
+		const [year, month, day] = currentDate.split('-').map(Number)
+
+		dispatch(getStudentAttendanceByDay(year, month, day))
+	}, [currentDate])
+	useEffect(() => {
+		if (successStudentAttendanceByDay) {
+			const newItems = studentAttendanceByDayList?.map((item: any) => {
+				return {
+					name: item.karateClass.name,
+					description: item.karateClass.description,
+					startTime: {
+						hour: item.date.hour,
+						minute: item.date.minute,
+					},
+				}
+			})
+
+			setItems(newItems || [])
+		}
+	}, [successStudentAttendanceByDay])
 
 	const handleDayChange = (date: string) => {
 		setCurrentDate(date)
-		setItems(
-			Array(Math.round(Math.random() * 15))
-				.fill(true)
-				.map((e, i) => ({
-					name: `Class Event-${i + 1}`,
-					description: i % 2 === 0 ? `Class Event-${i + 1} description` : '',
-					startTime: {
-						hour: i + 5,
-						minute: Math.round(Math.random() * 50),
-					},
-				})),
-		)
+		setItems([])
+		dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
 	}
 	const handleChangeMonth = (date: DateData, updateSource: UpdateSources) => {
 		setMonth(date.month)
@@ -95,7 +120,17 @@ const AttendanceScreen = () => {
 							{format(new Date(currentDate), 'EEEE, dd')}
 						</Text>
 					</View>
-					<FlatList data={items} renderItem={({ item }) => <AgendaItem item={item} />} />
+					{loadingStudentAttendanceByDay ? (
+						<CenterContainer>
+							<ActivityIndicator size='large' color={colors.primary} />
+						</CenterContainer>
+					) : errorStudentAttendanceByDay ? (
+						<CenterContainer>
+							<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
+						</CenterContainer>
+					) : (
+						<FlatList data={items} renderItem={({ item }) => <AgendaItem item={item} />} />
+					)}
 				</View>
 			</CalendarProvider>
 		</View>

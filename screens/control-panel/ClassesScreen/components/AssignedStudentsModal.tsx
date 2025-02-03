@@ -84,7 +84,7 @@ const AssignedStudentsModal = ({
 						showBackButton={true}
 						handleBack={handleSaveStudentsSelected}
 					/>
-					<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+					<View style={{ width: '100%', alignItems: 'center' }}>
 						<ScrollView>
 							{!studentsSelected?.length && (
 								<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>

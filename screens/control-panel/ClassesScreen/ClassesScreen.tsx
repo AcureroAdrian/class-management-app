@@ -91,7 +91,7 @@ const ClassesScreen = () => {
 					disabledButton={loadingKarateClassesByAdmin}
 					iconName='plus'
 				/>
-				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+				<View style={{ width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						{errorKarateClassesByAdmin && !karateClasses?.length ? (
 							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>

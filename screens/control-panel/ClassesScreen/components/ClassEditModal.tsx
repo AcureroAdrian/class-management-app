@@ -131,7 +131,7 @@ const ClassEditModal = ({
 							showBackButton={true}
 							handleBack={closeModal}
 						/>
-						<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+						<View style={{ width: '100%', alignItems: 'center' }}>
 							{showDate && (
 								<DateTimePicker
 									testID='dateTimePicker'

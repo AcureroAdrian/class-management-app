@@ -15,6 +15,7 @@ import {
 	updateStudentUserByIdReducer,
 	userLoginReducer,
 } from './userReducers'
+import { getStudentAttendanceByDayReducer } from './studentAttendanceReducers'
 
 const loginPersistConfig = {
 	key: 'root',
@@ -26,6 +27,7 @@ export default combineReducers({
 	getKarateClassById: getKarateClassByIdReducer,
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
 	getKarateClassesToAdminAttendance: getKarateClassesToAdminAttendanceReducer,
+	getStudentAttendanceByDay: getStudentAttendanceByDayReducer,
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
 	registerKarateClass: registerKarateClassReducer,

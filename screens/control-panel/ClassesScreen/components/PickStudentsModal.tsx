@@ -58,7 +58,7 @@ const PickStudentsModal = ({
 						color: '#1F2937',
 					}}
 				/>
-				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+				<View style={{ width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						<FlatList
 							nestedScrollEnabled={true}

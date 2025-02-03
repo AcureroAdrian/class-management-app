@@ -104,7 +104,7 @@ const StudentsScreen = () => {
 						color: '#1F2937',
 					}}
 				/>
-				<View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+				<View style={{ width: '100%', alignItems: 'center' }}>
 					<ScrollView>
 						{errorGetStudentUsers && !students?.length ? (
 							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
