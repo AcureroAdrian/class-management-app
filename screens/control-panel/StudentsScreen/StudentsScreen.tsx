@@ -104,50 +104,48 @@ const StudentsScreen = () => {
 						color: '#1F2937',
 					}}
 				/>
-				<View style={{ width: '100%', alignItems: 'center' }}>
-					<ScrollView>
-						{errorGetStudentUsers && !students?.length ? (
-							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-								<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-							</View>
-						) : (
-							<FlatList
-								nestedScrollEnabled={true}
-								scrollEnabled={false}
-								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
-								renderItem={({ item }) => (
-									<Pressable onPress={() => handleSelectStudent(item)}>
-										<View
-											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-											key={item._id}
-										>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
-												<Image
-													source={require('@/assets/img/default-avatar.png')}
-													style={{ width: 50, height: 50, borderRadius: 50 }}
-													resizeMode='contain'
-												/>
-												<View
-													style={{
-														justifyContent: 'center',
-														alignItems: 'flex-start',
-														width: '100%',
-														flexDirection: 'column',
-													}}
-												>
-													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
-												</View>
+				<ScrollView>
+					{errorGetStudentUsers && !students?.length ? (
+						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+							<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+						</View>
+					) : (
+						<FlatList
+							nestedScrollEnabled={true}
+							scrollEnabled={false}
+							data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
+							renderItem={({ item }) => (
+								<Pressable onPress={() => handleSelectStudent(item)}>
+									<View
+										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
+										key={item._id}
+									>
+										<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
+											<Image
+												source={require('@/assets/img/default-avatar.png')}
+												style={{ width: 50, height: 50, borderRadius: 50 }}
+												resizeMode='contain'
+											/>
+											<View
+												style={{
+													justifyContent: 'center',
+													alignItems: 'flex-start',
+													width: '100%',
+													flexDirection: 'column',
+												}}
+											>
+												<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+												<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
 											</View>
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
-									</Pressable>
-								)}
-								keyExtractor={(item) => item._id}
-							/>
-						)}
-					</ScrollView>
-				</View>
+										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+									</View>
+								</Pressable>
+							)}
+							keyExtractor={(item) => item._id}
+						/>
+					)}
+				</ScrollView>
 			</View>
 			{openStudentsRegisterModal && (
 				<StudentsRegisterModal

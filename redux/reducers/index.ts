@@ -15,7 +15,11 @@ import {
 	updateStudentUserByIdReducer,
 	userLoginReducer,
 } from './userReducers'
-import { getStudentAttendanceByDayReducer } from './studentAttendanceReducers'
+import {
+	getStudentAttendanceByDayReducer,
+	registerStudentAttendanceReducer,
+	updateStudentAttendanceByIdReducer,
+} from './studentAttendanceReducers'
 
 const loginPersistConfig = {
 	key: 'root',
@@ -31,8 +35,10 @@ export default combineReducers({
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
 	registerKarateClass: registerKarateClassReducer,
+	registerStudentAttendance: registerStudentAttendanceReducer,
 	registerStudents: registerStudentsReducer,
 	updateKarateClassById: updateKarateClassByIdReducer,
+	updateStudentAttendanceById: updateStudentAttendanceByIdReducer,
 	updateStudentUserById: updateStudentUserByIdReducer,
 	userLogin: persistReducer(loginPersistConfig, userLoginReducer),
 })

@@ -165,15 +165,17 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									editable={false}
 									onPress={() => setOpenLevelsModal(true)}
 								/>
-								<Text
-									style={{
-										textAlign: 'center',
-										fontSize: 13,
-										color: 'red',
-									}}
-								>
-									{errorMessage}
-								</Text>
+								{errorMessage && (
+									<Text
+										style={{
+											textAlign: 'center',
+											fontSize: 13,
+											color: 'red',
+										}}
+									>
+										{errorMessage}
+									</Text>
+								)}
 							</View>
 						</View>
 					</View>

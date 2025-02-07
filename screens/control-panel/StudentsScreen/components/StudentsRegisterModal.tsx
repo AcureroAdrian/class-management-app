@@ -98,15 +98,17 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 							</Pressable>
 						</View>
 					</View>
-					<Text
-						style={{
-							textAlign: 'center',
-							fontSize: 13,
-							color: 'red',
-						}}
-					>
-						{errorMessage || errorRegisterStudents}
-					</Text>
+					{(errorMessage || errorRegisterStudents) && (
+						<Text
+							style={{
+								textAlign: 'center',
+								fontSize: 13,
+								color: 'red',
+							}}
+						>
+							{errorMessage || errorRegisterStudents}
+						</Text>
+					)}
 					<Text style={{ paddingLeft: 10, backgroundColor: colors.brand, color: colors.primary, marginBottom: 10 }}>
 						Total Added: {studentsAdded?.length}
 					</Text>

@@ -114,13 +114,12 @@ const StudentEditModal = ({
 
 	return (
 		<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-			{loadingGetStudentUserById ||
-				(loadingUpdateStudentUserById && (
-					<CustomBackdrop
-						openBackdrop={loadingGetStudentUserById || loadingUpdateStudentUserById}
-						label='Loading ...'
-					/>
-				))}
+			{(loadingGetStudentUserById || loadingUpdateStudentUserById) && (
+				<CustomBackdrop
+					openBackdrop={Boolean(loadingGetStudentUserById || loadingUpdateStudentUserById)}
+					label='Loading ...'
+				/>
+			)}
 			{showDatePicker && (
 				<DateTimePicker
 					testID='dateTimePicker'
@@ -221,15 +220,17 @@ const StudentEditModal = ({
 							value={notes}
 						/>
 					</View>
-					<Text
-						style={{
-							textAlign: 'center',
-							fontSize: 13,
-							color: 'red',
-						}}
-					>
-						{errorMessage || errorGetStudentUserById || errorUpdateStudentUserById}
-					</Text>
+					{(errorMessage || errorGetStudentUserById || errorUpdateStudentUserById) && (
+						<Text
+							style={{
+								textAlign: 'center',
+								fontSize: 13,
+								color: 'red',
+							}}
+						>
+							{errorMessage || errorGetStudentUserById || errorUpdateStudentUserById}
+						</Text>
+					)}
 				</View>
 			</View>
 		</Modal>

@@ -191,15 +191,17 @@ const ClassEditModal = ({
 									editable={false}
 									onPress={() => setOpenLevelsModal(true)}
 								/>
-								<Text
-									style={{
-										textAlign: 'center',
-										fontSize: 13,
-										color: 'red',
-									}}
-								>
-									{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}
-								</Text>
+								{(errorMessage || errorGetKarateClassById || errorUpdateKarateClassById) && (
+									<Text
+										style={{
+											textAlign: 'center',
+											fontSize: 13,
+											color: 'red',
+										}}
+									>
+										{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}
+									</Text>
+								)}
 							</View>
 						</View>
 					</View>
