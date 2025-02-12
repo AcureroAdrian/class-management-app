@@ -119,7 +119,6 @@ const ClassEditModal = ({
 	return (
 		<>
 			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
 				<KeyboardAvoidingWrapper>
 					<View>
 						<ScreenHeader
@@ -207,6 +206,7 @@ const ClassEditModal = ({
 					</View>
 				</KeyboardAvoidingWrapper>
 			</Modal>
+			{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
 			{openWeekDaysModal && (
 				<CustomOptionsModal
 					openModal={openWeekDaysModal}

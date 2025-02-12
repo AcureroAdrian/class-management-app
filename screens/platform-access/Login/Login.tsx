@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Platform, Text, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
 import { Link } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import DateTimePicker from '@react-native-community/datetimepicker'
@@ -22,7 +22,8 @@ import {
 	TextLinkContent,
 } from '@/theme/styles'
 import colors from '@/theme/colors'
-import { LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
+import { DateActionsButton, DateActionsButtonText, LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
+import { TextInputFormLabel } from '@/components/TextInputForm/text-input-form-styles'
 
 const { darkLight, primary } = colors
 
@@ -45,15 +46,25 @@ const Login = () => {
 		}
 	}, [errorUserLogin])
 
-	const onChangeDatePicker = (event, selectedDate) => {
+	const onChangeDatePickerAndroid = (event, selectedDate) => {
 		const currentDate = selectedDate || date
 		setShowDate(false)
 		setDate(currentDate)
 		setDob(currentDate)
 	}
+	const onChangeDatePickerIOS = (event, selectedDate) => {
+		const currentDate = selectedDate || date
+		setDate(currentDate)
+	}
 	const showDatePicker = () => {
 		setShowDate(true)
 	}
+
+	const confirmIOSDate = () => {
+		setShowDate(false)
+		setDob(date)
+	}
+
 	const handleMessage = (message: string | null, type = 'FAILED') => {
 		setMessage(message)
 		setMessageType(type)
@@ -71,9 +82,10 @@ const Login = () => {
 
 	return (
 		<>
-			<KeyboardAvoidingWrapper>
-				<ContainerWithoutHeader>
-					<StatusBar style='auto' />
+			{/* <KeyboardAvoidingWrapper> */}
+			<ContainerWithoutHeader>
+				<StatusBar style='auto' />
+				<ScrollView showsVerticalScrollIndicator={false}>
 					<CenterAlignContainer>
 						<LoginLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
 						<LoginTitle>MIYAGI KEN</LoginTitle>
@@ -96,16 +108,44 @@ const Login = () => {
 								onChangeText={setLastName}
 								value={lastName}
 							/>
-							<TextInputForm
-								label='Date of Birth'
-								icon='calendar'
-								placeholder='YYY - MM - DD'
-								placeholderTextColor={darkLight}
-								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-								isDate={true}
-								editable={false}
-								showDatePicker={showDatePicker}
-							/>
+							{showDate && (
+								<>
+									{Platform.OS === 'ios' && <TextInputFormLabel>Date of Birth</TextInputFormLabel>}
+									<DateTimePicker
+										testID='dateTimePicker'
+										value={date}
+										mode='date'
+										is24Hour={true}
+										display='spinner'
+										onChange={Platform.OS === 'ios' ? onChangeDatePickerIOS : onChangeDatePickerAndroid}
+										style={styles.pickerSpinner}
+										maximumDate={new Date()}
+									/>
+									{Platform.OS === 'ios' && (
+										<View style={{ flexDirection: 'row', justifyContent: 'center', gap: 15 }}>
+											<DateActionsButton backgroundColor='red' onPress={() => setShowDate(false)}>
+												<DateActionsButtonText>Cancel</DateActionsButtonText>
+											</DateActionsButton>
+											<DateActionsButton onPress={confirmIOSDate}>
+												<DateActionsButtonText color={primary}>Confirm</DateActionsButtonText>
+											</DateActionsButton>
+										</View>
+									)}
+								</>
+							)}
+							{(!showDate || Platform.OS === 'android') && (
+								<TextInputForm
+									label='Date of Birth'
+									icon='calendar'
+									placeholder='YYY - MM - DD'
+									placeholderTextColor={darkLight}
+									value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+									isDate={true}
+									editable={false}
+									showDatePicker={showDatePicker}
+									onPressIn={showDatePicker}
+								/>
+							)}
 							<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
 							<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
 								{loadingUserLogin ? (
@@ -123,20 +163,17 @@ const Login = () => {
 							</ConcatTextContainer>
 						</LoginInputArea>
 					</CenterAlignContainer>
-				</ContainerWithoutHeader>
-			</KeyboardAvoidingWrapper>
-			{showDate && (
-				<DateTimePicker
-					testID='dateTimePicker'
-					value={date}
-					mode='date'
-					is24Hour={true}
-					display='default'
-					onChange={onChangeDatePicker}
-				/>
-			)}
+				</ScrollView>
+			</ContainerWithoutHeader>
+			{/* </KeyboardAvoidingWrapper> */}
 		</>
 	)
 }
+
+const styles = StyleSheet.create({
+	pickerSpinner: {
+		height: 100,
+	},
+})
 
 export default Login
