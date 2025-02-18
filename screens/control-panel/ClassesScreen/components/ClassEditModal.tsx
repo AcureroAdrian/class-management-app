@@ -75,7 +75,7 @@ const ClassEditModal = ({
 
 	const onChange = (event, selectedDate) => {
 		setErrorMessage(null)
-		const currentDate = selectedDate || date
+		const currentDate = selectedDate || startTime
 		setShowDate(false)
 		setStartTime(currentDate)
 	}

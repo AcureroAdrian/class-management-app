@@ -1,0 +1,100 @@
+import React, { useEffect, useState } from 'react'
+import { View, Text, Pressable } from 'react-native'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
+import DailyReportModal from './components/DailyReportModal'
+import StudentReportModal from './components/StudentReportModal'
+import ClassReportModal from './components/ClassReportModal'
+import { getkarateClassesByAdmin } from '@/redux/actions/karateClassActions'
+import { getStudentUsers } from '@/redux/actions/userActions'
+import { useAppDispatch } from '@/redux/store'
+
+const ReportScreen = () => {
+	const dispatch = useAppDispatch()
+
+	const [openDailyReportModal, setOpenDailyReportModal] = useState<boolean>(false)
+	const [openClassReportModal, setOpenClassReportModal] = useState<boolean>(false)
+	const [openStudentReportModal, setOpenStudentReportModal] = useState<boolean>(false)
+
+	useEffect(() => {
+		dispatch(getkarateClassesByAdmin())
+		dispatch(getStudentUsers())
+	}, [])
+
+	return (
+		<>
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'column',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+				}}
+			>
+				<ScreenHeader label='Reports' />
+				<View style={{ width: '100%', alignItems: 'center', padding: 20, gap: 30 }}>
+					<View
+						style={{
+							width: '100%',
+							padding: 15,
+							backgroundColor: 'skyblue',
+							borderRadius: 5,
+							boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+						}}
+					>
+						<Pressable onPress={() => setOpenDailyReportModal(true)}>
+							<Text style={{ marginBottom: 5 }}>Daily Report</Text>
+							<Text style={{ fontSize: 12, color: '#373535' }}>
+								Daily report for all classes grouped and sorted by dayes in descending order.
+							</Text>
+						</Pressable>
+					</View>
+					<View
+						style={{
+							width: '100%',
+							padding: 15,
+							backgroundColor: 'skyblue',
+							borderRadius: 5,
+							boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+							cursor: 'pointer',
+						}}
+					>
+						<Pressable onPress={() => setOpenStudentReportModal(true)}>
+							<Text style={{ marginBottom: 5 }}>Student Report</Text>
+							<Text style={{ fontSize: 12, color: '#373535' }}>
+								Reveals full attendance information for a student of your choice.
+							</Text>
+						</Pressable>
+					</View>
+					<View
+						style={{
+							width: '100%',
+							padding: 15,
+							backgroundColor: 'skyblue',
+							borderRadius: 5,
+							boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+							cursor: 'pointer',
+						}}
+					>
+						<Pressable onPress={() => setOpenClassReportModal(true)}>
+							<Text style={{ marginBottom: 5 }}>Class Report</Text>
+							<Text style={{ fontSize: 12, color: '#373535' }}>
+								Reveals full attendance information for a single class or all classes combined.
+							</Text>
+						</Pressable>
+					</View>
+				</View>
+			</View>
+			{openDailyReportModal && (
+				<DailyReportModal openModal={openDailyReportModal} closeModal={() => setOpenDailyReportModal(false)} />
+			)}
+			{openStudentReportModal && (
+				<StudentReportModal openModal={openStudentReportModal} closeModal={() => setOpenStudentReportModal(false)} />
+			)}
+			{openClassReportModal && (
+				<ClassReportModal openModal={openClassReportModal} closeModal={() => setOpenClassReportModal(false)} />
+			)}
+		</>
+	)
+}
+
+export default ReportScreen

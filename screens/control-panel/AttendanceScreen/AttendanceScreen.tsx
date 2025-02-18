@@ -108,7 +108,6 @@ const AttendanceScreen = () => {
 					item,
 				}
 			})
-			console.log(JSON.stringify(newItems, null, 2))
 			setItems(newItems || [])
 		}
 	}, [successStudentAttendanceByDay])
