@@ -22,8 +22,8 @@ import {
 	TextLinkContent,
 } from '@/theme/styles'
 import colors from '@/theme/colors'
-import { DateActionsButton, DateActionsButtonText, LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
-import { TextInputFormLabel } from '@/components/TextInputForm/text-input-form-styles'
+import { LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 
 const { darkLight, primary } = colors
 
@@ -32,11 +32,11 @@ const Login = () => {
 
 	const [name, setName] = useState<string>('')
 	const [lastName, setLastName] = useState<string>('')
-	const [showDate, setShowDate] = useState<boolean>(false)
-	const [date, setDate] = useState(new Date(2000, 0, 1))
-	const [dob, setDob] = useState<Date | null>(null)
+	const [dob, setDob] = useState<Date>(new Date(2000, 0, 1))
 	const [message, setMessage] = useState<string | null>(null)
 	const [messageType, setMessageType] = useState<string | null>(null)
+	const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+
 
 	const { loadingUserLogin, errorUserLogin } = useAppSelector((state: RootState) => state.userLogin)
 
@@ -45,25 +45,6 @@ const Login = () => {
 			handleMessage(errorUserLogin)
 		}
 	}, [errorUserLogin])
-
-	const onChangeDatePickerAndroid = (event, selectedDate) => {
-		const currentDate = selectedDate || date
-		setShowDate(false)
-		setDate(currentDate)
-		setDob(currentDate)
-	}
-	const onChangeDatePickerIOS = (event, selectedDate) => {
-		const currentDate = selectedDate || date
-		setDate(currentDate)
-	}
-	const showDatePicker = () => {
-		setShowDate(true)
-	}
-
-	const confirmIOSDate = () => {
-		setShowDate(false)
-		setDob(date)
-	}
 
 	const handleMessage = (message: string | null, type = 'FAILED') => {
 		setMessage(message)
@@ -78,6 +59,20 @@ const Login = () => {
 		handleMessage(null)
 
 		dispatch(login({ name: name, lastName: lastName, dateOfBirth: dob }))
+	}
+
+
+	const showDatePicker = () => {
+		setDatePickerVisibility(true)
+	}
+
+	const hideDatePicker = () => {
+		setDatePickerVisibility(false)
+	}
+
+	const handleConfirm = (date: Date) => {
+		console.warn('A date has been picked: ', date)
+		setDob(date)
 	}
 
 	return (
@@ -108,44 +103,25 @@ const Login = () => {
 								onChangeText={setLastName}
 								value={lastName}
 							/>
-							{showDate && (
-								<>
-									{Platform.OS === 'ios' && <TextInputFormLabel>Date of Birth</TextInputFormLabel>}
-									<DateTimePicker
-										testID='dateTimePicker'
-										value={date}
-										mode='date'
-										is24Hour={true}
-										display='spinner'
-										onChange={Platform.OS === 'ios' ? onChangeDatePickerIOS : onChangeDatePickerAndroid}
-										style={styles.pickerSpinner}
-										maximumDate={new Date()}
-									/>
-									{Platform.OS === 'ios' && (
-										<View style={{ flexDirection: 'row', justifyContent: 'center', gap: 15 }}>
-											<DateActionsButton backgroundColor='red' onPress={() => setShowDate(false)}>
-												<DateActionsButtonText>Cancel</DateActionsButtonText>
-											</DateActionsButton>
-											<DateActionsButton onPress={confirmIOSDate}>
-												<DateActionsButtonText color={primary}>Confirm</DateActionsButtonText>
-											</DateActionsButton>
-										</View>
-									)}
-								</>
-							)}
-							{(!showDate || Platform.OS === 'android') && (
-								<TextInputForm
-									label='Date of Birth'
-									icon='calendar'
-									placeholder='YYY - MM - DD'
-									placeholderTextColor={darkLight}
-									value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-									isDate={true}
-									editable={false}
-									showDatePicker={showDatePicker}
-									onPressIn={showDatePicker}
-								/>
-							)}
+							<TextInputForm
+								label='Date of Birth'
+								icon='calendar'
+								placeholder='YYY - MM - DD'
+								placeholderTextColor={darkLight}
+								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+								isDate={true}
+								editable={false}
+								showDatePicker={showDatePicker}
+								onPressIn={showDatePicker}
+							/>
+							<DateTimePickerModal
+								isVisible={isDatePickerVisible}
+								mode='date'
+								onConfirm={handleConfirm}
+								onCancel={hideDatePicker}
+								display='spinner'
+								date={dob}
+							/>
 							<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
 							<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
 								{loadingUserLogin ? (
