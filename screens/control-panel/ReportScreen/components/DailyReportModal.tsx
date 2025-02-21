@@ -54,7 +54,7 @@ const DailyReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 	}
 	const handleGetDailyReportForAdmin = () => {
 		if (!startDate || !endDate) {
-			setErrorMessage('Please select start and end dates')
+			setErrorMessage('Please select start and end dates.')
 			return
 		}
 

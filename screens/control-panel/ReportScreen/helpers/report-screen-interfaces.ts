@@ -42,3 +42,17 @@ export interface IClassReport {
 		}[]
 	}[]
 }
+
+export interface IStudentReport {
+	_id: string
+	karateClassName: string
+	date: {
+		year: number
+		month: number
+		day: number
+		hour: number
+		minute: number
+	}
+	student: IStudent
+	attendanceStatus: TAttendanceStatus
+}

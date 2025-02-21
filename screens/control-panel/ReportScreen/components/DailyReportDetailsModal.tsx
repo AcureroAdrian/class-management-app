@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView } from 'react-native'
+import { format } from 'date-fns'
+import { AntDesign } from '@expo/vector-icons'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IDailyReport } from '../helpers/report-screen-interfaces'
-import { format } from 'date-fns'
-import { AntDesign } from '@expo/vector-icons'
 import capitalizeWords from '@/shared/capitalize-words'
 
 const DailyReportDetailsModal = ({

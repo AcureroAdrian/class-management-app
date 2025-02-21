@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView } from 'react-native'
+import { format } from 'date-fns'
+import { AntDesign } from '@expo/vector-icons'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IClassReport } from '../helpers/report-screen-interfaces'
-import { format } from 'date-fns'
-import { AntDesign } from '@expo/vector-icons'
 import capitalizeWords from '@/shared/capitalize-words'
 
 const ClassReportByClassIdDetailsModal = ({
@@ -53,7 +53,7 @@ const ClassReportByClassIdDetailsModal = ({
 											<FlatList
 												data={item.attendances}
 												keyExtractor={(item) => 'id' + item.date.year + '' + item.date.month + '' + item.date.day}
-												style={{ width: '100%', marginTop: 5 }}
+												style={{ width: '100%' }}
 												renderItem={({ item }) => {
 													const attendanceDate = new Date(item.date.year, item.date.month - 1, item.date.day)
 													const presents = item.attendance.filter((item) => item.attendanceStatus === 'present')?.length
@@ -66,6 +66,7 @@ const ClassReportByClassIdDetailsModal = ({
 																	borderWidth: 1,
 																	width: '100%',
 																	padding: 10,
+																	marginTop: 5,
 																}}
 															>
 																<Text numberOfLines={1} style={{ fontSize: 12 }}>

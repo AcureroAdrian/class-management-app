@@ -19,6 +19,7 @@ import {
 	getClassReportByClassIdForAdminReducer,
 	getDailyReportForAdminReducer,
 	getStudentAttendanceByDayReducer,
+	getStudentReportForAdminReducer,
 	registerStudentAttendanceReducer,
 	updateStudentAttendanceByIdReducer,
 } from './studentAttendanceReducers'
@@ -36,6 +37,7 @@ export default combineReducers({
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
 	getKarateClassesToAdminAttendance: getKarateClassesToAdminAttendanceReducer,
 	getStudentAttendanceByDay: getStudentAttendanceByDayReducer,
+	getStudentReportForAdmin: getStudentReportForAdminReducer,
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
 	registerKarateClass: registerKarateClassReducer,

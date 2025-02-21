@@ -1,17 +1,23 @@
-import React, { useMemo, useState } from 'react'
-import { View, Text, Modal, Pressable } from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { format } from 'date-fns'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import colors from '@/theme/colors'
-import { useAppSelector } from '@/redux/store'
-import SelectClassModal from './SelectClassModal'
+import StudentReportDetailsModal from './StudentReportDetailsModal'
 import SelectStudentModal from './SelectStudentModal'
+import SelectClassModal from './SelectClassModal'
+import { IStudentReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { getStudentReportForAdmin } from '@/redux/actions/studentAttendanceActions'
+import { GET_STUDENT_REPORT_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
+import colors from '@/theme/colors'
 
 const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
+	const dispatch = useAppDispatch()
+
 	const [classId, setClassId] = useState<string>('all')
 	const [studentId, setStudentId] = useState<string>('')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -21,9 +27,31 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [endDate, setEndDate] = useState<Date>(new Date())
 	const [openClassesModal, setOpenClassesModal] = useState<boolean>(false)
 	const [openStudentsModal, setOpenStudentsModal] = useState<boolean>(false)
+	const [studentReportByStudentId, setStudentReportByStudentId] = useState<IStudentReport[]>([])
+	const [openStudentReportDetailsModal, setOpenStudentReportDetailsModal] = useState<boolean>(false)
 
 	const { karateClassesByAdminList } = useAppSelector((state) => state.getKarateClassesByAdmin)
 	const { studentUsersList } = useAppSelector((state) => state.getStudentUsers)
+	const {
+		loadingStudentReportForAdmin,
+		successStudentReportForAdmin,
+		studentReportForAdminList,
+		errorStudentReportForAdmin,
+	} = useAppSelector((state) => state.getStudentReportForAdmin)
+
+	useEffect(() => {
+		if (successStudentReportForAdmin) {
+			setStudentReportByStudentId(studentReportForAdminList || [])
+			setOpenStudentReportDetailsModal(true)
+			dispatch({ type: GET_STUDENT_REPORT_FOR_ADMIN_RESET })
+		}
+	}, [successStudentReportForAdmin])
+	useEffect(() => {
+		if (errorStudentReportForAdmin) {
+			setErrorMessage(errorStudentReportForAdmin)
+			dispatch({ type: GET_STUDENT_REPORT_FOR_ADMIN_RESET })
+		}
+	}, [errorStudentReportForAdmin])
 
 	const onChangeStartDate = (event, selectedDate) => {
 		setErrorMessage(null)
@@ -38,12 +66,33 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		setEndDate(currentDate)
 	}
 	const selectClass = (classId: string) => {
+		setErrorMessage(null)
 		setClassId(classId)
 		setOpenClassesModal(false)
 	}
 	const selectStudent = (studentId: string) => {
+		setErrorMessage(null)
 		setStudentId(studentId)
 		setOpenStudentsModal(false)
+	}
+	const handleGenerateClassReport = () => {
+		if (!startDate || !endDate) {
+			setErrorMessage('Please select start and end dates.')
+			return
+		}
+		if (!studentId) {
+			setErrorMessage('Please select a student for the report and press Generate Report button again.')
+			return
+		}
+
+		dispatch(
+			getStudentReportForAdmin(
+				studentId,
+				classId,
+				format(new Date(startDate), 'yyyy-MM-dd'),
+				format(new Date(endDate), 'yyyy-MM-dd'),
+			),
+		)
 	}
 	const classSelected = useMemo(() => {
 		let result = 'All classes'
@@ -130,20 +179,38 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									onPress={() => setShowEndDate(true)}
 								/>
 							</View>
-							<Pressable onPress={closeModal}>
+							<Pressable onPress={handleGenerateClassReport}>
 								<View
 									style={{
-										width: '100%',
 										paddingHorizontal: 20,
 										paddingVertical: 10,
 										backgroundColor: colors.brand,
 										borderRadius: 10,
 										marginTop: 20,
+										height: 40,
+										justifyContent: 'center',
+										alignItems: 'center',
+										width: 200,
 									}}
 								>
-									<Text style={{ color: colors.primary }}>Generate Report</Text>
+									{loadingStudentReportForAdmin ? (
+										<ActivityIndicator size='small' color={colors.primary} />
+									) : (
+										<Text style={{ color: colors.primary }}>Generate Report</Text>
+									)}
 								</View>
 							</Pressable>
+							{errorMessage && (
+								<Text
+									style={{
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
+									}}
+								>
+									{errorMessage}
+								</Text>
+							)}
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
@@ -160,6 +227,13 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					openModal={openStudentsModal}
 					closeModal={() => setOpenStudentsModal(false)}
 					selectStudent={selectStudent}
+				/>
+			)}
+			{openStudentReportDetailsModal && (
+				<StudentReportDetailsModal
+					openModal={openStudentReportDetailsModal}
+					closeModal={() => [setOpenStudentReportDetailsModal(false), setStudentReportByStudentId([])]}
+					studentReports={studentReportByStudentId}
 				/>
 			)}
 		</>

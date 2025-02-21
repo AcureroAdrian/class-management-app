@@ -5,13 +5,13 @@ import { format } from 'date-fns'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
+import ClassReportByClassIdDetailsModal from './ClassReportByClassIdDetailsModal'
+import { IClassReport } from '../helpers/report-screen-interfaces'
 import SelectClassModal from './SelectClassModal'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import colors from '@/theme/colors'
 import { getClassReportByClassIdForAdmin } from '@/redux/actions/studentAttendanceActions'
 import { GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
-import { IClassReport } from '../helpers/report-screen-interfaces'
-import ClassReportByClassIdDetailsModal from './ClassReportByClassIdDetailsModal'
+import colors from '@/theme/colors'
 
 const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -66,7 +66,7 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 	}
 	const handleGenerateClassReport = () => {
 		if (!startDate || !endDate) {
-			setErrorMessage('Please select start and end dates')
+			setErrorMessage('Please select start and end dates.')
 			return
 		}
 
@@ -158,12 +158,15 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 							<Pressable onPress={handleGenerateClassReport}>
 								<View
 									style={{
-										width: '100%',
 										paddingHorizontal: 20,
 										paddingVertical: 10,
 										backgroundColor: colors.brand,
 										borderRadius: 10,
 										marginTop: 20,
+										height: 40,
+										justifyContent: 'center',
+										alignItems: 'center',
+										width: 200,
 									}}
 								>
 									{loadingClassReportByClassIdForAdmin ? (

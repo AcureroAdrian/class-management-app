@@ -138,3 +138,33 @@ export const getClassReportByClassIdForAdmin =
 			})
 		}
 	}
+
+export const getStudentReportForAdmin =
+	(id: string, classId: string, startDate: string, endDate: string) =>
+	async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.GET_STUDENT_REPORT_FOR_ADMIN_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.get(
+				`/api/student-attendances/student-report-admin/${id}?classId=${classId}&startDate=${startDate}&endDate=${endDate}`,
+				config,
+			)
+
+			dispatch({ type: types.GET_STUDENT_REPORT_FOR_ADMIN_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.GET_STUDENT_REPORT_FOR_ADMIN_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

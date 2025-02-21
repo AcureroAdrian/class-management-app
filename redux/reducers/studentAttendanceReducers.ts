@@ -42,6 +42,19 @@ interface IClassReport {
 		}[]
 	}[]
 }
+interface IStudentReport {
+	_id: string
+	karateClassName: string
+	date: {
+		year: number
+		month: number
+		day: number
+		hour: number
+		minute: number
+	}
+	student: IStudent
+	attendanceStatus: TAttendanceStatus
+}
 
 interface IGetStudentAttendanceByDayState {
 	loadingStudentAttendanceByDay?: boolean
@@ -73,12 +86,19 @@ interface IGetDailyReportForAdminState {
 	classReportByClassIdForAdminList?: IClassReport[]
 	errorClassReportByClassIdForAdmin?: string
 }
+interface IGetStudentReportForAdminState {
+	loadingStudentReportForAdmin?: boolean
+	successStudentReportForAdmin?: boolean
+	studentReportForAdminList?: IStudentReport[]
+	errorStudentReportForAdmin?: string
+}
 
 type TGetStudentAttendanceByDayReducer = Reducer<IGetStudentAttendanceByDayState, any>
 type TRegisterStudentAttendanceReducer = Reducer<IRegisterStudentAttendanceState, any>
 type TUpdateStudentAttendanceByIdReducer = Reducer<IUpdateStudentAttendanceByIdState, any>
 type TGetDailyReportForAdminReducer = Reducer<IGetDailyReportForAdminState, any>
 type TGetClassReportByClassIdForAdminReducer = Reducer<IGetDailyReportForAdminState, any>
+type TGetStudentReportForAdminReducer = Reducer<IGetStudentReportForAdminState, any>
 
 export const getStudentAttendanceByDayReducer: TGetStudentAttendanceByDayReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -184,6 +204,28 @@ export const getClassReportByClassIdForAdminReducer: TGetClassReportByClassIdFor
 				errorClassReportByClassIdForAdmin: action.payload,
 			}
 		case types.GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const getStudentReportForAdminReducer: TGetStudentReportForAdminReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.GET_STUDENT_REPORT_FOR_ADMIN_REQUEST:
+			return { loadingStudentReportForAdmin: true }
+		case types.GET_STUDENT_REPORT_FOR_ADMIN_SUCCESS:
+			return {
+				loadingStudentReportForAdmin: false,
+				successStudentReportForAdmin: true,
+				studentReportForAdminList: action.payload,
+			}
+		case types.GET_STUDENT_REPORT_FOR_ADMIN_FAIL:
+			return {
+				loadingStudentReportForAdmin: false,
+				errorStudentReportForAdmin: action.payload,
+			}
+		case types.GET_STUDENT_REPORT_FOR_ADMIN_RESET:
 			return {}
 		default:
 			return state
