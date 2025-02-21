@@ -1,15 +1,21 @@
-import React, { useMemo, useState } from 'react'
-import { View, Text, Modal, Pressable } from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { format } from 'date-fns'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import SelectClassModal from './SelectClassModal'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
-import { useAppSelector } from '@/redux/store'
+import { getClassReportByClassIdForAdmin } from '@/redux/actions/studentAttendanceActions'
+import { GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
+import { IClassReport } from '../helpers/report-screen-interfaces'
+import ClassReportByClassIdDetailsModal from './ClassReportByClassIdDetailsModal'
 
 const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
+	const dispatch = useAppDispatch()
+
 	const [classId, setClassId] = useState<string>('all')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 	const [showStartDate, setShowStartDate] = useState<boolean>(false)
@@ -17,8 +23,30 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 	const [startDate, setStartDate] = useState<Date>(new Date())
 	const [endDate, setEndDate] = useState<Date>(new Date())
 	const [openClassesModal, setOpenClassesModal] = useState<boolean>(false)
+	const [classReportByClassId, setClassReportByClassId] = useState<IClassReport[]>([])
+	const [openClassReportByClassIdModal, setOpenClassReportByClassIdModal] = useState<boolean>(false)
 
 	const { karateClassesByAdminList } = useAppSelector((state) => state.getKarateClassesByAdmin)
+	const {
+		loadingClassReportByClassIdForAdmin,
+		successClassReportByClassIdForAdmin,
+		classReportByClassIdForAdminList,
+		errorClassReportByClassIdForAdmin,
+	} = useAppSelector((state) => state.getClassReportByClassIdForAdmin)
+
+	useEffect(() => {
+		if (successClassReportByClassIdForAdmin) {
+			setClassReportByClassId(classReportByClassIdForAdminList || [])
+			setOpenClassReportByClassIdModal(true)
+			dispatch({ type: GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET })
+		}
+	}, [successClassReportByClassIdForAdmin])
+	useEffect(() => {
+		if (errorClassReportByClassIdForAdmin) {
+			setErrorMessage(errorClassReportByClassIdForAdmin)
+			dispatch({ type: GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET })
+		}
+	}, [errorClassReportByClassIdForAdmin])
 
 	const onChangeStartDate = (event, selectedDate) => {
 		setErrorMessage(null)
@@ -35,6 +63,20 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 	const selectClass = (classId: string) => {
 		setClassId(classId)
 		setOpenClassesModal(false)
+	}
+	const handleGenerateClassReport = () => {
+		if (!startDate || !endDate) {
+			setErrorMessage('Please select start and end dates')
+			return
+		}
+
+		dispatch(
+			getClassReportByClassIdForAdmin(
+				classId,
+				format(new Date(startDate), 'yyyy-MM-dd'),
+				format(new Date(endDate), 'yyyy-MM-dd'),
+			),
+		)
 	}
 	const classSelected = useMemo(() => {
 		let result = 'All classes'
@@ -113,7 +155,7 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 									}}
 								/>
 							</View>
-							<Pressable onPress={closeModal}>
+							<Pressable onPress={handleGenerateClassReport}>
 								<View
 									style={{
 										width: '100%',
@@ -124,9 +166,24 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 										marginTop: 20,
 									}}
 								>
-									<Text style={{ color: colors.primary }}>Generate Report</Text>
+									{loadingClassReportByClassIdForAdmin ? (
+										<ActivityIndicator size='small' color={colors.primary} />
+									) : (
+										<Text style={{ color: colors.primary }}>Generate Report</Text>
+									)}
 								</View>
 							</Pressable>
+							{errorMessage && (
+								<Text
+									style={{
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
+									}}
+								>
+									{errorMessage}
+								</Text>
+							)}
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
@@ -136,6 +193,13 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 					openModal={openClassesModal}
 					closeModal={() => setOpenClassesModal(false)}
 					selectClass={selectClass}
+				/>
+			)}
+			{openClassReportByClassIdModal && (
+				<ClassReportByClassIdDetailsModal
+					openModal={openClassReportByClassIdModal}
+					closeModal={() => [setOpenClassReportByClassIdModal(false), setClassReportByClassId([])]}
+					classReports={classReportByClassId}
 				/>
 			)}
 		</>

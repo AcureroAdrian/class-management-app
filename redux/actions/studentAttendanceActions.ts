@@ -80,3 +80,61 @@ export const updateStudentAttendanceById =
 			})
 		}
 	}
+
+export const getDailyReportForAdmin =
+	(startDate: string, endDate: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.GET_DAILY_REPORT_FOR_ADMIN_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.get(
+				`/api/student-attendances/daily-report-admin?startDate=${startDate}&endDate=${endDate}`,
+				config,
+			)
+
+			dispatch({ type: types.GET_DAILY_REPORT_FOR_ADMIN_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.GET_DAILY_REPORT_FOR_ADMIN_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}
+
+export const getClassReportByClassIdForAdmin =
+	(id: string, startDate: string, endDate: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.get(
+				`/api/student-attendances/class-report-admin/${id}?startDate=${startDate}&endDate=${endDate}`,
+				config,
+			)
+
+			dispatch({ type: types.GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

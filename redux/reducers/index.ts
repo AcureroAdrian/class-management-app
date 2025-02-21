@@ -16,6 +16,8 @@ import {
 	userLoginReducer,
 } from './userReducers'
 import {
+	getClassReportByClassIdForAdminReducer,
+	getDailyReportForAdminReducer,
 	getStudentAttendanceByDayReducer,
 	registerStudentAttendanceReducer,
 	updateStudentAttendanceByIdReducer,
@@ -28,6 +30,8 @@ const loginPersistConfig = {
 }
 
 export default combineReducers({
+	getClassReportByClassIdForAdmin: getClassReportByClassIdForAdminReducer,
+	getDailyReportForAdmin: getDailyReportForAdminReducer,
 	getKarateClassById: getKarateClassByIdReducer,
 	getKarateClassesByAdmin: getKarateClassesByAdminReducer,
 	getKarateClassesToAdminAttendance: getKarateClassesToAdminAttendanceReducer,
