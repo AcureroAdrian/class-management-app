@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -53,17 +53,17 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		}
 	}, [errorStudentReportForAdmin])
 
-	const onChangeStartDate = (event, selectedDate) => {
+	const onChangeStartDate = (date: Date) => {
 		setErrorMessage(null)
-		const currentDate = selectedDate || startDate
-		setShowStartDate(false)
+		const currentDate = date || startDate
 		setStartDate(currentDate)
+		setShowStartDate(false)
 	}
-	const onChangeEndDate = (event, selectedDate) => {
+	const onChangeEndDate = (date: Date) => {
 		setErrorMessage(null)
-		const currentDate = selectedDate || endDate
-		setShowEndDate(false)
+		const currentDate = date || endDate
 		setEndDate(currentDate)
+		setShowEndDate(false)
 	}
 	const selectClass = (classId: string) => {
 		setErrorMessage(null)
@@ -118,28 +118,6 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					<View>
 						<ScreenHeader label='Student Report' showBackButton={true} handleBack={closeModal} />
 						<View style={{ width: '100%', alignItems: 'center' }}>
-							{showStartDate && (
-								<DateTimePicker
-									testID='startDateTimePicker'
-									value={startDate}
-									mode='date'
-									is24Hour={true}
-									display='default'
-									onChange={onChangeStartDate}
-									maximumDate={new Date()}
-								/>
-							)}
-							{showEndDate && (
-								<DateTimePicker
-									testID='endDateTimePicker'
-									value={endDate}
-									mode='date'
-									is24Hour={true}
-									display='default'
-									onChange={onChangeEndDate}
-									maximumDate={new Date()}
-								/>
-							)}
 							<Text style={{ padding: 20, fontSize: 16, color: colors.brand, textAlign: 'center' }}>
 								Select student, class, start and end dates for the report
 							</Text>
@@ -215,6 +193,28 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					</View>
 				</KeyboardAvoidingWrapper>
 			</Modal>
+			{showStartDate && (
+				<DateTimePickerModal
+					isVisible={showStartDate}
+					mode='date'
+					onConfirm={onChangeStartDate}
+					onCancel={() => setShowStartDate(false)}
+					display='spinner'
+					date={startDate}
+					maximumDate={new Date()}
+				/>
+			)}
+			{showEndDate && (
+				<DateTimePickerModal
+					isVisible={showEndDate}
+					mode='date'
+					onConfirm={onChangeEndDate}
+					onCancel={() => setShowEndDate(false)}
+					display='spinner'
+					date={endDate}
+					maximumDate={new Date()}
+				/>
+			)}
 			{openClassesModal && (
 				<SelectClassModal
 					openModal={openClassesModal}

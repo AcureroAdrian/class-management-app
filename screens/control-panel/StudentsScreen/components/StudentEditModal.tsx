@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Modal, Image, Text } from 'react-native'
 import { format } from 'date-fns'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
@@ -28,8 +28,7 @@ const StudentEditModal = ({
 	const [lastName, setLastName] = useState<string>('')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 	const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
-	const [dob, setDob] = useState<Date | null>(null)
-	const [date, setDate] = useState<Date>(new Date(2000, 0, 1))
+	const [dob, setDob] = useState<Date | undefined>(undefined)
 	const [phone, setPhone] = useState<string>('')
 	const [email, setEmail] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
@@ -66,7 +65,6 @@ const StudentEditModal = ({
 					studentUserById?.dateOfBirth?.day,
 				)
 				setDob(dob)
-				setDate(dob)
 			}
 		}
 	}, [successGetStudentUserById])
@@ -105,26 +103,15 @@ const StudentEditModal = ({
 
 		dispatch(updateStudentUserById(studentId, dataToUpdate))
 	}
-	const handleSelectDob = (event, selectedDate) => {
-		const currentDate = selectedDate || date
-		setShowDatePicker(false)
-		setDate(currentDate)
+	const handleSelectDob = (date: Date) => {
+		const currentDate = date || dob
 		setDob(currentDate)
+		setShowDatePicker(false)
 	}
 
 	return (
 		<>
 			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				{showDatePicker && (
-					<DateTimePicker
-						testID='dateTimePicker'
-						value={date}
-						mode='date'
-						is24Hour={true}
-						display='default'
-						onChange={handleSelectDob}
-					/>
-				)}
 				<View>
 					<View>
 						<ScreenHeader
@@ -229,6 +216,16 @@ const StudentEditModal = ({
 					</View>
 				</View>
 			</Modal>
+			{showDatePicker && (
+				<DateTimePickerModal
+					isVisible={showDatePicker}
+					mode='date'
+					onConfirm={handleSelectDob}
+					onCancel={() => setShowDatePicker(false)}
+					display='spinner'
+					date={dob}
+				/>
+			)}
 			{(loadingGetStudentUserById || loadingUpdateStudentUserById) && (
 				<CustomBackdrop
 					openBackdrop={Boolean(loadingGetStudentUserById || loadingUpdateStudentUserById)}

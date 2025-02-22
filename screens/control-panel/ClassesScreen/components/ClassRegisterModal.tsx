@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Modal, Text } from 'react-native'
 import { format, isDate } from 'date-fns'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
@@ -47,11 +47,11 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		}
 	}, [errorRegisterKarateClass])
 
-	const onChange = (event, selectedDate) => {
+	const onChange = (date: Date) => {
 		setErrorMessage(null)
-		const currentDate = selectedDate || date
-		setShowDate(false)
+		const currentDate = date || startTime
 		setStartTime(currentDate)
+		setShowDate(false)
 	}
 	const handleRegisterClass = () => {
 		setErrorMessage(null)
@@ -106,16 +106,6 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 							handleBack={closeModal}
 						/>
 						<View style={{ width: '100%', alignItems: 'center' }}>
-							{showDate && (
-								<DateTimePicker
-									testID='dateTimePicker'
-									value={startTime}
-									mode='time'
-									is24Hour={true}
-									display='default'
-									onChange={onChange}
-								/>
-							)}
 							<View style={{ width: '90%' }}>
 								<CustomInputForm
 									label='Class Name'
@@ -181,6 +171,17 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					</View>
 				</KeyboardAvoidingWrapper>
 			</Modal>
+			{showDate && (
+				<DateTimePickerModal
+					isVisible={showDate}
+					mode='time'
+					is24Hour={true}
+					onConfirm={onChange}
+					onCancel={() => setShowDate(false)}
+					display='spinner'
+					date={startTime}
+				/>
+			)}
 			{openWeekDaysModal && (
 				<CustomOptionsModal
 					openModal={openWeekDaysModal}

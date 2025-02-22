@@ -9,6 +9,7 @@ import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUsers } from '@/redux/actions/userActions'
+import { SafeAreaViewStyled } from '@/theme/styles'
 
 const StudentsScreen = () => {
 	const dispatch = useAppDispatch()
@@ -79,74 +80,76 @@ const StudentsScreen = () => {
 
 	return (
 		<>
-			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-				<ScreenHeader
-					label='Students'
-					labelButton='Add'
-					handleOnPress={() => setOpenStudentsRegisterModal(true)}
-					disabledButton={loadingGetStudentUsers}
-					iconName='plus'
-				/>
-				<TextInput
-					value={textSearch}
-					onChangeText={setTextSearch}
-					placeholder='Search students'
-					style={{
-						width: '100%',
-						backgroundColor: '#E5E7EB',
-						padding: 10,
-						borderRadius: 5,
-						fontSize: 15,
-						height: 50,
-						marginVertical: 3,
-						marginBottom: 10,
-						color: '#1F2937',
-					}}
-				/>
-				<ScrollView>
-					{errorGetStudentUsers && !students?.length ? (
-						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-						</View>
-					) : (
-						<FlatList
-							nestedScrollEnabled={true}
-							scrollEnabled={false}
-							data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
-							renderItem={({ item }) => (
-								<Pressable onPress={() => handleSelectStudent(item)}>
-									<View
-										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-										key={item._id}
-									>
-										<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
-											<Image
-												source={require('@/assets/img/default-avatar.png')}
-												style={{ width: 50, height: 50, borderRadius: 50 }}
-												resizeMode='contain'
-											/>
-											<View
-												style={{
-													justifyContent: 'center',
-													alignItems: 'flex-start',
-													width: '100%',
-													flexDirection: 'column',
-												}}
-											>
-												<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-												<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+			<SafeAreaViewStyled>
+				<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+					<ScreenHeader
+						label='Students'
+						labelButton='Add'
+						handleOnPress={() => setOpenStudentsRegisterModal(true)}
+						disabledButton={loadingGetStudentUsers}
+						iconName='plus'
+					/>
+					<TextInput
+						value={textSearch}
+						onChangeText={setTextSearch}
+						placeholder='Search students'
+						style={{
+							width: '100%',
+							backgroundColor: '#E5E7EB',
+							padding: 10,
+							borderRadius: 5,
+							fontSize: 15,
+							height: 50,
+							marginVertical: 3,
+							marginBottom: 10,
+							color: '#1F2937',
+						}}
+					/>
+					<ScrollView>
+						{errorGetStudentUsers && !students?.length ? (
+							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+								<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+							</View>
+						) : (
+							<FlatList
+								nestedScrollEnabled={true}
+								scrollEnabled={false}
+								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
+								renderItem={({ item }) => (
+									<Pressable onPress={() => handleSelectStudent(item)}>
+										<View
+											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
+											key={item._id}
+										>
+											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
+												<Image
+													source={require('@/assets/img/default-avatar.png')}
+													style={{ width: 50, height: 50, borderRadius: 50 }}
+													resizeMode='contain'
+												/>
+												<View
+													style={{
+														justifyContent: 'center',
+														alignItems: 'flex-start',
+														width: '100%',
+														flexDirection: 'column',
+													}}
+												>
+													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+												</View>
 											</View>
+											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-									</View>
-								</Pressable>
-							)}
-							keyExtractor={(item) => item._id}
-						/>
-					)}
-				</ScrollView>
-			</View>
+									</Pressable>
+								)}
+								keyExtractor={(item) => item._id}
+							/>
+						)}
+					</ScrollView>
+				</View>
+			</SafeAreaViewStyled>
+			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
 			{openStudentsRegisterModal && (
 				<StudentsRegisterModal
 					openModal={openStudentsRegisterModal}

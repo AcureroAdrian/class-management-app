@@ -75,3 +75,6 @@ export const CenterContainer = styled.View`
 	justify-content: center;
 	align-items: center;
 `
+export const SafeAreaViewStyled = styled.SafeAreaView`
+	flex: 1;
+`

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
 import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
 import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActions'
-import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
+import { CenterContainer, ErrorMsgBox, SafeAreaViewStyled } from '@/theme/styles'
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
 import colors from '@/theme/colors'
 
@@ -184,42 +184,44 @@ const AttendanceScreen = () => {
 
 	return (
 		<>
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-				<ScreenHeader label='Attendance' />
-				<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
-					<ExpandableCalendar
-						initialPosition={'open' as Positions}
-						markedDates={markedDates}
-						allowShadow={false}
-						closeOnDayPress={false}
-						hideArrows={true}
-						animateScroll={false}
-						monthFormat='MMM, yyyy'
-						displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance}
-					/>
-					<View style={{ flex: 1 }}>
-						<View style={{ backgroundColor: 'red', padding: 20 }}>
-							<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
-								{format(new Date(currentDate), 'EEEE, dd')}
-							</Text>
+			<SafeAreaViewStyled>
+				<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+					<ScreenHeader label='Attendance' />
+					<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
+						<ExpandableCalendar
+							initialPosition={'open' as Positions}
+							markedDates={markedDates}
+							allowShadow={false}
+							closeOnDayPress={false}
+							hideArrows={true}
+							animateScroll={false}
+							monthFormat='MMM, yyyy'
+							displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance}
+						/>
+						<View style={{ flex: 1 }}>
+							<View style={{ backgroundColor: 'red', padding: 20 }}>
+								<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+									{format(new Date(currentDate), 'EEEE, dd')}
+								</Text>
+							</View>
+							{loadingStudentAttendanceByDay ? (
+								<CenterContainer>
+									<ActivityIndicator size='large' color={colors.primary} />
+								</CenterContainer>
+							) : errorStudentAttendanceByDay ? (
+								<CenterContainer>
+									<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
+								</CenterContainer>
+							) : (
+								<FlatList
+									data={items}
+									renderItem={({ item }) => <AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} />}
+								/>
+							)}
 						</View>
-						{loadingStudentAttendanceByDay ? (
-							<CenterContainer>
-								<ActivityIndicator size='large' color={colors.primary} />
-							</CenterContainer>
-						) : errorStudentAttendanceByDay ? (
-							<CenterContainer>
-								<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
-							</CenterContainer>
-						) : (
-							<FlatList
-								data={items}
-								renderItem={({ item }) => <AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} />}
-							/>
-						)}
-					</View>
-				</CalendarProvider>
-			</View>
+					</CalendarProvider>
+				</View>
+			</SafeAreaViewStyled>
 			{openAttendanceEditModal && (
 				<AttendanceEditModal
 					openModal={openAttendanceEditModal}

@@ -13,12 +13,13 @@ import {
 	LoginTitle,
 	TextLinkContent,
 	SimpleTextLine,
+	SafeAreaViewStyled,
 } from '@/theme/styles'
 
 const Info = () => {
 	return (
-		<KeyboardAvoidingWrapper>
-			<ContainerWithoutHeader>
+		<ContainerWithoutHeader>
+			<SafeAreaViewStyled>
 				<StatusBar style='auto' />
 				<CenterAlignContainer>
 					<LoginLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
@@ -55,8 +56,8 @@ const Info = () => {
 						</Link>
 					</ConcatTextContainer>
 				</CenterAlignContainer>
-			</ContainerWithoutHeader>
-		</KeyboardAvoidingWrapper>
+			</SafeAreaViewStyled>
+		</ContainerWithoutHeader>
 	)
 }
 
