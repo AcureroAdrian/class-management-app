@@ -215,17 +215,18 @@ const StudentEditModal = ({
 						)}
 					</View>
 				</View>
+				{showDatePicker && (
+					<DateTimePickerModal
+						isVisible={showDatePicker}
+						mode='date'
+						onConfirm={handleSelectDob}
+						onCancel={() => setShowDatePicker(false)}
+						display='spinner'
+						date={dob}
+					/>
+				)}
 			</Modal>
-			{showDatePicker && (
-				<DateTimePickerModal
-					isVisible={showDatePicker}
-					mode='date'
-					onConfirm={handleSelectDob}
-					onCancel={() => setShowDatePicker(false)}
-					display='spinner'
-					date={dob}
-				/>
-			)}
+
 			{(loadingGetStudentUserById || loadingUpdateStudentUserById) && (
 				<CustomBackdrop
 					openBackdrop={Boolean(loadingGetStudentUserById || loadingUpdateStudentUserById)}

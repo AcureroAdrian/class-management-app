@@ -12,7 +12,7 @@ const CustomInputForm = ({ label, onPress, ...props }: ICustomInputFormProps) =>
 		<View>
 			{Boolean(label?.length) && <StyledCustomInputlabel>{label}</StyledCustomInputlabel>}
 			<Pressable onPress={onPress}>
-				<StyledCustomTextInput {...props} />
+				<StyledCustomTextInput {...props} onPressIn={onPress}  />
 			</Pressable>
 		</View>
 	)

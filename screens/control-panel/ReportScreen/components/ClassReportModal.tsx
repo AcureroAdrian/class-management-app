@@ -168,43 +168,43 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
+				{showStartDate && (
+					<DateTimePickerModal
+						isVisible={showStartDate}
+						mode='date'
+						onConfirm={onChangeStartDate}
+						onCancel={() => setShowStartDate(false)}
+						display='spinner'
+						date={startDate}
+						maximumDate={new Date()}
+					/>
+				)}
+				{showEndDate && (
+					<DateTimePickerModal
+						isVisible={showEndDate}
+						mode='date'
+						onConfirm={onChangeEndDate}
+						onCancel={() => setShowEndDate(false)}
+						display='spinner'
+						date={endDate}
+						// maximumDate={new Date()}
+					/>
+				)}
+				{openClassesModal && (
+					<SelectClassModal
+						openModal={openClassesModal}
+						closeModal={() => setOpenClassesModal(false)}
+						selectClass={selectClass}
+					/>
+				)}
+				{openClassReportByClassIdModal && (
+					<ClassReportByClassIdDetailsModal
+						openModal={openClassReportByClassIdModal}
+						closeModal={() => [setOpenClassReportByClassIdModal(false), setClassReportByClassId([])]}
+						classReports={classReportByClassId}
+					/>
+				)}
 			</Modal>
-			{showStartDate && (
-				<DateTimePickerModal
-					isVisible={showStartDate}
-					mode='date'
-					onConfirm={onChangeStartDate}
-					onCancel={() => setShowStartDate(false)}
-					display='spinner'
-					date={startDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{showEndDate && (
-				<DateTimePickerModal
-					isVisible={showEndDate}
-					mode='date'
-					onConfirm={onChangeEndDate}
-					onCancel={() => setShowEndDate(false)}
-					display='spinner'
-					date={endDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{openClassesModal && (
-				<SelectClassModal
-					openModal={openClassesModal}
-					closeModal={() => setOpenClassesModal(false)}
-					selectClass={selectClass}
-				/>
-			)}
-			{openClassReportByClassIdModal && (
-				<ClassReportByClassIdDetailsModal
-					openModal={openClassReportByClassIdModal}
-					closeModal={() => [setOpenClassReportByClassIdModal(false), setClassReportByClassId([])]}
-					classReports={classReportByClassId}
-				/>
-			)}
 		</>
 	)
 }

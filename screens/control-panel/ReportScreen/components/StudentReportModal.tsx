@@ -192,50 +192,50 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
+				{showStartDate && (
+					<DateTimePickerModal
+						isVisible={showStartDate}
+						mode='date'
+						onConfirm={onChangeStartDate}
+						onCancel={() => setShowStartDate(false)}
+						display='spinner'
+						date={startDate}
+						maximumDate={new Date()}
+					/>
+				)}
+				{showEndDate && (
+					<DateTimePickerModal
+						isVisible={showEndDate}
+						mode='date'
+						onConfirm={onChangeEndDate}
+						onCancel={() => setShowEndDate(false)}
+						display='spinner'
+						date={endDate}
+						// maximumDate={new Date()}
+					/>
+				)}
+				{openClassesModal && (
+					<SelectClassModal
+						openModal={openClassesModal}
+						closeModal={() => setOpenClassesModal(false)}
+						selectClass={selectClass}
+					/>
+				)}
+				{openStudentsModal && (
+					<SelectStudentModal
+						openModal={openStudentsModal}
+						closeModal={() => setOpenStudentsModal(false)}
+						selectStudent={selectStudent}
+					/>
+				)}
+				{openStudentReportDetailsModal && (
+					<StudentReportDetailsModal
+						openModal={openStudentReportDetailsModal}
+						closeModal={() => [setOpenStudentReportDetailsModal(false), setStudentReportByStudentId([])]}
+						studentReports={studentReportByStudentId}
+					/>
+				)}
 			</Modal>
-			{showStartDate && (
-				<DateTimePickerModal
-					isVisible={showStartDate}
-					mode='date'
-					onConfirm={onChangeStartDate}
-					onCancel={() => setShowStartDate(false)}
-					display='spinner'
-					date={startDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{showEndDate && (
-				<DateTimePickerModal
-					isVisible={showEndDate}
-					mode='date'
-					onConfirm={onChangeEndDate}
-					onCancel={() => setShowEndDate(false)}
-					display='spinner'
-					date={endDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{openClassesModal && (
-				<SelectClassModal
-					openModal={openClassesModal}
-					closeModal={() => setOpenClassesModal(false)}
-					selectClass={selectClass}
-				/>
-			)}
-			{openStudentsModal && (
-				<SelectStudentModal
-					openModal={openStudentsModal}
-					closeModal={() => setOpenStudentsModal(false)}
-					selectStudent={selectStudent}
-				/>
-			)}
-			{openStudentReportDetailsModal && (
-				<StudentReportDetailsModal
-					openModal={openStudentReportDetailsModal}
-					closeModal={() => [setOpenStudentReportDetailsModal(false), setStudentReportByStudentId([])]}
-					studentReports={studentReportByStudentId}
-				/>
-			)}
 		</>
 	)
 }

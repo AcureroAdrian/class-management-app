@@ -64,9 +64,6 @@ const AssignedStudentsModal = ({
 	return (
 		<>
 			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				{loadingGetStudentUsers && (
-					<CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />
-				)}
 				<View
 					style={{
 						flex: 1,
@@ -153,16 +150,17 @@ const AssignedStudentsModal = ({
 						</ScrollView>
 					</View>
 				</View>
+				{openPickStudentsModal && (
+					<PickStudentsModal
+						openModal={openPickStudentsModal}
+						closeModal={() => setOpenPickStudentsModal(false)}
+						students={students}
+						studentsSelected={studentsSelected}
+						handleSelectStudent={handleSelectStudent}
+					/>
+				)}
 			</Modal>
-			{openPickStudentsModal && (
-				<PickStudentsModal
-					openModal={openPickStudentsModal}
-					closeModal={() => setOpenPickStudentsModal(false)}
-					students={students}
-					studentsSelected={studentsSelected}
-					handleSelectStudent={handleSelectStudent}
-				/>
-			)}
+			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
 		</>
 	)
 }

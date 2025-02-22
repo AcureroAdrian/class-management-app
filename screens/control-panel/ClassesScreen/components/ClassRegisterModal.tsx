@@ -93,7 +93,6 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	return (
 		<>
 			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				{loadingRegisterKarateClass && <CustomBackdrop openBackdrop={loadingRegisterKarateClass} label='Loading ...' />}
 				<KeyboardAvoidingWrapper>
 					<View>
 						<ScreenHeader
@@ -170,19 +169,26 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
-			</Modal>
-			{showDate && (
-				<DateTimePickerModal
-					isVisible={showDate}
-					mode='time'
-					is24Hour={true}
-					onConfirm={onChange}
-					onCancel={() => setShowDate(false)}
-					display='spinner'
-					date={startTime}
-				/>
-			)}
-			{openWeekDaysModal && (
+				{showDate && (
+					<DateTimePickerModal
+						isVisible={showDate}
+						mode='time'
+						is24Hour={true}
+						onConfirm={onChange}
+						onCancel={() => setShowDate(false)}
+						display='spinner'
+						date={startTime}
+					/>
+				)}
+				{openAssignedStudentsModal && (
+					<AssignedStudentsModal
+						openModal={openAssignedStudentsModal}
+						closeModal={() => setOpenAssignedStudentsModal(false)}
+						studentsAssigned={studentsAssigned}
+						handleAssignStudents={handleAssignStudents}
+					/>
+				)}
+				{openWeekDaysModal && (
 				<CustomOptionsModal
 					openModal={openWeekDaysModal}
 					closeModal={() => setOpenWeekDaysModal(false)}
@@ -202,14 +208,9 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					handleSaveOptions={(selected: any) => setLevels(selected)}
 				/>
 			)}
-			{openAssignedStudentsModal && (
-				<AssignedStudentsModal
-					openModal={openAssignedStudentsModal}
-					closeModal={() => setOpenAssignedStudentsModal(false)}
-					studentsAssigned={studentsAssigned}
-					handleAssignStudents={handleAssignStudents}
-				/>
-			)}
+			</Modal>
+			{loadingRegisterKarateClass && <CustomBackdrop openBackdrop={loadingRegisterKarateClass} label='Loading ...' />}
+			
 		</>
 	)
 }

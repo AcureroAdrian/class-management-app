@@ -195,47 +195,47 @@ const ClassEditModal = ({
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
+				{showDate && (
+					<DateTimePickerModal
+						isVisible={showDate}
+						mode='time'
+						is24Hour={true}
+						onConfirm={onChange}
+						onCancel={() => setShowDate(false)}
+						display='spinner'
+						date={startTime}
+					/>
+				)}
+				{openWeekDaysModal && (
+					<CustomOptionsModal
+						openModal={openWeekDaysModal}
+						closeModal={() => setOpenWeekDaysModal(false)}
+						title='Week Days'
+						options={weekDaysInitialValues}
+						selected={weekDays}
+						handleSaveOptions={(selected: any) => setWeekDays(selected)}
+					/>
+				)}
+				{openLevelsModal && (
+					<CustomOptionsModal
+						openModal={openLevelsModal}
+						closeModal={() => setOpenLevelsModal(false)}
+						title='Levels'
+						options={levelsInitialValues}
+						selected={levels}
+						handleSaveOptions={(selected: any) => setLevels(selected)}
+					/>
+				)}
+				{openAssignedStudentsModal && (
+					<AssignedStudentsModal
+						openModal={openAssignedStudentsModal}
+						closeModal={() => setOpenAssignedStudentsModal(false)}
+						studentsAssigned={studentsAssigned}
+						handleAssignStudents={handleAssignStudents}
+					/>
+				)}
 			</Modal>
 			{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
-			{showDate && (
-				<DateTimePickerModal
-					isVisible={showDate}
-					mode='time'
-					is24Hour={true}
-					onConfirm={onChange}
-					onCancel={() => setShowDate(false)}
-					display='spinner'
-					date={startTime}
-				/>
-			)}
-			{openWeekDaysModal && (
-				<CustomOptionsModal
-					openModal={openWeekDaysModal}
-					closeModal={() => setOpenWeekDaysModal(false)}
-					title='Week Days'
-					options={weekDaysInitialValues}
-					selected={weekDays}
-					handleSaveOptions={(selected: any) => setWeekDays(selected)}
-				/>
-			)}
-			{openLevelsModal && (
-				<CustomOptionsModal
-					openModal={openLevelsModal}
-					closeModal={() => setOpenLevelsModal(false)}
-					title='Levels'
-					options={levelsInitialValues}
-					selected={levels}
-					handleSaveOptions={(selected: any) => setLevels(selected)}
-				/>
-			)}
-			{openAssignedStudentsModal && (
-				<AssignedStudentsModal
-					openModal={openAssignedStudentsModal}
-					closeModal={() => setOpenAssignedStudentsModal(false)}
-					studentsAssigned={studentsAssigned}
-					handleAssignStudents={handleAssignStudents}
-				/>
-			)}
 		</>
 	)
 }

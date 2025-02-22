@@ -130,36 +130,36 @@ const DailyReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 						</View>
 					</View>
 				</KeyboardAvoidingWrapper>
+				{showStartDate && (
+					<DateTimePickerModal
+						isVisible={showStartDate}
+						mode='date'
+						onConfirm={onChangeStartDate}
+						onCancel={() => setShowStartDate(false)}
+						display='spinner'
+						date={startDate}
+						maximumDate={new Date()}
+					/>
+				)}
+				{showEndDate && (
+					<DateTimePickerModal
+						isVisible={showEndDate}
+						mode='date'
+						onConfirm={onChangeEndDate}
+						onCancel={() => setShowEndDate(false)}
+						display='spinner'
+						date={endDate}
+						// maximumDate={new Date()}
+					/>
+				)}
+				{openDailyReportDetailsModal && (
+					<DailyReportDetailsModal
+						openModal={openDailyReportDetailsModal}
+						closeModal={() => [setOpenDailyReportDetailsModal(false), setReports([])]}
+						reports={reports}
+					/>
+				)}
 			</Modal>
-			{showStartDate && (
-				<DateTimePickerModal
-					isVisible={showStartDate}
-					mode='date'
-					onConfirm={onChangeStartDate}
-					onCancel={() => setShowStartDate(false)}
-					display='spinner'
-					date={startDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{showEndDate && (
-				<DateTimePickerModal
-					isVisible={showEndDate}
-					mode='date'
-					onConfirm={onChangeEndDate}
-					onCancel={() => setShowEndDate(false)}
-					display='spinner'
-					date={endDate}
-					maximumDate={new Date()}
-				/>
-			)}
-			{openDailyReportDetailsModal && (
-				<DailyReportDetailsModal
-					openModal={openDailyReportDetailsModal}
-					closeModal={() => [setOpenDailyReportDetailsModal(false), setReports([])]}
-					reports={reports}
-				/>
-			)}
 		</>
 	)
 }
