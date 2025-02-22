@@ -18,16 +18,3 @@ export const LoginButtonText = styled.Text`
 	color: ${colors.primary};
 	font-size: 16px;
 `
-
-export const DateActionsButton = styled.TouchableOpacity<{ backgroundColor: string }>`
-	background-color: ${(props: { backgroundColor: string }) => props.backgroundColor || colors.brand};
-	padding: 10px;
-	border-radius: 5px;
-`
-
-export const DateActionsButtonText = styled.Text<{ color: string, backgroundColor: string }>`
-	color: ${(props: { color: string }) => props.color || 'white'};
-	font-size: 16px;
-`
-
-

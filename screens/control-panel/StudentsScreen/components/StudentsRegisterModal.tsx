@@ -57,102 +57,104 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 	}
 
 	return (
-		<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<>
 			{loadingRegisterStudents && <CustomBackdrop openBackdrop={loadingRegisterStudents} label='Loading ...' />}
-			<View>
+			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<View>
-					<ScreenHeader
-						label='Add Students'
-						labelButton='Save'
-						iconName='save'
-						disabledButton={loadingRegisterStudents}
-						handleOnPress={handleRegisterStudents}
-						showBackButton={true}
-						handleBack={closeModal}
-					/>
-					<View style={{ width: '100%', alignItems: 'center', flexDirection: 'row' }}>
-						<View style={{ width: '60%', alignItems: 'center' }}>
-							<View style={{ width: '90%' }}>
-								<CustomInputForm
-									label='First Name'
-									placeholder='Manuel'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setStudentName}
-									value={studentName}
-								/>
-								<CustomInputForm
-									label='Last Name'
-									placeholder='Smith'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setStudentLastName}
-									value={studentLastName}
-								/>
+					<View>
+						<ScreenHeader
+							label='Add Students'
+							labelButton='Save'
+							iconName='save'
+							disabledButton={loadingRegisterStudents}
+							handleOnPress={handleRegisterStudents}
+							showBackButton={true}
+							handleBack={closeModal}
+						/>
+						<View style={{ width: '100%', alignItems: 'center', flexDirection: 'row' }}>
+							<View style={{ width: '60%', alignItems: 'center' }}>
+								<View style={{ width: '90%' }}>
+									<CustomInputForm
+										label='First Name'
+										placeholder='Manuel'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setStudentName}
+										value={studentName}
+									/>
+									<CustomInputForm
+										label='Last Name'
+										placeholder='Smith'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setStudentLastName}
+										value={studentLastName}
+									/>
+								</View>
+							</View>
+							<View style={{ width: '40%', alignItems: 'center' }}>
+								<Pressable
+									style={{ backgroundColor: colors.brand, padding: 10, paddingHorizontal: 30, borderRadius: 10 }}
+									onPress={handleAddStudent}
+								>
+									<Text style={{ color: colors.primary }}>Add</Text>
+								</Pressable>
 							</View>
 						</View>
-						<View style={{ width: '40%', alignItems: 'center' }}>
-							<Pressable
-								style={{ backgroundColor: colors.brand, padding: 10, paddingHorizontal: 30, borderRadius: 10 }}
-								onPress={handleAddStudent}
+						{(errorMessage || errorRegisterStudents) && (
+							<Text
+								style={{
+									textAlign: 'center',
+									fontSize: 13,
+									color: 'red',
+								}}
 							>
-								<Text style={{ color: colors.primary }}>Add</Text>
-							</Pressable>
+								{errorMessage || errorRegisterStudents}
+							</Text>
+						)}
+						<Text style={{ paddingLeft: 10, backgroundColor: colors.brand, color: colors.primary, marginBottom: 10 }}>
+							Total Added: {studentsAdded?.length}
+						</Text>
+						<View style={{ width: '100%', alignItems: 'center', marginBottom: 10, height: '70%' }}>
+							<ScrollView style={{ width: '100%' }}>
+								<FlatList
+									data={studentsAdded}
+									nestedScrollEnabled={true}
+									scrollEnabled={false}
+									renderItem={({ item, index }) => (
+										<>
+											<View
+												style={{
+													width: '100%',
+													padding: 10,
+													flexDirection: 'row',
+													alignItems: 'center',
+													justifyContent: 'space-between',
+												}}
+											>
+												<Text>
+													{item.name} {item.lastName}
+												</Text>
+												<Pressable onPress={() => handleRemoveStudent(index)}>
+													<AntDesign name='closecircle' size={24} color='red' />
+												</Pressable>
+											</View>
+											<View
+												style={{
+													height: 1,
+													backgroundColor: colors.darkLight,
+													marginBottom: 10,
+													marginLeft: 10,
+													marginRight: 10,
+												}}
+											/>
+										</>
+									)}
+								/>
+							</ScrollView>
 						</View>
 					</View>
-					{(errorMessage || errorRegisterStudents) && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage || errorRegisterStudents}
-						</Text>
-					)}
-					<Text style={{ paddingLeft: 10, backgroundColor: colors.brand, color: colors.primary, marginBottom: 10 }}>
-						Total Added: {studentsAdded?.length}
-					</Text>
-					<View style={{ width: '100%', alignItems: 'center', marginBottom: 10, height: '70%' }}>
-						<ScrollView style={{ width: '100%' }}>
-							<FlatList
-								data={studentsAdded}
-								nestedScrollEnabled={true}
-								scrollEnabled={false}
-								renderItem={({ item, index }) => (
-									<>
-										<View
-											style={{
-												width: '100%',
-												padding: 10,
-												flexDirection: 'row',
-												alignItems: 'center',
-												justifyContent: 'space-between',
-											}}
-										>
-											<Text>
-												{item.name} {item.lastName}
-											</Text>
-											<Pressable onPress={() => handleRemoveStudent(index)}>
-												<AntDesign name='closecircle' size={24} color='red' />
-											</Pressable>
-										</View>
-										<View
-											style={{
-												height: 1,
-												backgroundColor: colors.darkLight,
-												marginBottom: 10,
-												marginLeft: 10,
-												marginRight: 10,
-											}}
-										/>
-									</>
-								)}
-							/>
-						</ScrollView>
-					</View>
 				</View>
-			</View>
-		</Modal>
+			</Modal>
+		</>
 	)
 }
 

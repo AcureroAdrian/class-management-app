@@ -22,8 +22,8 @@ const TextInputForm = ({
 			</LeftIconContainer>
 			<TextInputFormLabel>{label}</TextInputFormLabel>
 			{isDate ? (
-				<Pressable onPress={showDatePicker}>
-					<TextInputFormInput {...props} />
+				<Pressable onPress={showDatePicker} >
+					<TextInputFormInput {...props} onPressIn={showDatePicker}/>
 				</Pressable>
 			) : (
 				<TextInputFormInput {...props} />
