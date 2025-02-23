@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList } from 'react-native'
+import { View } from 'react-native'
 import { useSegments } from 'expo-router'
-import { addHours, format } from 'date-fns'
-import { CalendarProvider, DateData, ExpandableCalendar } from 'react-native-calendars'
-import { Positions } from 'react-native-calendars/src/expandableCalendar'
-import Loader from '@/components/Loader/Loader'
+import { format } from 'date-fns'
+import { DateData } from 'react-native-calendars'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import AgendaItem from './components/AgendaItem'
+import CalendarComponent from './components/CalendarComponent'
 import AttendanceEditModal from './components/AttendanceEditModal'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
 import { TDaysOfWeek, TUserRole } from '@/shared/common-types'
@@ -15,11 +13,8 @@ import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActi
 import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
-	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
-	ExpandableCalendar.defaultProps = undefined
 	const dispatch = useAppDispatch()
 	const segments: string[] = useSegments()
 	const today = new Date()
@@ -94,7 +89,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	}, [currentDate, successGetKarateClassesToAdminAttendance])
 	useEffect(() => {
 		if (successStudentAttendanceByDay) {
-			const newItems = studentAttendanceByDayList?.map((item: any) => {
+			const newItems = studentAttendanceByDayList?.map((item: any, index: number) => {
 				let presents = 0
 				let absents = 0
 				item.attendance.forEach((student: any) => {
@@ -106,6 +101,8 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					}
 				})
 				return {
+					_id: item._id,
+					id: 'calendar-item-' + index,
 					name: item.karateClass.name,
 					description: item.karateClass.description,
 					startTime: {
@@ -126,7 +123,8 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 				prev.map((item) => {
 					if (
 						item.startTime.hour === studentAttendanceRegistered.date.hour &&
-						item.startTime.minute === studentAttendanceRegistered.date.minute
+						item.startTime.minute === studentAttendanceRegistered.date.minute &&
+						item.item.karateClass._id === studentAttendanceRegistered.karateClass
 					) {
 						let presents = 0
 						let absents = 0
@@ -155,7 +153,8 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 				prev.map((item) => {
 					if (
 						item.startTime.hour === studentAttendanceByIdUpdated.date.hour &&
-						item.startTime.minute === studentAttendanceByIdUpdated.date.minute
+						item.startTime.minute === studentAttendanceByIdUpdated.date.minute &&
+						item._id === studentAttendanceByIdUpdated._id
 					) {
 						let presents = 0
 						let absents = 0
@@ -195,7 +194,19 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		<>
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='Attendance' />
-				<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
+				<CalendarComponent
+					currentDate={currentDate}
+					handleDayChange={handleDayChange}
+					handleChangeMonth={handleChangeMonth}
+					markedDates={markedDates}
+					loadingGetKarateClassesToAdminAttendance={loadingGetKarateClassesToAdminAttendance}
+					generatingMarkDates={generatingMarkDates}
+					loadingStudentAttendanceByDay={loadingStudentAttendanceByDay}
+					errorStudentAttendanceByDay={errorStudentAttendanceByDay}
+					items={items}
+					handleOpenAttendance={handleOpenAttendance}
+				/>
+				{/* <CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 					<ExpandableCalendar
 						initialPosition={'open' as Positions}
 						markedDates={markedDates}
@@ -236,7 +247,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 							/>
 						)}
 					</View>
-				</CalendarProvider>
+				</CalendarProvider> */}
 			</View>
 			{openAttendanceEditModal && (
 				<AttendanceEditModal
