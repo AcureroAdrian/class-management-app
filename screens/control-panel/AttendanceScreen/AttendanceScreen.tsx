@@ -7,7 +7,7 @@ import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import AgendaItem from './components/AgendaItem'
 import AttendanceEditModal from './components/AttendanceEditModal'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
-import { TDaysOfWeek } from '@/shared/common-types'
+import { TDaysOfWeek, TUserRole } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
 import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
@@ -16,7 +16,7 @@ import { CenterContainer, ErrorMsgBox, SafeAreaViewStyled } from '@/theme/styles
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
 import colors from '@/theme/colors'
 
-const AttendanceScreen = () => {
+const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 	ExpandableCalendar.defaultProps = undefined
 	const dispatch = useAppDispatch()

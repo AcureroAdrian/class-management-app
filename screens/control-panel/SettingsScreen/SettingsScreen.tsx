@@ -4,9 +4,10 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { USER_LOGOUT } from '@/redux/constants/userConstants'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
+import { TUserRole } from '@/shared/common-types'
 import { SafeAreaViewStyled } from '@/theme/styles'
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)

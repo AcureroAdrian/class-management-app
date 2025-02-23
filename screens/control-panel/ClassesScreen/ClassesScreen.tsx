@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
+import { AntDesign } from '@expo/vector-icons'
+import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
+import Loader from '@/components/Loader/Loader'
 import ClassRegisterModal from './components/ClassRegisterModal'
 import ClassEditModal from './components/ClassEditModal'
 import { IClass } from './helpers/karate-classes-interfaces'
-import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
-import { deletekarateClassById, getkarateClassesByAdmin } from '@/redux/actions/karateClassActions'
-import Loader from '@/components/Loader/Loader'
-import { AntDesign } from '@expo/vector-icons'
-import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
-import { DELETE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
+import { TUserRole } from '@/shared/common-types'
+import {
+	deletekarateClassById,
+	getkarateClassesByAdmin,
+	getkarateClassesForStudent,
+} from '@/redux/actions/karateClassActions'
+import {
+	DELETE_KARATE_CLASS_BY_ID_RESET,
+	GET_KARATE_CLASS_BY_ADMIN_RESET,
+	GET_KARATE_CLASSES_FOR_STUDENT_RESET,
+} from '@/redux/constants/karateClassConstants'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 
-const ClassesScreen = () => {
+const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
 	const segments = useSegments()
 
@@ -29,20 +38,32 @@ const ClassesScreen = () => {
 		successKarateClassesByAdmin,
 		karateClassesByAdminList,
 		errorKarateClassesByAdmin,
-	} = useAppSelector((state: RootState) => state.getKarateClassesByAdmin)
-	const { successRegisterKarateClass, karateClassRegistered } = useAppSelector(
-		(state: RootState) => state.registerKarateClass,
-	)
+	} = useAppSelector((state) => state.getKarateClassesByAdmin)
+	const {
+		loadingKarateClassesForStudent,
+		successKarateClassesForStudent,
+		karateClassesForStudentList,
+		errorKarateClassesForStudent,
+	} = useAppSelector((state) => state.getKarateClassesForStudent)
+	const { successRegisterKarateClass, karateClassRegistered } = useAppSelector((state) => state.registerKarateClass)
 	const { successUpdateKarateClassById, karateClassByIdUpdated } = useAppSelector(
-		(state: RootState) => state.updateKarateClassById,
+		(state) => state.updateKarateClassById,
 	)
 	const { loadingDeleteKarateClassById, successDeleteKarateClassById, karateClassDeleted, errorDeleteKarateClassById } =
-		useAppSelector((state: RootState) => state.deleteKarateClassById)
+		useAppSelector((state) => state.deleteKarateClassById)
 
 	useEffect(() => {
 		if (segments?.length < 2) {
 			setKarateClasses([])
-			dispatch(getkarateClassesByAdmin())
+			if (role === 'admin') {
+				dispatch(getkarateClassesByAdmin())
+			} else if (role === 'student') {
+				dispatch(getkarateClassesForStudent())
+			}
+		}
+		return () => {
+			dispatch({ type: GET_KARATE_CLASS_BY_ADMIN_RESET })
+			dispatch({ type: GET_KARATE_CLASSES_FOR_STUDENT_RESET })
 		}
 	}, [segments])
 	useEffect(() => {
@@ -51,6 +72,12 @@ const ClassesScreen = () => {
 			setKarateClasses(karateClassesByAdminList)
 		}
 	}, [successKarateClassesByAdmin])
+	useEffect(() => {
+		if (successKarateClassesForStudent && karateClassesForStudentList) {
+			setDeleteId('')
+			setKarateClasses(karateClassesForStudentList)
+		}
+	}, [successKarateClassesForStudent])
 	useEffect(() => {
 		if (successRegisterKarateClass) {
 			setDeleteId('')
@@ -111,17 +138,19 @@ const ClassesScreen = () => {
 					label='Classes'
 					labelButton='Add'
 					handleOnPress={() => [setOpenClassRegisterModal(true), setDeleteId('')]}
-					disabledButton={loadingKarateClassesByAdmin}
+					disabledButton={loadingKarateClassesByAdmin || loadingKarateClassesForStudent}
 					iconName='plus'
 				/>
 				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
-					{loadingKarateClassesByAdmin ? (
+					{loadingKarateClassesByAdmin || loadingKarateClassesForStudent ? (
 						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
 							<Loader text='Loading classes' />
 						</View>
-					) : errorKarateClassesByAdmin && !karateClasses?.length ? (
+					) : (errorKarateClassesByAdmin || errorKarateClassesForStudent) && !karateClasses?.length ? (
 						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: 'red' }}>{errorKarateClassesByAdmin}</Text>
+							<Text style={{ fontSize: 16, color: 'red' }}>
+								{errorKarateClassesByAdmin || errorKarateClassesForStudent}
+							</Text>
 						</View>
 					) : (
 						<ScrollView>

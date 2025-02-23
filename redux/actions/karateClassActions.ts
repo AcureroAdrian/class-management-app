@@ -17,14 +17,7 @@ export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState
 			},
 		}
 
-		const data = await new Promise((res, rej) => {
-			setTimeout(() => {
-				customAxios.get('/api/karate-classes', config).then(({ data }) => {
-					res(data)
-				})
-			}, 2000)
-		})
-		// const { data } = await customAxios.get('/api/karate-classes', config)
+		const { data } = await customAxios.get('/api/karate-classes', config)
 
 		dispatch({ type: types.GET_KARATE_CLASS_BY_ADMIN_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -160,3 +153,54 @@ export const deletekarateClassById = (id: string) => async (dispatch: Dispatch, 
 		})
 	}
 }
+
+export const getkarateClassesForStudent = () => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.GET_KARATE_CLASSES_FOR_STUDENT_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.get('/api/karate-classes/student', config)
+
+		dispatch({ type: types.GET_KARATE_CLASSES_FOR_STUDENT_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.GET_KARATE_CLASSES_FOR_STUDENT_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}
+
+export const getkarateClassesByStudentId =
+	(id: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.GET_KARATE_CLASSES_BY_STUDENT_ID_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.get('/api/karate-classes/student/' + id, config)
+
+			dispatch({ type: types.GET_KARATE_CLASSES_BY_STUDENT_ID_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.GET_KARATE_CLASSES_BY_STUDENT_ID_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

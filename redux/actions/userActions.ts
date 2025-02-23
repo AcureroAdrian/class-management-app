@@ -154,17 +154,7 @@ export const deleteStudentUserById =
 				},
 			}
 
-			const data = await new Promise((res, rej) => {
-				setTimeout(() => {
-					customAxios
-						.delete('/api/users/' + studentId, config)
-						.then(({ data }) => {
-							res(data)
-						})
-						.catch((err) => rej(err))
-				}, 3000)
-			})
-			// const { data } = await customAxios.delete('/api/users/' + studentId, config)
+			const { data } = await customAxios.delete('/api/users/' + studentId, config)
 
 			dispatch({ type: types.DELETE_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 		} catch (error: any) {

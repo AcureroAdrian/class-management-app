@@ -14,8 +14,17 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentReportForAdmin } from '@/redux/actions/studentAttendanceActions'
 import { GET_STUDENT_REPORT_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
 import colors from '@/theme/colors'
+import { TUserRole } from '@/shared/common-types'
 
-const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
+const StudentReportModal = ({
+	openModal,
+	closeModal,
+	role,
+}: {
+	openModal: boolean
+	closeModal: () => void
+	role: TUserRole
+}) => {
 	const dispatch = useAppDispatch()
 
 	const [classId, setClassId] = useState<string>('all')
@@ -31,6 +40,7 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [openStudentReportDetailsModal, setOpenStudentReportDetailsModal] = useState<boolean>(false)
 
 	const { karateClassesByAdminList } = useAppSelector((state) => state.getKarateClassesByAdmin)
+	const { karateClassesByStudentIdList } = useAppSelector((state) => state.getKarateClassesByStudentId)
 	const { studentUsersList } = useAppSelector((state) => state.getStudentUsers)
 	const {
 		loadingStudentReportForAdmin,
@@ -38,7 +48,13 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		studentReportForAdminList,
 		errorStudentReportForAdmin,
 	} = useAppSelector((state) => state.getStudentReportForAdmin)
+	const { userInfo } = useAppSelector((state) => state.userLogin)
 
+	useEffect(() => {
+		if (role === 'student') {
+			setStudentId(userInfo?._id || '')
+		}
+	}, [userInfo])
 	useEffect(() => {
 		if (successStudentReportForAdmin) {
 			setStudentReportByStudentId(studentReportForAdminList || [])
@@ -97,19 +113,24 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const classSelected = useMemo(() => {
 		let result = 'All classes'
 		if (classId !== 'all') {
-			const karateClass = karateClassesByAdminList?.find((karateClass) => karateClass._id === classId)
+			const karateClass = (karateClassesByAdminList || karateClassesByStudentIdList)?.find(
+				(karateClass) => karateClass._id === classId,
+			)
 			result = karateClass?.name
 		}
 		return result
-	}, [karateClassesByAdminList, classId])
+	}, [karateClassesByAdminList, karateClassesByStudentIdList, classId])
 	const studentSelected = useMemo(() => {
 		let result = 'Select a student'
 		if (studentId?.length) {
 			const studentSelected = studentUsersList?.find((student) => student._id === studentId)
 			result = `${capitalizeWords(studentSelected?.name || '')} ${capitalizeWords(studentSelected?.lastName || '')}`
 		}
+		if (role === 'student') {
+			result = `${capitalizeWords(userInfo?.name || '')} ${capitalizeWords(userInfo?.lastName || '')}`
+		}
 		return result
-	}, [studentUsersList, studentId])
+	}, [studentUsersList, studentId, userInfo, role])
 
 	return (
 		<>
@@ -119,7 +140,9 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 						<ScreenHeader label='Student Report' showBackButton={true} handleBack={closeModal} />
 						<View style={{ width: '100%', alignItems: 'center' }}>
 							<Text style={{ padding: 20, fontSize: 16, color: colors.brand, textAlign: 'center' }}>
-								Select student, class, start and end dates for the report
+								{role === 'student'
+									? 'Select class, start and end dates for the report'
+									: 'Select student, class, start and end dates for the report'}
 							</Text>
 							<View style={{ width: '100%', paddingHorizontal: 20 }}>
 								<CustomInputForm
@@ -127,7 +150,7 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									placeholderTextColor={colors.darkLight}
 									value={studentSelected}
 									editable={false}
-									onPress={() => setOpenStudentsModal(true)}
+									onPress={() => role === 'admin' && setOpenStudentsModal(true)}
 								/>
 							</View>
 							<View style={{ width: '100%', paddingHorizontal: 20 }}>
@@ -211,7 +234,7 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 						onCancel={() => setShowEndDate(false)}
 						display='spinner'
 						date={endDate}
-						// maximumDate={new Date()}
+						maximumDate={new Date()}
 					/>
 				)}
 				{openClassesModal && (

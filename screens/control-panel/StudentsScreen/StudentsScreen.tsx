@@ -9,11 +9,12 @@ import StudentsRegisterModal from './components/StudentsRegisterModal'
 import StudentEditModal from './components/StudentEditModal'
 import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
-import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
+import { TUserRole } from '@/shared/common-types'
 import { deleteStudentUserById, getStudentUsers } from '@/redux/actions/userActions'
 import { DELETE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
+import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 
-const StudentsScreen = () => {
+const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
 	const segments: string[] = useSegments()
 

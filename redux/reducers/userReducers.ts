@@ -17,6 +17,7 @@ interface IUser {
 	notes?: string
 	avatar?: string
 	isAdmin: boolean
+	isTeacher: boolean
 	createdAt: string
 	token: string
 }

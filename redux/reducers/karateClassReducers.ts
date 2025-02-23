@@ -37,6 +37,18 @@ interface IDeleteKarateClassByIdState {
 	karateClassDeleted?: { karateClassId: string }
 	errorDeleteKarateClassById?: string
 }
+interface IGetKarateClassesForStudentState {
+	loadingKarateClassesForStudent?: boolean
+	successKarateClassesForStudent?: boolean
+	karateClassesForStudentList?: any[]
+	errorKarateClassesForStudent?: string
+}
+interface IGetKarateClassesByStudentIdState {
+	loadingKarateClassesByStudentId?: boolean
+	successKarateClassesByStudentId?: boolean
+	karateClassesByStudentIdList?: any[]
+	errorKarateClassesByStudentId?: string
+}
 
 type TGetKarateClassesByAdminReducer = Reducer<IGetKarateClassesByAdminState, any>
 type TRegisterKarateClassReducer = Reducer<IRegisterKarateClassState, any>
@@ -44,6 +56,8 @@ type TGetKarateClassByIdReducer = Reducer<IGetKarateClassByIdState, any>
 type TUpdateKarateClassByIdReducer = Reducer<IUpdateKarateClassByIdState, any>
 type TGetKarateClassesToAdminAttendanceReducer = Reducer<IGetKarateClassesToAdminAttendanceState, any>
 type TDeleteKarateClassByIdReducer = Reducer<IDeleteKarateClassByIdState, any>
+type TGetKarateClassesForStudentReducer = Reducer<IGetKarateClassesForStudentState, any>
+type TGetKarateClassesByStudentIdReducer = Reducer<IGetKarateClassesByStudentIdState, any>
 
 export const getKarateClassesByAdminReducer: TGetKarateClassesByAdminReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -174,6 +188,50 @@ export const deleteKarateClassByIdReducer: TDeleteKarateClassByIdReducer = (stat
 				errorDeleteKarateClassById: action.payload,
 			}
 		case types.DELETE_KARATE_CLASS_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const getKarateClassesForStudentReducer: TGetKarateClassesForStudentReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.GET_KARATE_CLASSES_FOR_STUDENT_REQUEST:
+			return { loadingKarateClassesForStudent: true }
+		case types.GET_KARATE_CLASSES_FOR_STUDENT_SUCCESS:
+			return {
+				loadingKarateClassesForStudent: false,
+				successKarateClassesForStudent: true,
+				karateClassesForStudentList: action.payload,
+			}
+		case types.GET_KARATE_CLASSES_FOR_STUDENT_FAIL:
+			return {
+				loadingKarateClassesForStudent: false,
+				errorKarateClassesForStudent: action.payload,
+			}
+		case types.GET_KARATE_CLASSES_FOR_STUDENT_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const getKarateClassesByStudentIdReducer: TGetKarateClassesByStudentIdReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.GET_KARATE_CLASSES_BY_STUDENT_ID_REQUEST:
+			return { loadingKarateClassesByStudentId: true }
+		case types.GET_KARATE_CLASSES_BY_STUDENT_ID_SUCCESS:
+			return {
+				loadingKarateClassesByStudentId: false,
+				successKarateClassesByStudentId: true,
+				karateClassesByStudentIdList: action.payload,
+			}
+		case types.GET_KARATE_CLASSES_BY_STUDENT_ID_FAIL:
+			return {
+				loadingKarateClassesByStudentId: false,
+				errorKarateClassesByStudentId: action.payload,
+			}
+		case types.GET_KARATE_CLASSES_BY_STUDENT_ID_RESET:
 			return {}
 		default:
 			return state

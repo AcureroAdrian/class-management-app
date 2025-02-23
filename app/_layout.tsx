@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { StatusBar } from 'expo-status-bar'
@@ -12,14 +12,22 @@ const StackLayout = () => {
 	const { userInfo } = useSelector((state: RootState) => state?.userLogin)
 
 	useEffect(() => {
-		const newPath = userInfo ? '/(protected)' : '/(home)'
+		const newPath = userInfo
+			? userInfo?.isAdmin
+				? '/(admin)'
+				: userInfo?.isTeacher
+					? '/(teacher)'
+					: '(student)'
+			: '/(home)'
 		router.replace(newPath)
 	}, [userInfo])
 
 	return (
 		<Stack screenOptions={{ headerShown: false }}>
 			<Stack.Screen name='(home)' />
-			<Stack.Screen name='(protected)' />
+			<Stack.Screen name='(admin)' />
+			<Stack.Screen name='(student)' />
+			<Stack.Screen name='(teacher)' />
 		</Stack>
 	)
 }

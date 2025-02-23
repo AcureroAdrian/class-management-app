@@ -2,7 +2,7 @@ import React from 'react'
 import { Tabs } from 'expo-router'
 import { AntDesign } from '@expo/vector-icons'
 
-const TabsLayout = () => {
+const StudentTabsLayout = () => {
 	return (
 		<Tabs screenOptions={{ headerShown: false }}>
 			<Tabs.Screen
@@ -20,20 +20,6 @@ const TabsLayout = () => {
 				}}
 			/>
 			<Tabs.Screen
-				name='attendance'
-				options={{
-					tabBarLabel: 'Attendance',
-					tabBarIcon: () => <AntDesign name='calendar' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='students'
-				options={{
-					tabBarLabel: 'Students',
-					tabBarIcon: () => <AntDesign name='user' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
 				name='settings'
 				options={{
 					tabBarLabel: 'Settings',
@@ -44,8 +30,8 @@ const TabsLayout = () => {
 	)
 }
 
-const ProtectedLayout = () => {
-	return <TabsLayout />
+const StudentLayout = () => {
+	return <StudentTabsLayout />
 }
 
-export default ProtectedLayout
+export default StudentLayout
