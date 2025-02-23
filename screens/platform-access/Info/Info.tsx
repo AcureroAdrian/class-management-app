@@ -1,7 +1,6 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { Link } from 'expo-router'
-import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import {
 	CenterAlignContainer,
 	CenterTextConcated,

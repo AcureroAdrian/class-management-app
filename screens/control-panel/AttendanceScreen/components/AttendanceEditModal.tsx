@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import capitalizeWords from '@/shared/capitalize-words'
 import { registerStudentAttendance, updateStudentAttendanceById } from '@/redux/actions/studentAttendanceActions'
 import {
@@ -60,8 +59,19 @@ const AttendanceEditModal = ({
 			setAttendance(newAttendance)
 		}
 	}, [attendanceData])
+	useEffect(() => {
+		if (errorRegisterStudentAttendance) {
+			setErrorMessage(errorRegisterStudentAttendance)
+		}
+	}, [errorRegisterStudentAttendance])
+	useEffect(() => {
+		if (errorUpdateStudentAttendanceById) {
+			setErrorMessage(errorUpdateStudentAttendanceById)
+		}
+	}, [errorUpdateStudentAttendanceById])
 
 	const handleSaveAtendance = () => {
+		setErrorMessage(null)
 		if (!attendance?.length) {
 			setErrorMessage('No attendance found')
 			return
@@ -83,6 +93,7 @@ const AttendanceEditModal = ({
 		}
 	}
 	const handleSelectStudent = (studentId: string) => {
+		setErrorMessage(null)
 		setAttendance((prev) =>
 			prev.map((item) => {
 				if (item?.student === studentId) {
@@ -115,6 +126,7 @@ const AttendanceEditModal = ({
 						labelButton='Save'
 						iconName='save'
 						disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+						loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 						handleOnPress={handleSaveAtendance}
 						showBackButton={true}
 						handleBack={closeModal}
@@ -179,7 +191,7 @@ const AttendanceEditModal = ({
 						</View>
 						<Text>Total: {attendance?.length}</Text>
 					</View>
-					{(errorMessage || errorRegisterStudentAttendance || errorUpdateStudentAttendanceById) && (
+					{errorMessage && (
 						<Text
 							style={{
 								textAlign: 'center',
@@ -187,7 +199,7 @@ const AttendanceEditModal = ({
 								color: 'red',
 							}}
 						>
-							{errorMessage || errorRegisterStudentAttendance || errorUpdateStudentAttendanceById}
+							{errorMessage}
 						</Text>
 					)}
 					<ScrollView>
@@ -243,12 +255,6 @@ const AttendanceEditModal = ({
 					</ScrollView>
 				</View>
 			</Modal>
-			{(loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById) && (
-				<CustomBackdrop
-					openBackdrop={Boolean(loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById)}
-					label='Loading ...'
-				/>
-			)}
 		</>
 	)
 }

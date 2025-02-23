@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import { useSegments } from 'expo-router'
 import { addHours, format } from 'date-fns'
 import { CalendarProvider, DateData, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
+import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import AgendaItem from './components/AgendaItem'
 import AttendanceEditModal from './components/AttendanceEditModal'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
 import { TDaysOfWeek, TUserRole } from '@/shared/common-types'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
-import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
 import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActions'
-import { CenterContainer, ErrorMsgBox, SafeAreaViewStyled } from '@/theme/styles'
+import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
-import colors from '@/theme/colors'
-import Loader from '@/components/Loader/Loader'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
@@ -194,54 +193,51 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 
 	return (
 		<>
-			<SafeAreaViewStyled>
-				<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-					<ScreenHeader label='Attendance' />
-
-					<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
-						<ExpandableCalendar
-							initialPosition={'open' as Positions}
-							markedDates={markedDates}
-							allowShadow={false}
-							closeOnDayPress={false}
-							hideArrows={true}
-							animateScroll={false}
-							monthFormat='MMM, yyyy'
-							displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance || generatingMarkDates}
-							minDate={
-								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
-									? '1999-01-01'
-									: undefined
-							}
-							maxDate={
-								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
-									? '1999-01-02'
-									: undefined
-							}
-							allowSelectionOutOfRange={false}
-						/>
-						<View style={{ flex: 1 }}>
-							<View style={{ backgroundColor: 'red', padding: 20 }}>
-								<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
-									{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
-								</Text>
-							</View>
-							{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
-								<Loader text='Loading attendance...' />
-							) : errorStudentAttendanceByDay ? (
-								<CenterContainer>
-									<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
-								</CenterContainer>
-							) : (
-								<FlatList
-									data={items}
-									renderItem={({ item }) => <AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} />}
-								/>
-							)}
+			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+				<ScreenHeader label='Attendance' />
+				<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
+					<ExpandableCalendar
+						initialPosition={'open' as Positions}
+						markedDates={markedDates}
+						allowShadow={false}
+						closeOnDayPress={false}
+						hideArrows={true}
+						animateScroll={false}
+						monthFormat='MMM, yyyy'
+						displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance || generatingMarkDates}
+						minDate={
+							loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
+								? '1999-01-01'
+								: undefined
+						}
+						maxDate={
+							loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
+								? '1999-01-02'
+								: undefined
+						}
+						allowSelectionOutOfRange={false}
+					/>
+					<View style={{ flex: 1 }}>
+						<View style={{ backgroundColor: 'red', padding: 20 }}>
+							<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+								{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
+							</Text>
 						</View>
-					</CalendarProvider>
-				</View>
-			</SafeAreaViewStyled>
+						{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
+							<Loader text='Loading attendance...' />
+						) : errorStudentAttendanceByDay ? (
+							<CenterContainer>
+								<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
+							</CenterContainer>
+						) : (
+							<FlatList
+								data={items}
+								renderItem={({ item }) => <AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} />}
+							/>
+						)}
+					</View>
+				</CalendarProvider>
+			</View>
 			{openAttendanceEditModal && (
 				<AttendanceEditModal
 					openModal={openAttendanceEditModal}
