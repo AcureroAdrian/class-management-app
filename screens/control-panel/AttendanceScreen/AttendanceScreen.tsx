@@ -31,6 +31,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const [year, setYear] = useState<number>(today.getFullYear())
 	const [markedDates, setMarkedDates] = useState<any>({})
 	const [items, setItems] = useState<any[]>([])
+	const [generatingMarkDates, setGeneratingMarkDates] = useState(false)
 	const [attendanceData, setAttendanceData] = useState<any>(null)
 	const [openAttendanceEditModal, setOpenAttendanceEditModal] = useState<boolean>(false)
 
@@ -77,8 +78,10 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	}, [successGetKarateClassesToAdminAttendance])
 	useEffect(() => {
 		if (month && year) {
+			setGeneratingMarkDates(true)
 			const markedDates = generateMarkDatesByMonth(month, year, weekDays)
 			setMarkedDates(markedDates)
+			setGeneratingMarkDates(false)
 		}
 	}, [month, year, weekDays])
 	useEffect(() => {
@@ -204,12 +207,16 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 							hideArrows={true}
 							animateScroll={false}
 							monthFormat='MMM, yyyy'
-							displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance}
+							displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance || generatingMarkDates}
 							minDate={
-								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? '1999-01-01' : undefined
+								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
+									? '1999-01-01'
+									: undefined
 							}
 							maxDate={
-								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? '1999-01-02' : undefined
+								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
+									? '1999-01-02'
+									: undefined
 							}
 							allowSelectionOutOfRange={false}
 						/>
