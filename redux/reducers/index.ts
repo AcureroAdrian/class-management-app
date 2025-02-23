@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
+	deleteKarateClassByIdReducer,
 	getKarateClassByIdReducer,
 	getKarateClassesByAdminReducer,
 	getKarateClassesToAdminAttendanceReducer,
@@ -9,6 +10,7 @@ import {
 	updateKarateClassByIdReducer,
 } from './karateClassReducers'
 import {
+	deleteStudentUserByIdReducer,
 	getStudentUserByIdReducer,
 	getStudentUsersReducer,
 	registerStudentsReducer,
@@ -31,6 +33,8 @@ const loginPersistConfig = {
 }
 
 export default combineReducers({
+	deleteKarateClassById: deleteKarateClassByIdReducer,
+	deleteStudentUserById: deleteStudentUserByIdReducer,
 	getClassReportByClassIdForAdmin: getClassReportByClassIdForAdminReducer,
 	getDailyReportForAdmin: getDailyReportForAdminReducer,
 	getKarateClassById: getKarateClassByIdReducer,

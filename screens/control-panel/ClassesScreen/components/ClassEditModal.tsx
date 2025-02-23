@@ -64,7 +64,6 @@ const ClassEditModal = ({
 	}, [classId])
 	useEffect(() => {
 		if (successGetKarateClassById) {
-			console.log(karateClassById)
 			setName(karateClassById.name)
 			setDescription(karateClassById.description)
 			setWeekDays(karateClassById.weekDays)

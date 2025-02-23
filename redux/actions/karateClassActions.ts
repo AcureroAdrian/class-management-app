@@ -17,7 +17,7 @@ export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState
 			},
 		}
 
-		const data = await new Promise((res) => {
+		const data = await new Promise((res, rej) => {
 			setTimeout(() => {
 				customAxios.get('/api/karate-classes', config).then(({ data }) => {
 					res(data)
@@ -131,6 +131,31 @@ export const getKarateClassesToAdminAttendance = () => async (dispatch: Dispatch
 	} catch (error: any) {
 		dispatch({
 			type: types.GET_CLASSES_TO_ADMIN_ATTENDANCE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}
+
+export const deletekarateClassById = (id: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.DELETE_KARATE_CLASS_BY_ID_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.delete('/api/karate-classes/' + id, config)
+
+		dispatch({ type: types.DELETE_KARATE_CLASS_BY_ID_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.DELETE_KARATE_CLASS_BY_ID_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		})
 	}

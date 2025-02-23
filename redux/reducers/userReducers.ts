@@ -56,12 +56,19 @@ interface IUpdateStudentUserByIdState {
 	studentUserByIdUpdated?: Omit<IUser, 'token | createdAt | isAdmin'>
 	errorUpdateStudentUserById?: string
 }
+interface IDeleteStudentUserByIdState {
+	loadingDeleteStudentUserById?: boolean
+	successDeleteStudentUserById?: boolean
+	studentUserDeleted?: { studentId: string }
+	errorDeleteStudentUserById?: string
+}
 
 type TUserLoginReducer = Reducer<ILoginState, any>
 type TGetStudentUsersReducer = Reducer<IGetStudentUsersState, any>
 type TRegisterStudentsReducer = Reducer<IRegisterStudentsState, any>
 type TGetStudentUserByIdReducer = Reducer<IGetStudentUserByIdState, any>
 type TUpdateStudentUserByIdReducer = Reducer<IUpdateStudentUserByIdState, any>
+type TDeleteStudentUserByIdReducer = Reducer<IDeleteStudentUserByIdState, any>
 
 export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -167,6 +174,28 @@ export const updateStudentUserByIdReducer: TUpdateStudentUserByIdReducer = (stat
 				errorUpdateStudentUserById: action.payload,
 			}
 		case types.UPDATE_STUDENT_USER_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const deleteStudentUserByIdReducer: TDeleteStudentUserByIdReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.DELETE_STUDENT_USER_BY_ID_REQUEST:
+			return { loadingDeleteStudentUserById: true }
+		case types.DELETE_STUDENT_USER_BY_ID_SUCCESS:
+			return {
+				loadingDeleteStudentUserById: false,
+				successDeleteStudentUserById: true,
+				studentUserDeleted: action.payload,
+			}
+		case types.DELETE_STUDENT_USER_BY_ID_FAIL:
+			return {
+				loadingDeleteStudentUserById: false,
+				errorDeleteStudentUserById: action.payload,
+			}
+		case types.DELETE_STUDENT_USER_BY_ID_RESET:
 			return {}
 		default:
 			return state

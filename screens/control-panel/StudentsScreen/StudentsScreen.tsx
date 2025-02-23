@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 import { useSegments } from 'expo-router'
+import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
+import Loader from '@/components/Loader/Loader'
 import StudentsRegisterModal from './components/StudentsRegisterModal'
 import StudentEditModal from './components/StudentEditModal'
 import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
-import { getStudentUsers } from '@/redux/actions/userActions'
-import Loader from '@/components/Loader/Loader'
+import { deleteStudentUserById, getStudentUsers } from '@/redux/actions/userActions'
+import { DELETE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 
 const StudentsScreen = () => {
 	const dispatch = useAppDispatch()
@@ -20,6 +23,8 @@ const StudentsScreen = () => {
 	const [textSearch, setTextSearch] = useState<string>('')
 	const [openStudentEditModal, setOpenStudentEditModal] = useState<boolean>(false)
 	const [studentIdSelected, setStudentIdSelected] = useState<string>('')
+	const [deleteId, setDeleteId] = useState<string>('')
+	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
 
 	const { loadingGetStudentUsers, studentUsersList, successGetStudentUsers, errorGetStudentUsers } = useAppSelector(
 		(state: RootState) => state.getStudentUsers,
@@ -28,6 +33,8 @@ const StudentsScreen = () => {
 	const { successUpdateStudentUserById, studentUserByIdUpdated } = useAppSelector(
 		(state) => state.updateStudentUserById,
 	)
+	const { loadingDeleteStudentUserById, successDeleteStudentUserById, studentUserDeleted, errorDeleteStudentUserById } =
+		useAppSelector((state: RootState) => state.deleteStudentUserById)
 
 	useEffect(() => {
 		if (segments[1] === 'students') {
@@ -37,16 +44,19 @@ const StudentsScreen = () => {
 	}, [segments])
 	useEffect(() => {
 		if (successGetStudentUsers && studentUsersList) {
+			setDeleteId('')
 			setStudents(studentUsersList)
 		}
 	}, [successGetStudentUsers])
 	useEffect(() => {
 		if (successRegisterStudents && studentRegistered) {
+			setDeleteId('')
 			setStudents((prev) => [...prev, studentRegistered])
 			setOpenStudentsRegisterModal(false)
 		}
 	}, [successRegisterStudents])
 	useEffect(() => {
+		setDeleteId('')
 		let filteredStudents = [...students]
 		if (textSearch) {
 			filteredStudents = filteredStudents.filter((student) =>
@@ -57,6 +67,7 @@ const StudentsScreen = () => {
 	}, [textSearch, students])
 	useEffect(() => {
 		if (successUpdateStudentUserById) {
+			setDeleteId('')
 			setStudents((prev) =>
 				prev.map((student) => {
 					if (student._id === studentUserByIdUpdated?._id) {
@@ -69,10 +80,26 @@ const StudentsScreen = () => {
 			setOpenStudentEditModal(false)
 		}
 	}, [successUpdateStudentUserById])
+	useEffect(() => {
+		if (successDeleteStudentUserById) {
+			setDeleteId('')
+			setStudents((prev) => prev.filter((student) => student._id !== studentUserDeleted?.studentId))
+			setOpenConfirmationDeleteModal(false)
+		}
+	}, [successDeleteStudentUserById])
 
 	const handleSelectStudent = (student: IStudent) => {
 		setStudentIdSelected(student._id)
 		setOpenStudentEditModal(true)
+	}
+	const handleSelectDeleteStudent = (studentId: string) => {
+		setDeleteId(deleteId === studentId ? '' : studentId)
+	}
+	const handleShowConfirmationModal = () => {
+		setOpenConfirmationDeleteModal(true)
+	}
+	const handleConfirmDeleteStudent = () => {
+		dispatch(deleteStudentUserById(deleteId))
 	}
 
 	return (
@@ -81,7 +108,7 @@ const StudentsScreen = () => {
 				<ScreenHeader
 					label='Students'
 					labelButton='Add'
-					handleOnPress={() => setOpenStudentsRegisterModal(true)}
+					handleOnPress={() => [setOpenStudentsRegisterModal(true), setDeleteId('')]}
 					disabledButton={loadingGetStudentUsers}
 					iconName='plus'
 				/>
@@ -116,32 +143,50 @@ const StudentsScreen = () => {
 								scrollEnabled={false}
 								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
 								renderItem={({ item }) => (
-									<Pressable onPress={() => handleSelectStudent(item)}>
+									<View
+										style={{ paddingHorizontal: 15, paddingTop: 15, alignItems: 'flex-start', width: '100%' }}
+										key={item._id}
+									>
 										<View
-											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-											key={item._id}
+											style={{
+												flexDirection: 'row',
+												alignItems: 'center',
+												gap: 10,
+												width: '100%',
+												justifyContent: 'flex-start',
+											}}
 										>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
-												<Image
-													source={require('@/assets/img/default-avatar.png')}
-													style={{ width: 50, height: 50, borderRadius: 50 }}
-													resizeMode='contain'
-												/>
-												<View
-													style={{
-														justifyContent: 'center',
-														alignItems: 'flex-start',
-														width: '100%',
-														flexDirection: 'column',
-													}}
-												>
-													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+											<Pressable
+												onPress={() => [handleSelectStudent(item), setDeleteId('')]}
+												onLongPress={() => handleSelectDeleteStudent(item._id)}
+												style={{ width: '80%' }}
+											>
+												<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
+													<Image
+														source={require('@/assets/img/default-avatar.png')}
+														style={{ width: 50, height: 50, borderRadius: 50 }}
+														resizeMode='contain'
+													/>
+													<View
+														style={{
+															justifyContent: 'center',
+															alignItems: 'flex-start',
+															flexDirection: 'column',
+														}}
+													>
+														<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+														<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+													</View>
 												</View>
+											</Pressable>
+											<View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
+												<Pressable onPress={handleShowConfirmationModal}>
+													{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
+												</Pressable>
 											</View>
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
 										</View>
-									</Pressable>
+										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+									</View>
 								)}
 								keyExtractor={(item) => item._id}
 							/>
@@ -160,6 +205,19 @@ const StudentsScreen = () => {
 					openModal={openStudentEditModal}
 					closeModal={() => [setOpenStudentEditModal(false), setStudentIdSelected('')]}
 					studentId={studentIdSelected}
+				/>
+			)}
+			{openConfirmationDeleteModal && (
+				<ConfirmationDeleteModal
+					openModal={openConfirmationDeleteModal}
+					closeModal={() => [
+						setOpenConfirmationDeleteModal(false),
+						dispatch({ type: DELETE_STUDENT_USER_BY_ID_RESET }),
+					]}
+					title='Are you sure you want to delete this student?'
+					handleConfirm={handleConfirmDeleteStudent}
+					loadingDelete={loadingDeleteStudentUserById}
+					errorDelete={errorDeleteStudentUserById}
 				/>
 			)}
 		</>

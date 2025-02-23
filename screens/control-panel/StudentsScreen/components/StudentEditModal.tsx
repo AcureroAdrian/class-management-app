@@ -58,7 +58,6 @@ const StudentEditModal = ({
 	}, [studentId])
 	useEffect(() => {
 		if (successGetStudentUserById) {
-			console.log(studentUserById)
 			setName(capitalizeWords(studentUserById?.name || ''))
 			setLastName(capitalizeWords(studentUserById?.lastName || ''))
 			setPhone(studentUserById?.phone || '')
