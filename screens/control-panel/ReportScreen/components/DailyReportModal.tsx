@@ -61,103 +61,101 @@ const DailyReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 	}
 
 	return (
-		<>
-			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<View>
-					<ScreenHeader label='Daily Report' showBackButton={true} handleBack={closeModal} />
-					<View style={{ width: '100%', alignItems: 'center' }}>
-						<Text style={{ padding: 20, fontSize: 16, color: colors.brand }}>
-							Select start and end dates for the report
-						</Text>
-						<View style={{ width: '100%', paddingHorizontal: 20 }}>
-							<CustomInputForm
-								label='Start Time'
-								placeholderTextColor={colors.darkLight}
-								value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
-								editable={false}
-								onPress={() => setShowStartDate(true)}
-								style={{
-									fontSize: 15,
-								}}
-							/>
-						</View>
-						<View style={{ width: '100%', paddingHorizontal: 20 }}>
-							<CustomInputForm
-								label='End Time'
-								placeholderTextColor={colors.darkLight}
-								value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
-								editable={false}
-								onPress={() => setShowEndDate(true)}
-								style={{
-									fontSize: 15,
-								}}
-							/>
-						</View>
-						<Pressable onPress={handleGetDailyReportForAdmin} disabled={loadingDailyReportForAdmin}>
-							<View
-								style={{
-									paddingHorizontal: 20,
-									paddingVertical: 10,
-									backgroundColor: colors.brand,
-									borderRadius: 10,
-									marginTop: 20,
-									height: 40,
-									justifyContent: 'center',
-									alignItems: 'center',
-									width: 200,
-								}}
-							>
-								{loadingDailyReportForAdmin ? (
-									<ActivityIndicator size='small' color={colors.primary} />
-								) : (
-									<Text style={{ color: colors.primary }}>Generate Report</Text>
-								)}
-							</View>
-						</Pressable>
-						{errorMessage && (
-							<Text
-								style={{
-									textAlign: 'center',
-									fontSize: 13,
-									color: 'red',
-								}}
-							>
-								{errorMessage}
-							</Text>
-						)}
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View>
+				<ScreenHeader label='Daily Report' showBackButton={true} handleBack={closeModal} />
+				<View style={{ width: '100%', alignItems: 'center' }}>
+					<Text style={{ padding: 20, fontSize: 16, color: colors.brand }}>
+						Select start and end dates for the report
+					</Text>
+					<View style={{ width: '100%', paddingHorizontal: 20 }}>
+						<CustomInputForm
+							label='Start Time'
+							placeholderTextColor={colors.darkLight}
+							value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
+							editable={false}
+							onPress={() => setShowStartDate(true)}
+							style={{
+								fontSize: 15,
+							}}
+						/>
 					</View>
+					<View style={{ width: '100%', paddingHorizontal: 20 }}>
+						<CustomInputForm
+							label='End Time'
+							placeholderTextColor={colors.darkLight}
+							value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
+							editable={false}
+							onPress={() => setShowEndDate(true)}
+							style={{
+								fontSize: 15,
+							}}
+						/>
+					</View>
+					<Pressable onPress={handleGetDailyReportForAdmin} disabled={loadingDailyReportForAdmin}>
+						<View
+							style={{
+								paddingHorizontal: 20,
+								paddingVertical: 10,
+								backgroundColor: colors.brand,
+								borderRadius: 10,
+								marginTop: 20,
+								height: 40,
+								justifyContent: 'center',
+								alignItems: 'center',
+								width: 200,
+							}}
+						>
+							{loadingDailyReportForAdmin ? (
+								<ActivityIndicator size='small' color={colors.primary} />
+							) : (
+								<Text style={{ color: colors.primary }}>Generate Report</Text>
+							)}
+						</View>
+					</Pressable>
+					{errorMessage && (
+						<Text
+							style={{
+								textAlign: 'center',
+								fontSize: 13,
+								color: 'red',
+							}}
+						>
+							{errorMessage}
+						</Text>
+					)}
 				</View>
-				{showStartDate && (
-					<DateTimePickerModal
-						isVisible={showStartDate}
-						mode='date'
-						onConfirm={onChangeStartDate}
-						onCancel={() => setShowStartDate(false)}
-						display='spinner'
-						date={startDate}
-						maximumDate={new Date()}
-					/>
-				)}
-				{showEndDate && (
-					<DateTimePickerModal
-						isVisible={showEndDate}
-						mode='date'
-						onConfirm={onChangeEndDate}
-						onCancel={() => setShowEndDate(false)}
-						display='spinner'
-						date={endDate}
-						// maximumDate={new Date()}
-					/>
-				)}
-				{openDailyReportDetailsModal && (
-					<DailyReportDetailsModal
-						openModal={openDailyReportDetailsModal}
-						closeModal={() => [setOpenDailyReportDetailsModal(false), setReports([])]}
-						reports={reports}
-					/>
-				)}
-			</Modal>
-		</>
+			</View>
+			{showStartDate && (
+				<DateTimePickerModal
+					isVisible={showStartDate}
+					mode='date'
+					onConfirm={onChangeStartDate}
+					onCancel={() => setShowStartDate(false)}
+					display='spinner'
+					date={startDate}
+					maximumDate={new Date()}
+				/>
+			)}
+			{showEndDate && (
+				<DateTimePickerModal
+					isVisible={showEndDate}
+					mode='date'
+					onConfirm={onChangeEndDate}
+					onCancel={() => setShowEndDate(false)}
+					display='spinner'
+					date={endDate}
+					// maximumDate={new Date()}
+				/>
+			)}
+			{openDailyReportDetailsModal && (
+				<DailyReportDetailsModal
+					openModal={openDailyReportDetailsModal}
+					closeModal={() => [setOpenDailyReportDetailsModal(false), setReports([])]}
+					reports={reports}
+				/>
+			)}
+		</Modal>
 	)
 }
 

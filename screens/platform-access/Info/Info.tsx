@@ -1,4 +1,5 @@
 import React from 'react'
+import { Text, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { Link } from 'expo-router'
 import {
@@ -44,7 +45,11 @@ const Info = () => {
 					<SimpleTextLine>Phone: (936) 217-3155</SimpleTextLine>
 					<SimpleTextLine></SimpleTextLine>
 					<SimpleTextLine>Stay connected with us on social media:</SimpleTextLine>
-					<SimpleTextLine>Instagram | Facebook</SimpleTextLine>
+					<View style={{ width: '100%', flexDirection: 'row', gap: 10, justifyContent: 'flex-start' }}>
+						<Link href={'https://www.instagram.com/miyagikeninternational/'}>Instagram</Link>
+						<Text>|</Text>
+						<Link href={'https://www.facebook.com/MiyagiKenInternational/'}>Facebook</Link>
+					</View>
 					<SimpleTextLine></SimpleTextLine>
 					<SimpleTextLine>We look forward to welcoming you!</SimpleTextLine>
 					<Line />

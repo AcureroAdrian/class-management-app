@@ -62,108 +62,106 @@ const AssignedStudentsModal = ({
 	}
 
 	return (
-		<>
-			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<View
-					style={{
-						flex: 1,
-						flexDirection: 'column',
-						justifyContent: 'flex-start',
-						alignItems: 'center',
-					}}
-				>
-					<ScreenHeader
-						label='Class Students'
-						labelButton='Add'
-						handleOnPress={() => setOpenPickStudentsModal(true)}
-						disabledButton={loadingGetStudentUsers}
-						iconName='plus'
-						showBackButton={true}
-						handleBack={handleSaveStudentsSelected}
-					/>
-					<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
-						{loadingGetStudentUsers ? (
-							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-								<Loader text='Loading students' />
-							</View>
-						) : errorGetStudentUsers && !students?.length ? (
-							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-								<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-							</View>
-						) : !studentsSelected?.length ? (
-							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-								<Text style={{ fontSize: 16, color: 'red' }}>No students assigned</Text>
-								<Button title='Assign students' onPress={() => setOpenPickStudentsModal(true)} />
-							</View>
-						) : (
-							<ScrollView>
-								<FlatList
-									nestedScrollEnabled={true}
-									scrollEnabled={false}
-									data={studentsSelected.sort((a, b) => a?.name?.localeCompare(b?.name))}
-									renderItem={({ item }) => (
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'column',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+				}}
+			>
+				<ScreenHeader
+					label='Class Students'
+					labelButton='Add'
+					handleOnPress={() => setOpenPickStudentsModal(true)}
+					disabledButton={loadingGetStudentUsers}
+					iconName='plus'
+					showBackButton={true}
+					handleBack={handleSaveStudentsSelected}
+				/>
+				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+					{loadingGetStudentUsers ? (
+						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+							<Loader text='Loading students' />
+						</View>
+					) : errorGetStudentUsers && !students?.length ? (
+						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+							<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+						</View>
+					) : !studentsSelected?.length ? (
+						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+							<Text style={{ fontSize: 16, color: 'red' }}>No students assigned</Text>
+							<Button title='Assign students' onPress={() => setOpenPickStudentsModal(true)} />
+						</View>
+					) : (
+						<ScrollView>
+							<FlatList
+								nestedScrollEnabled={true}
+								scrollEnabled={false}
+								data={studentsSelected.sort((a, b) => a?.name?.localeCompare(b?.name))}
+								renderItem={({ item }) => (
+									<View
+										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
+										key={item._id}
+									>
 										<View
-											style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-											key={item._id}
+											style={{
+												flexDirection: 'row',
+												alignItems: 'center',
+												width: '100%',
+												flex: 1,
+												justifyContent: 'space-between',
+											}}
 										>
-											<View
-												style={{
-													flexDirection: 'row',
-													alignItems: 'center',
-													width: '100%',
-													flex: 1,
-													justifyContent: 'space-between',
-												}}
-											>
-												<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%', flex: 1 }}>
-													<Image
-														source={require('@/assets/img/default-avatar.png')}
-														style={{ width: 50, height: 50, borderRadius: 50 }}
-														resizeMode='contain'
-													/>
-													<View
-														style={{
-															justifyContent: 'center',
-															alignItems: 'flex-start',
-															width: '100%',
-															flexDirection: 'column',
-														}}
-													>
-														<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
-															{capitalizeWords(item.name)}
-														</Text>
-														<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
-															{capitalizeWords(item?.lastName)}
-														</Text>
-													</View>
-												</View>
-												<AntDesign
-													name='closecircle'
-													size={24}
-													color='red'
-													onPress={() => handleDeleteStudent(item._id)}
+											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%', flex: 1 }}>
+												<Image
+													source={require('@/assets/img/default-avatar.png')}
+													style={{ width: 50, height: 50, borderRadius: 50 }}
+													resizeMode='contain'
 												/>
+												<View
+													style={{
+														justifyContent: 'center',
+														alignItems: 'flex-start',
+														width: '100%',
+														flexDirection: 'column',
+													}}
+												>
+													<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
+														{capitalizeWords(item.name)}
+													</Text>
+													<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
+														{capitalizeWords(item?.lastName)}
+													</Text>
+												</View>
 											</View>
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+											<AntDesign
+												name='closecircle'
+												size={24}
+												color='red'
+												onPress={() => handleDeleteStudent(item._id)}
+											/>
 										</View>
-									)}
-									keyExtractor={(item) => item._id}
-								/>
-							</ScrollView>
-						)}
-					</View>
+										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+									</View>
+								)}
+								keyExtractor={(item) => item._id}
+							/>
+						</ScrollView>
+					)}
 				</View>
-				{openPickStudentsModal && (
-					<PickStudentsModal
-						openModal={openPickStudentsModal}
-						closeModal={() => setOpenPickStudentsModal(false)}
-						students={students}
-						studentsSelected={studentsSelected}
-						handleSelectStudent={handleSelectStudent}
-					/>
-				)}
-			</Modal>
-		</>
+			</View>
+			{openPickStudentsModal && (
+				<PickStudentsModal
+					openModal={openPickStudentsModal}
+					closeModal={() => setOpenPickStudentsModal(false)}
+					students={students}
+					studentsSelected={studentsSelected}
+					handleSelectStudent={handleSelectStudent}
+				/>
+			)}
+		</Modal>
 	)
 }
 

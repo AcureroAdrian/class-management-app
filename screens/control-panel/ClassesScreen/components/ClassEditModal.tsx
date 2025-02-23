@@ -135,138 +135,136 @@ const ClassEditModal = ({
 	}
 
 	return (
-		<>
-			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<View style={{ flex: 1, justifyContent: 'flex-start' }}>
-					<ScreenHeader
-						label={className}
-						labelButton='Save'
-						iconName='save'
-						disabledButton={loadingGetKarateClassById || loadingUpdateKarateClassById}
-						loadingButtonAction={loadingUpdateKarateClassById}
-						handleOnPress={handleUpdateClass}
-						showBackButton={true}
-						handleBack={closeModal}
-					/>
-					<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
-						{loadingGetKarateClassById ? (
-							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-								<Loader text='Loading class info' />
-							</View>
-						) : (
-							<View style={{ width: '90%', flex: 1 }}>
-								<CustomInputForm
-									label='Class Name'
-									placeholder='Mon 7 PM Class'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setName}
-									value={name}
-									editable={!loadingUpdateKarateClassById}
-								/>
-								<CustomInputForm
-									label='Additional Info'
-									placeholder='Its a description ...'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setDescription}
-									value={description}
-									editable={!loadingUpdateKarateClassById}
-								/>
-								<CustomInputForm
-									label='Start Time'
-									placeholder='12:00 p.m.'
-									placeholderTextColor={colors.darkLight}
-									value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-									editable={false}
-									onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
-								/>
-								<CustomInputForm
-									label='Class Students'
-									placeholder='Tap to add students'
-									placeholderTextColor={colors.darkLight}
-									value={`${studentsAssigned?.length} students (Tap to add students)`}
-									editable={false}
-									onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
-								/>
-								<CustomInputForm
-									label='Weekdays'
-									placeholder='Tap to manage class days'
-									placeholderTextColor={colors.darkLight}
-									value={
-										weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
-									}
-									editable={false}
-									onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
-								/>
-								<AgeRangeInput
-									minAge={minAge}
-									maxAge={maxAge}
-									saveMinAge={(value: number) => setMinAge(value)}
-									saveMaxAge={(value: number) => setMaxAge(value)}
-								/>
-								<CustomInputForm
-									label='Levels'
-									placeholder='Tap to manage student levels'
-									placeholderTextColor={colors.darkLight}
-									value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-									editable={false}
-									onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
-								/>
-								{errorMessage && (
-									<Text
-										style={{
-											textAlign: 'center',
-											fontSize: 13,
-											color: 'red',
-										}}
-									>
-										{errorMessage}
-									</Text>
-								)}
-							</View>
-						)}
-					</View>
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View style={{ flex: 1, justifyContent: 'flex-start' }}>
+				<ScreenHeader
+					label={className}
+					labelButton='Save'
+					iconName='save'
+					disabledButton={loadingGetKarateClassById || loadingUpdateKarateClassById}
+					loadingButtonAction={loadingUpdateKarateClassById}
+					handleOnPress={handleUpdateClass}
+					showBackButton={true}
+					handleBack={closeModal}
+				/>
+				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+					{loadingGetKarateClassById ? (
+						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+							<Loader text='Loading class info' />
+						</View>
+					) : (
+						<View style={{ width: '90%', flex: 1 }}>
+							<CustomInputForm
+								label='Class Name'
+								placeholder='Mon 7 PM Class'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setName}
+								value={name}
+								editable={!loadingUpdateKarateClassById}
+							/>
+							<CustomInputForm
+								label='Additional Info'
+								placeholder='Its a description ...'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setDescription}
+								value={description}
+								editable={!loadingUpdateKarateClassById}
+							/>
+							<CustomInputForm
+								label='Start Time'
+								placeholder='12:00 p.m.'
+								placeholderTextColor={colors.darkLight}
+								value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+								editable={false}
+								onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
+							/>
+							<CustomInputForm
+								label='Class Students'
+								placeholder='Tap to add students'
+								placeholderTextColor={colors.darkLight}
+								value={`${studentsAssigned?.length} students (Tap to add students)`}
+								editable={false}
+								onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
+							/>
+							<CustomInputForm
+								label='Weekdays'
+								placeholder='Tap to manage class days'
+								placeholderTextColor={colors.darkLight}
+								value={
+									weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
+								}
+								editable={false}
+								onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
+							/>
+							<AgeRangeInput
+								minAge={minAge}
+								maxAge={maxAge}
+								saveMinAge={(value: number) => setMinAge(value)}
+								saveMaxAge={(value: number) => setMaxAge(value)}
+							/>
+							<CustomInputForm
+								label='Levels'
+								placeholder='Tap to manage student levels'
+								placeholderTextColor={colors.darkLight}
+								value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
+								editable={false}
+								onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
+							/>
+							{errorMessage && (
+								<Text
+									style={{
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
+									}}
+								>
+									{errorMessage}
+								</Text>
+							)}
+						</View>
+					)}
 				</View>
-				{showDate && (
-					<DateTimePickerModal
-						isVisible={showDate}
-						mode='time'
-						is24Hour={true}
-						onConfirm={onChange}
-						onCancel={() => setShowDate(false)}
-						display='spinner'
-						date={startTime}
-					/>
-				)}
-				{openWeekDaysModal && (
-					<CustomOptionsModal
-						openModal={openWeekDaysModal}
-						closeModal={() => setOpenWeekDaysModal(false)}
-						title='Week Days'
-						options={weekDaysInitialValues}
-						selected={weekDays}
-						handleSaveOptions={(selected: any) => setWeekDays(selected)}
-					/>
-				)}
-				{openLevelsModal && (
-					<CustomOptionsModal
-						openModal={openLevelsModal}
-						closeModal={() => setOpenLevelsModal(false)}
-						title='Levels'
-						options={levelsInitialValues}
-						selected={levels}
-						handleSaveOptions={(selected: any) => setLevels(selected)}
-					/>
-				)}
-				{openAssignedStudentsModal && (
-					<AssignedStudentsModal
-						openModal={openAssignedStudentsModal}
-						closeModal={() => setOpenAssignedStudentsModal(false)}
-						studentsAssigned={studentsAssigned}
-						handleAssignStudents={handleAssignStudents}
-					/>
-				)}
-			</Modal>
-		</>
+			</View>
+			{showDate && (
+				<DateTimePickerModal
+					isVisible={showDate}
+					mode='time'
+					is24Hour={true}
+					onConfirm={onChange}
+					onCancel={() => setShowDate(false)}
+					display='spinner'
+					date={startTime}
+				/>
+			)}
+			{openWeekDaysModal && (
+				<CustomOptionsModal
+					openModal={openWeekDaysModal}
+					closeModal={() => setOpenWeekDaysModal(false)}
+					title='Week Days'
+					options={weekDaysInitialValues}
+					selected={weekDays}
+					handleSaveOptions={(selected: any) => setWeekDays(selected)}
+				/>
+			)}
+			{openLevelsModal && (
+				<CustomOptionsModal
+					openModal={openLevelsModal}
+					closeModal={() => setOpenLevelsModal(false)}
+					title='Levels'
+					options={levelsInitialValues}
+					selected={levels}
+					handleSaveOptions={(selected: any) => setLevels(selected)}
+				/>
+			)}
+			{openAssignedStudentsModal && (
+				<AssignedStudentsModal
+					openModal={openAssignedStudentsModal}
+					closeModal={() => setOpenAssignedStudentsModal(false)}
+					studentsAssigned={studentsAssigned}
+					handleAssignStudents={handleAssignStudents}
+				/>
+			)}
+		</Modal>
 	)
 }
 

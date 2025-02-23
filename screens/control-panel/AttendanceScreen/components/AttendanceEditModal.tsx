@@ -113,149 +113,147 @@ const AttendanceEditModal = ({
 	}, [attendance])
 
 	return (
-		<>
-			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View
+				style={{
+					flex: 1,
+					justifyContent: 'flex-start',
+				}}
+			>
+				<ScreenHeader
+					label={attendanceData?.karateClass?.name}
+					labelButton='Save'
+					iconName='save'
+					disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+					loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+					handleOnPress={handleSaveAtendance}
+					showBackButton={true}
+					handleBack={closeModal}
+				/>
 				<View
 					style={{
-						flex: 1,
-						justifyContent: 'flex-start',
+						width: '100%',
+						backgroundColor: '#E5E7EB',
+						padding: 10,
+						height: 50,
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						alignItems: 'center',
 					}}
 				>
-					<ScreenHeader
-						label={attendanceData?.karateClass?.name}
-						labelButton='Save'
-						iconName='save'
-						disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
-						loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
-						handleOnPress={handleSaveAtendance}
-						showBackButton={true}
-						handleBack={closeModal}
-					/>
-					<View
+					<View style={{ flexDirection: 'row', gap: 10 }}>
+						{Boolean(presents) && (
+							<View
+								style={{
+									backgroundColor: 'green',
+									padding: 5,
+									width: 30,
+									height: 30,
+									justifyContent: 'center',
+									alignItems: 'center',
+									borderRadius: '50%',
+								}}
+							>
+								<Text style={{ color: 'white' }}>{presents}</Text>
+							</View>
+						)}
+						{Boolean(absents) && (
+							<View
+								style={{
+									backgroundColor: 'red',
+									padding: 5,
+									width: 30,
+									height: 30,
+									justifyContent: 'center',
+									alignItems: 'center',
+									borderRadius: '50%',
+								}}
+							>
+								<Text style={{ color: 'white' }}>{absents}</Text>
+							</View>
+						)}
+						{Boolean(late) && (
+							<View
+								style={{
+									backgroundColor: 'skyblue',
+									padding: 5,
+									width: 30,
+									height: 30,
+									justifyContent: 'center',
+									alignItems: 'center',
+									borderRadius: '50%',
+								}}
+							>
+								<Text style={{ color: 'white' }}>{late}</Text>
+							</View>
+						)}
+					</View>
+					<Text>Total: {attendance?.length}</Text>
+				</View>
+				{errorMessage && (
+					<Text
 						style={{
-							width: '100%',
-							backgroundColor: '#E5E7EB',
-							padding: 10,
-							height: 50,
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							alignItems: 'center',
+							textAlign: 'center',
+							fontSize: 13,
+							color: 'red',
 						}}
 					>
-						<View style={{ flexDirection: 'row', gap: 10 }}>
-							{Boolean(presents) && (
+						{errorMessage}
+					</Text>
+				)}
+				<ScrollView>
+					<FlatList
+						nestedScrollEnabled={true}
+						scrollEnabled={false}
+						data={attendance.sort((a, b) => a?.name?.localeCompare(b?.name))}
+						renderItem={({ item }) => (
+							<Pressable
+								onPress={() => handleSelectStudent(item.student)}
+								disabled={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+							>
 								<View
 									style={{
-										backgroundColor: 'green',
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
+										flex: 1,
+										paddingLeft: 15,
+										paddingRight: 15,
+										paddingTop: 15,
+										alignItems: 'flex-start',
 									}}
-								>
-									<Text style={{ color: 'white' }}>{presents}</Text>
-								</View>
-							)}
-							{Boolean(absents) && (
-								<View
-									style={{
-										backgroundColor: 'red',
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
-									}}
-								>
-									<Text style={{ color: 'white' }}>{absents}</Text>
-								</View>
-							)}
-							{Boolean(late) && (
-								<View
-									style={{
-										backgroundColor: 'skyblue',
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
-									}}
-								>
-									<Text style={{ color: 'white' }}>{late}</Text>
-								</View>
-							)}
-						</View>
-						<Text>Total: {attendance?.length}</Text>
-					</View>
-					{errorMessage && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage}
-						</Text>
-					)}
-					<ScrollView>
-						<FlatList
-							nestedScrollEnabled={true}
-							scrollEnabled={false}
-							data={attendance.sort((a, b) => a?.name?.localeCompare(b?.name))}
-							renderItem={({ item }) => (
-								<Pressable
-									onPress={() => handleSelectStudent(item.student)}
-									disabled={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 								>
 									<View
-										style={{
-											flex: 1,
-											paddingLeft: 15,
-											paddingRight: 15,
-											paddingTop: 15,
-											alignItems: 'flex-start',
-										}}
+										style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
 									>
-										<View
-											style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-										>
-											<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-												<Image
-													source={require('@/assets/img/default-avatar.png')}
-													style={{ width: 50, height: 50, borderRadius: 50 }}
-													resizeMode='contain'
-												/>
-												<View
-													style={{
-														justifyContent: 'center',
-														alignItems: 'flex-start',
-														width: '100%',
-														flexDirection: 'column',
-													}}
-												>
-													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
-												</View>
+										<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+											<Image
+												source={require('@/assets/img/default-avatar.png')}
+												style={{ width: 50, height: 50, borderRadius: 50 }}
+												resizeMode='contain'
+											/>
+											<View
+												style={{
+													justifyContent: 'center',
+													alignItems: 'flex-start',
+													width: '100%',
+													flexDirection: 'column',
+												}}
+											>
+												<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+												<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
 											</View>
-											{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
-											{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
-											{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
 										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+										{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
+										{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
+										{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
 									</View>
-								</Pressable>
-							)}
-							keyExtractor={(item) => item.student}
-						/>
-					</ScrollView>
-				</View>
-			</Modal>
-		</>
+									<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+								</View>
+							</Pressable>
+						)}
+						keyExtractor={(item) => item.student}
+					/>
+				</ScrollView>
+			</View>
+		</Modal>
 	)
 }
 
