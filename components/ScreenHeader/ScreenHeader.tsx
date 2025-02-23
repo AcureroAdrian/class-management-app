@@ -37,7 +37,7 @@ const ScreenHeader = ({
 				)}
 				<HeaderTitle>{label?.length > 17 ? label.substring(0, 17) + '...' : label}</HeaderTitle>
 				{additionalIcon && (
-					<Pressable onPress={handleAdditionalIcon}>
+					<Pressable onPress={handleAdditionalIcon} style={{ width: 40, height: '100%' }}>
 						<AntDesign
 							name={additionalIcon}
 							size={24}
