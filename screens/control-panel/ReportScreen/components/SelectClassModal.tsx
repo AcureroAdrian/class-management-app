@@ -14,7 +14,7 @@ const SelectClassModal = ({
 }) => {
 	const { karateClassesByAdminList } = useAppSelector((state) => state.getKarateClassesByAdmin)
 	return (
-		<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, justifyContent: 'flex-start' }}>
 				<ScreenHeader label='Pick a Class' showBackButton={true} handleBack={closeModal} />
 				<View style={{ flex: 1, paddingTop: 20 }}>

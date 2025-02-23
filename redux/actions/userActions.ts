@@ -52,7 +52,14 @@ export const getStudentUsers = () => async (dispatch: Dispatch, getState: AppSto
 			},
 		}
 
-		const { data } = await customAxios.get('/api/users', config)
+		const data = await new Promise((res) => {
+			setTimeout(() => {
+				customAxios.get('/api/users', config).then(({ data }) => {
+					res(data)
+				})
+			}, 3000)
+		})
+		// const { data } = await customAxios.get('/api/users', config)
 
 		dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -77,7 +84,14 @@ export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, 
 			},
 		}
 
-		const { data } = await customAxios.post('/api/users', dataToSend, config)
+		const data = await new Promise((res) => {
+			setTimeout(() => {
+				customAxios.post('/api/users', dataToSend, config).then(({ data }) => {
+					res(data)
+				})
+			}, 2000)
+		})
+		// const { data } = await customAxios.post('/api/users', dataToSend, config)
 
 		dispatch({ type: types.REGISTER_STUDENTS_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -102,7 +116,14 @@ export const getStudentUserById = (studentId: string) => async (dispatch: Dispat
 			},
 		}
 
-		const { data } = await customAxios.get('/api/users/' + studentId, config)
+		const data = await new Promise((res) => {
+			setTimeout(() => {
+				customAxios.get('/api/users/' + studentId, config).then(({ data }) => {
+					res(data)
+				})
+			}, 2000)
+		})
+		// const { data } = await customAxios.get('/api/users/' + studentId, config)
 
 		dispatch({ type: types.GET_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 	} catch (error: any) {
@@ -128,7 +149,14 @@ export const updateStudentUserById =
 				},
 			}
 
-			const { data } = await customAxios.patch('/api/users/' + studentId, dataToSend, config)
+			const data = await new Promise((res) => {
+				setTimeout(() => {
+					customAxios.patch('/api/users/' + studentId, dataToSend, config).then(({ data }) => {
+						res(data)
+					})
+				}, 2000)
+			})
+			// const { data } = await customAxios.patch('/api/users/' + studentId, dataToSend, config)
 
 			dispatch({ type: types.UPDATE_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 		} catch (error: any) {

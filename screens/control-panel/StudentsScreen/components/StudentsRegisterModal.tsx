@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Modal, FlatList, Pressable, ScrollView } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { View, Text, Modal } from 'react-native'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
+import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
+import { levelsInitialValues } from '../helpers/student-screen-initial-values'
+import { IFullStudent } from '../helpers/students-interfaces'
+import { TUserLevel } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerStudents } from '@/redux/actions/userActions'
 import { REGISTER_STUDENTS_RESET } from '@/redux/constants/userConstants'
@@ -14,8 +18,14 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 
 	const [studentName, setStudentName] = useState<string>('')
 	const [studentLastName, setStudentLastName] = useState<string>('')
+	const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
+	const [dob, setDob] = useState<Date | undefined>(undefined)
+	const [phone, setPhone] = useState<string>('')
+	const [email, setEmail] = useState<string>('')
+	const [notes, setNotes] = useState<string>('')
+	const [level, setLevel] = useState<TUserLevel>()
+	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
-	const [studentsAdded, setStudentsAdded] = useState<{ name: string; lastName: string }[]>([])
 
 	const { loadingRegisterStudents, errorRegisterStudents } = useAppSelector((state) => state.registerStudents)
 
@@ -26,9 +36,7 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 		}
 	}, [])
 
-	const handleAddStudent = () => {
-		setErrorMessage(null)
-
+	const handleRegisterStudents = () => {
 		if (!studentName?.length) {
 			return setErrorMessage('First name is required')
 		}
@@ -36,125 +44,135 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 			return setErrorMessage('Last name is required')
 		}
 
-		if (studentsAdded.some((student) => student.name === studentName && student.lastName === studentLastName)) {
-			return setErrorMessage('Student already added')
+		const studentData: IFullStudent = {
+			name: studentName?.trim(),
+			lastName: studentLastName?.trim(),
+			phone,
+			email,
+			notes,
+			level,
 		}
 
-		setStudentsAdded((prev) => [...prev, { name: studentName, lastName: studentLastName }])
-
-		setStudentName('')
-		setStudentLastName('')
-	}
-	const handleRemoveStudent = (index: number) => {
-		setStudentsAdded((prev) => prev.filter((_, i) => i !== index))
-	}
-	const handleRegisterStudents = () => {
-		if (!studentsAdded?.length) {
-			return setErrorMessage('Please add at least one student')
+		if (dob) {
+			studentData.dateOfBirth = {
+				year: dob.getFullYear(),
+				month: dob.getMonth() + 1,
+				day: dob.getDate(),
+			}
 		}
 
-		dispatch(registerStudents({ students: studentsAdded }))
+		dispatch(registerStudents(studentData))
+	}
+	const handleSelectDob = (date: Date) => {
+		const currentDate = date || dob
+		setDob(currentDate)
+		setShowDatePicker(false)
 	}
 
 	return (
-		<>
-			{loadingRegisterStudents && <CustomBackdrop openBackdrop={loadingRegisterStudents} label='Loading ...' />}
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<View>
-					<View>
-						<ScreenHeader
-							label='Add Students'
-							labelButton='Save'
-							iconName='save'
-							disabledButton={loadingRegisterStudents}
-							handleOnPress={handleRegisterStudents}
-							showBackButton={true}
-							handleBack={closeModal}
-						/>
-						<View style={{ width: '100%', alignItems: 'center', flexDirection: 'row' }}>
-							<View style={{ width: '60%', alignItems: 'center' }}>
-								<View style={{ width: '90%' }}>
-									<CustomInputForm
-										label='First Name'
-										placeholder='Manuel'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setStudentName}
-										value={studentName}
-									/>
-									<CustomInputForm
-										label='Last Name'
-										placeholder='Smith'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setStudentLastName}
-										value={studentLastName}
-									/>
-								</View>
-							</View>
-							<View style={{ width: '40%', alignItems: 'center' }}>
-								<Pressable
-									style={{ backgroundColor: colors.brand, padding: 10, paddingHorizontal: 30, borderRadius: 10 }}
-									onPress={handleAddStudent}
-								>
-									<Text style={{ color: colors.primary }}>Add</Text>
-								</Pressable>
-							</View>
-						</View>
-						{(errorMessage || errorRegisterStudents) && (
-							<Text
-								style={{
-									textAlign: 'center',
-									fontSize: 13,
-									color: 'red',
-								}}
-							>
-								{errorMessage || errorRegisterStudents}
-							</Text>
-						)}
-						<Text style={{ paddingLeft: 10, backgroundColor: colors.brand, color: colors.primary, marginBottom: 10 }}>
-							Total Added: {studentsAdded?.length}
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
+				<ScreenHeader
+					label='Add Student'
+					labelButton='Save'
+					iconName='save'
+					disabledButton={loadingRegisterStudents}
+					loadingButtonAction={loadingRegisterStudents}
+					handleOnPress={handleRegisterStudents}
+					showBackButton={true}
+					handleBack={closeModal}
+				/>
+				<View style={{ width: '100%', flex: 1, padding: 20 }}>
+					<CustomInputForm
+						label='First Name'
+						placeholder='Manuel'
+						placeholderTextColor={colors.darkLight}
+						onChangeText={setStudentName}
+						value={studentName}
+						editable={!loadingRegisterStudents}
+					/>
+					<CustomInputForm
+						label='Last Name'
+						placeholder='Smith'
+						placeholderTextColor={colors.darkLight}
+						onChangeText={setStudentLastName}
+						value={studentLastName}
+						editable={!loadingRegisterStudents}
+					/>
+					<CustomInputForm
+						label='Date of Birth'
+						placeholder='YYY - MM - DD'
+						placeholderTextColor={colors.darkLight}
+						value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+						editable={false}
+						onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
+					/>
+					<CustomInputForm
+						label='Level'
+						placeholder='novice'
+						placeholderTextColor={colors.darkLight}
+						value={level}
+						editable={false}
+						onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
+					/>
+					<CustomInputForm
+						label='Email'
+						placeholder='manuel@gmail.com'
+						placeholderTextColor={colors.darkLight}
+						onChangeText={setEmail}
+						value={email}
+						editable={!loadingRegisterStudents}
+					/>
+					<CustomInputForm
+						label='Phone'
+						placeholder='+506 1234 5678'
+						placeholderTextColor={colors.darkLight}
+						onChangeText={setPhone}
+						value={phone}
+						editable={!loadingRegisterStudents}
+					/>
+					<CustomInputForm
+						label='Notes'
+						placeholder='This student has 3 brothers...'
+						placeholderTextColor={colors.darkLight}
+						onChangeText={setNotes}
+						value={notes}
+						editable={!loadingRegisterStudents}
+					/>
+					{(errorMessage || errorRegisterStudents) && (
+						<Text
+							style={{
+								textAlign: 'center',
+								fontSize: 13,
+								color: 'red',
+							}}
+						>
+							{errorMessage || errorRegisterStudents}
 						</Text>
-						<View style={{ width: '100%', alignItems: 'center', marginBottom: 10, height: '70%' }}>
-							<ScrollView style={{ width: '100%' }}>
-								<FlatList
-									data={studentsAdded}
-									nestedScrollEnabled={true}
-									scrollEnabled={false}
-									renderItem={({ item, index }) => (
-										<>
-											<View
-												style={{
-													width: '100%',
-													padding: 10,
-													flexDirection: 'row',
-													alignItems: 'center',
-													justifyContent: 'space-between',
-												}}
-											>
-												<Text>
-													{item.name} {item.lastName}
-												</Text>
-												<Pressable onPress={() => handleRemoveStudent(index)}>
-													<AntDesign name='closecircle' size={24} color='red' />
-												</Pressable>
-											</View>
-											<View
-												style={{
-													height: 1,
-													backgroundColor: colors.darkLight,
-													marginBottom: 10,
-													marginLeft: 10,
-													marginRight: 10,
-												}}
-											/>
-										</>
-									)}
-								/>
-							</ScrollView>
-						</View>
-					</View>
+					)}
 				</View>
-			</Modal>
-		</>
+			</View>
+			{showDatePicker && (
+				<DateTimePickerModal
+					isVisible={showDatePicker}
+					mode='date'
+					onConfirm={handleSelectDob}
+					onCancel={() => setShowDatePicker(false)}
+					display='spinner'
+					date={dob}
+				/>
+			)}
+			{openLevelModal && (
+				<CustomSelectModal
+					openModal={openLevelModal}
+					closeModal={() => setOpenLevelModal(false)}
+					title='Student Levels'
+					options={levelsInitialValues}
+					selected={level || ''}
+					handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
+				/>
+			)}
+		</Modal>
 	)
 }
 

@@ -78,3 +78,19 @@ export const CenterContainer = styled.View`
 export const SafeAreaViewStyled = styled.SafeAreaView`
 	flex: 1;
 `
+export const StyledCustomTextInput = styled.TextInput`
+	background-color: ${colors.primary};
+	padding: 5px;
+	font-size: 16px;
+	height: 30px;
+	margin-vertical: 5px;
+	color: ${colors.tertiary};
+`
+export const StyledCustomInputlabel = styled.Text`
+	color: ${colors.primary};
+	font-size: 13px;
+	text-align: left;
+	font-weight: 400;
+	margin-top: 10px;
+	background-color: ${colors.brand};
+`

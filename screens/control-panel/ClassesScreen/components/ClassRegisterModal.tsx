@@ -3,10 +3,8 @@ import { View, Modal, Text } from 'react-native'
 import { format, isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import AssignedStudentsModal from './AssignedStudentsModal'
 import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
@@ -15,6 +13,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerKarateClass } from '@/redux/actions/karateClassActions'
 import { REGISTER_KARATE_CLASS_RESET } from '@/redux/constants/karateClassConstants'
 import colors from '@/theme/colors'
+import AgeRangeInput from './AgeRangeInput'
 
 const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -26,6 +25,8 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [startTime, setStartTime] = useState<Date>(new Date('2000-01-01 12:00:00'))
 	const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>(weekDaysInitialValues)
 	const [levels, setLevels] = useState<TUserLevel[]>(levelsInitialValues)
+	const [minAge, setMinAge] = useState<number>(0)
+	const [maxAge, setMaxAge] = useState<number>(100)
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
@@ -80,8 +81,8 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 				},
 				weekDays,
 				students: studentsAssigned,
-				minAge: 0,
-				maxAge: 100,
+				minAge,
+				maxAge,
 				levels,
 			}),
 		)
@@ -92,83 +93,90 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<KeyboardAvoidingWrapper>
-					<View>
-						<ScreenHeader
-							label='New Class'
-							labelButton='Save'
-							iconName='save'
-							disabledButton={loadingRegisterKarateClass}
-							handleOnPress={handleRegisterClass}
-							showBackButton={true}
-							handleBack={closeModal}
-						/>
-						<View style={{ width: '100%', alignItems: 'center' }}>
-							<View style={{ width: '90%' }}>
-								<CustomInputForm
-									label='Class Name'
-									placeholder='Mon 7 PM Class'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setName}
-									value={name}
-								/>
-								<CustomInputForm
-									label='Additional Info'
-									placeholder='Its a description ...'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setDescription}
-									value={description}
-								/>
-								<CustomInputForm
-									label='Start Time'
-									placeholder='12:00 p.m.'
-									placeholderTextColor={colors.darkLight}
-									value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-									editable={false}
-									onPress={() => setShowDate(true)}
-								/>
-								<CustomInputForm
-									label='Class Students'
-									placeholder='Tap to add students'
-									placeholderTextColor={colors.darkLight}
-									value={`${studentsAssigned?.length} students (Tap to add students)`}
-									editable={false}
-									onPress={() => setOpenAssignedStudentsModal(true)}
-								/>
-								<CustomInputForm
-									label='Weekdays'
-									placeholder='Tap to manage class days'
-									placeholderTextColor={colors.darkLight}
-									value={
-										weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
-									}
-									editable={false}
-									onPress={() => setOpenWeekDaysModal(true)}
-								/>
-								<CustomInputForm
-									label='Levels'
-									placeholder='Tap to manage student levels'
-									placeholderTextColor={colors.darkLight}
-									value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-									editable={false}
-									onPress={() => setOpenLevelsModal(true)}
-								/>
-								{errorMessage && (
-									<Text
-										style={{
-											textAlign: 'center',
-											fontSize: 13,
-											color: 'red',
-										}}
-									>
-										{errorMessage}
-									</Text>
-								)}
-							</View>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+				<View style={{ flex: 1, justifyContent: 'flex-start' }}>
+					<ScreenHeader
+						label='New Class'
+						labelButton='Save'
+						iconName='save'
+						disabledButton={loadingRegisterKarateClass}
+						loadingButtonAction={loadingRegisterKarateClass}
+						handleOnPress={handleRegisterClass}
+						showBackButton={true}
+						handleBack={closeModal}
+					/>
+					<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+						<View style={{ width: '90%', flex: 1 }}>
+							<CustomInputForm
+								label='Class Name'
+								placeholder='Mon 7 PM Class'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setName}
+								value={name}
+								editable={!loadingRegisterKarateClass}
+							/>
+							<CustomInputForm
+								label='Additional Info'
+								placeholder='Its a description ...'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setDescription}
+								value={description}
+								editable={!loadingRegisterKarateClass}
+							/>
+							<CustomInputForm
+								label='Start Time'
+								placeholder='12:00 p.m.'
+								placeholderTextColor={colors.darkLight}
+								value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+								editable={false}
+								onPress={() => !loadingRegisterKarateClass && setShowDate(true)}
+							/>
+							<CustomInputForm
+								label='Class Students'
+								placeholder='Tap to add students'
+								placeholderTextColor={colors.darkLight}
+								value={`${studentsAssigned?.length} students (Tap to add students)`}
+								editable={false}
+								onPress={() => !loadingRegisterKarateClass && setOpenAssignedStudentsModal(true)}
+							/>
+							<CustomInputForm
+								label='Weekdays'
+								placeholder='Tap to manage class days'
+								placeholderTextColor={colors.darkLight}
+								value={
+									weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
+								}
+								editable={false}
+								onPress={() => !loadingRegisterKarateClass && setOpenWeekDaysModal(true)}
+							/>
+							<AgeRangeInput
+								minAge={minAge}
+								maxAge={maxAge}
+								saveMinAge={(value: number) => setMinAge(value)}
+								saveMaxAge={(value: number) => setMaxAge(value)}
+							/>
+							<CustomInputForm
+								label='Levels'
+								placeholder='Tap to manage student levels'
+								placeholderTextColor={colors.darkLight}
+								value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
+								editable={false}
+								onPress={() => !loadingRegisterKarateClass && setOpenLevelsModal(true)}
+							/>
+							{errorMessage && (
+								<Text
+									style={{
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
+									}}
+								>
+									{errorMessage}
+								</Text>
+							)}
 						</View>
 					</View>
-				</KeyboardAvoidingWrapper>
+				</View>
 				{showDate && (
 					<DateTimePickerModal
 						isVisible={showDate}
@@ -189,28 +197,26 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					/>
 				)}
 				{openWeekDaysModal && (
-				<CustomOptionsModal
-					openModal={openWeekDaysModal}
-					closeModal={() => setOpenWeekDaysModal(false)}
-					title='Week Days'
-					options={weekDaysInitialValues}
-					selected={weekDays}
-					handleSaveOptions={(selected: any) => setWeekDays(selected)}
-				/>
-			)}
-			{openLevelsModal && (
-				<CustomOptionsModal
-					openModal={openLevelsModal}
-					closeModal={() => setOpenLevelsModal(false)}
-					title='Levels'
-					options={levelsInitialValues}
-					selected={levels}
-					handleSaveOptions={(selected: any) => setLevels(selected)}
-				/>
-			)}
+					<CustomOptionsModal
+						openModal={openWeekDaysModal}
+						closeModal={() => setOpenWeekDaysModal(false)}
+						title='Week Days'
+						options={weekDaysInitialValues}
+						selected={weekDays}
+						handleSaveOptions={(selected: any) => setWeekDays(selected)}
+					/>
+				)}
+				{openLevelsModal && (
+					<CustomOptionsModal
+						openModal={openLevelsModal}
+						closeModal={() => setOpenLevelsModal(false)}
+						title='Levels'
+						options={levelsInitialValues}
+						selected={levels}
+						handleSaveOptions={(selected: any) => setLevels(selected)}
+					/>
+				)}
 			</Modal>
-			{loadingRegisterKarateClass && <CustomBackdrop openBackdrop={loadingRegisterKarateClass} label='Loading ...' />}
-			
 		</>
 	)
 }

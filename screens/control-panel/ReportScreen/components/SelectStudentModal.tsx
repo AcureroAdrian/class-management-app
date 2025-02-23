@@ -30,7 +30,7 @@ const SelectStudentModal = ({
 	}, [textSearch, studentUsersList])
 
 	return (
-		<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='Pick a Student' showBackButton={true} handleBack={closeModal} />
 				<TextInput

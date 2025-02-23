@@ -63,7 +63,7 @@ const DailyReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<KeyboardAvoidingWrapper>
 					<View>
 						<ScreenHeader label='Daily Report' showBackButton={true} handleBack={closeModal} />

@@ -18,7 +18,7 @@ const ClassReportByClassIdDetailsModal = ({
 }) => {
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<KeyboardAvoidingWrapper>
 					<View style={{ flex: 1 }}>
 						<ScreenHeader label='Reports' showBackButton={true} handleBack={closeModal} />

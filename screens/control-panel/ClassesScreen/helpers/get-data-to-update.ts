@@ -5,6 +5,8 @@ interface IKarateClass {
 	startTime: { hour: number; minute: number }
 	students: string[]
 	description: string
+	minAge: number
+	maxAge: number
 }
 
 const compareArrays = (array1: string[], array2: string[]) => {
@@ -23,7 +25,7 @@ const compareArrays = (array1: string[], array2: string[]) => {
 }
 
 const getDataToUpdate = (oldData: IKarateClass, newData: IKarateClass) => {
-	const dataToUpdate: { [key: string]: any } = {}
+	const dataToUpdate: Record<string, any> = {}
 
 	if (oldData.name !== newData.name) {
 		dataToUpdate.name = newData.name
@@ -46,6 +48,14 @@ const getDataToUpdate = (oldData: IKarateClass, newData: IKarateClass) => {
 
 	if (!compareArrays(oldData.students, newData.students)) {
 		dataToUpdate.students = newData.students
+	}
+
+	if (oldData.minAge !== newData.minAge) {
+		dataToUpdate.minAge = newData.minAge
+	}
+
+	if (oldData.maxAge !== newData.maxAge) {
+		dataToUpdate.maxAge = newData.maxAge
 	}
 
 	return { needUpdate: Boolean(Object.keys(dataToUpdate).length), dataToUpdate }

@@ -41,7 +41,7 @@ interface IGetStudentUsersState {
 interface IRegisterStudentsState {
 	loadingRegisterStudents?: boolean
 	successRegisterStudents?: boolean
-	studentRegisteredList?: IStudent[]
+	studentRegistered?: IStudent
 	errorRegisterStudents?: string
 }
 interface IGetStudentUserByIdState {
@@ -115,7 +115,7 @@ export const registerStudentsReducer: TRegisterStudentsReducer = (state = {}, ac
 			return {
 				loadingRegisterStudents: false,
 				successRegisterStudents: true,
-				studentRegisteredList: action.payload,
+				studentRegistered: action.payload,
 			}
 		case types.REGISTER_STUDENTS_FAIL:
 			return {

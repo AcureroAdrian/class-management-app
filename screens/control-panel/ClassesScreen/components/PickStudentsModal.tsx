@@ -32,15 +32,8 @@ const PickStudentsModal = ({
 	}, [textSearch, students, studentsSelected])
 
 	return (
-		<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View
-				style={{
-					flex: 1,
-					flexDirection: 'column',
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-				}}
-			>
+		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='Pick Students' showBackButton={true} handleBack={closeModal} />
 				<TextInput
 					value={textSearch}
@@ -58,7 +51,7 @@ const PickStudentsModal = ({
 						color: '#1F2937',
 					}}
 				/>
-				<View style={{ width: '100%', alignItems: 'center' }}>
+				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
 					<ScrollView>
 						<FlatList
 							nestedScrollEnabled={true}

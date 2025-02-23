@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { View, Modal, Text } from 'react-native'
 import { format, isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import AssignedStudentsModal from './AssignedStudentsModal'
 import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
 import getDataToUpdate from '../helpers/get-data-to-update'
@@ -16,6 +15,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getkarateClassById, updatekarateClassById } from '@/redux/actions/karateClassActions'
 import { GET_KARATE_CLASS_BY_ID_RESET, UPDATE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
 import colors from '@/theme/colors'
+import AgeRangeInput from './AgeRangeInput'
 
 const ClassEditModal = ({
 	openModal,
@@ -37,6 +37,8 @@ const ClassEditModal = ({
 	const [startTime, setStartTime] = useState<Date>(new Date('2000-01-01 12:00:00'))
 	const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>(weekDaysInitialValues)
 	const [levels, setLevels] = useState<TUserLevel[]>(levelsInitialValues)
+	const [minAge, setMinAge] = useState<number>(0)
+	const [maxAge, setMaxAge] = useState<number>(100)
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
@@ -62,16 +64,30 @@ const ClassEditModal = ({
 	}, [classId])
 	useEffect(() => {
 		if (successGetKarateClassById) {
+			console.log(karateClassById)
 			setName(karateClassById.name)
 			setDescription(karateClassById.description)
 			setWeekDays(karateClassById.weekDays)
 			setLevels(karateClassById.levels)
 			setStudentsAssigned(karateClassById.students)
+			setMinAge(karateClassById.minAge || 0)
+			setMaxAge(karateClassById.maxAge || 100)
 			const date = new Date()
 			date.setHours(karateClassById.startTime.hour, karateClassById.startTime.minute)
 			setStartTime(date)
 		}
 	}, [successGetKarateClassById])
+	useEffect(() => {
+		if (errorGetKarateClassById) {
+			setErrorMessage(errorGetKarateClassById)
+		}
+	}, [errorGetKarateClassById])
+	useEffect(() => {
+		if (errorUpdateKarateClassById) {
+			setErrorMessage(errorUpdateKarateClassById)
+			dispatch({ type: UPDATE_KARATE_CLASS_BY_ID_RESET })
+		}
+	}, [errorUpdateKarateClassById])
 
 	const onChange = (date: Date) => {
 		setErrorMessage(null)
@@ -101,6 +117,8 @@ const ClassEditModal = ({
 				hour: startTime.getHours(),
 				minute: startTime.getMinutes(),
 			},
+			minAge: minAge,
+			maxAge: maxAge,
 			weekDays,
 			levels,
 			students: studentsAssigned,
@@ -113,31 +131,38 @@ const ClassEditModal = ({
 		dispatch(updatekarateClassById(classId, dataToUpdate))
 	}
 	const handleAssignStudents = (students: string[]) => {
+		setErrorMessage(null)
 		setStudentsAssigned(students)
 	}
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
-				<KeyboardAvoidingWrapper>
-					<View>
-						<ScreenHeader
-							label={className}
-							labelButton='Save'
-							iconName='save'
-							disabledButton={loadingUpdateKarateClassById}
-							handleOnPress={handleUpdateClass}
-							showBackButton={true}
-							handleBack={closeModal}
-						/>
-						<View style={{ width: '100%', alignItems: 'center' }}>
-							<View style={{ width: '90%' }}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+				<View style={{ flex: 1, justifyContent: 'flex-start' }}>
+					<ScreenHeader
+						label={className}
+						labelButton='Save'
+						iconName='save'
+						disabledButton={loadingGetKarateClassById || loadingUpdateKarateClassById}
+						loadingButtonAction={loadingUpdateKarateClassById}
+						handleOnPress={handleUpdateClass}
+						showBackButton={true}
+						handleBack={closeModal}
+					/>
+					<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+						{loadingGetKarateClassById ? (
+							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+								<Loader text='Loading class info' />
+							</View>
+						) : (
+							<View style={{ width: '90%', flex: 1 }}>
 								<CustomInputForm
 									label='Class Name'
 									placeholder='Mon 7 PM Class'
 									placeholderTextColor={colors.darkLight}
 									onChangeText={setName}
 									value={name}
+									editable={!loadingUpdateKarateClassById}
 								/>
 								<CustomInputForm
 									label='Additional Info'
@@ -145,6 +170,7 @@ const ClassEditModal = ({
 									placeholderTextColor={colors.darkLight}
 									onChangeText={setDescription}
 									value={description}
+									editable={!loadingUpdateKarateClassById}
 								/>
 								<CustomInputForm
 									label='Start Time'
@@ -152,7 +178,7 @@ const ClassEditModal = ({
 									placeholderTextColor={colors.darkLight}
 									value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
 									editable={false}
-									onPress={() => setShowDate(true)}
+									onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
 								/>
 								<CustomInputForm
 									label='Class Students'
@@ -160,7 +186,7 @@ const ClassEditModal = ({
 									placeholderTextColor={colors.darkLight}
 									value={`${studentsAssigned?.length} students (Tap to add students)`}
 									editable={false}
-									onPress={() => setOpenAssignedStudentsModal(true)}
+									onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
 								/>
 								<CustomInputForm
 									label='Weekdays'
@@ -170,7 +196,13 @@ const ClassEditModal = ({
 										weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
 									}
 									editable={false}
-									onPress={() => setOpenWeekDaysModal(true)}
+									onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
+								/>
+								<AgeRangeInput
+									minAge={minAge}
+									maxAge={maxAge}
+									saveMinAge={(value: number) => setMinAge(value)}
+									saveMaxAge={(value: number) => setMaxAge(value)}
 								/>
 								<CustomInputForm
 									label='Levels'
@@ -178,9 +210,9 @@ const ClassEditModal = ({
 									placeholderTextColor={colors.darkLight}
 									value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
 									editable={false}
-									onPress={() => setOpenLevelsModal(true)}
+									onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
 								/>
-								{(errorMessage || errorGetKarateClassById || errorUpdateKarateClassById) && (
+								{errorMessage && (
 									<Text
 										style={{
 											textAlign: 'center',
@@ -188,13 +220,13 @@ const ClassEditModal = ({
 											color: 'red',
 										}}
 									>
-										{errorMessage || errorGetKarateClassById || errorUpdateKarateClassById}
+										{errorMessage}
 									</Text>
 								)}
 							</View>
-						</View>
+						)}
 					</View>
-				</KeyboardAvoidingWrapper>
+				</View>
 				{showDate && (
 					<DateTimePickerModal
 						isVisible={showDate}
@@ -235,7 +267,6 @@ const ClassEditModal = ({
 					/>
 				)}
 			</Modal>
-			{loadingGetKarateClassById && <CustomBackdrop openBackdrop={loadingGetKarateClassById} label='Loading ...' />}
 		</>
 	)
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable, View } from 'react-native'
+import { ActivityIndicator, Pressable, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AntDesign } from '@expo/vector-icons'
 import { IScreenHeaderProps } from './helpers/screen-header-interfaces'
@@ -10,6 +10,7 @@ const ScreenHeader = ({
 	labelButton = '',
 	handleOnPress = () => {},
 	disabledButton = false,
+	loadingButtonAction = false,
 	iconName,
 	showBackButton = false,
 	handleBack = () => {},
@@ -29,9 +30,12 @@ const ScreenHeader = ({
 			<Pressable onPress={handleOnPress} disabled={disabledButton}>
 				<ButtonContainer>
 					<ButtonText>{labelButton}</ButtonText>
-					{Boolean(iconName) && (
-						<AntDesign name={iconName} size={24} color='white' style={{ opacity: disabledButton ? 0.5 : 1 }} />
-					)}
+					{Boolean(iconName) &&
+						(loadingButtonAction ? (
+							<ActivityIndicator size={'small'} />
+						) : (
+							<AntDesign name={iconName} size={24} color='white' style={{ opacity: disabledButton ? 0.5 : 1 }} />
+						))}
 				</ButtonContainer>
 			</Pressable>
 		</HeaderContainer>

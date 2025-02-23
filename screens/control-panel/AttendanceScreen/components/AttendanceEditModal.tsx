@@ -103,7 +103,7 @@ const AttendanceEditModal = ({
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<View
 					style={{
 						flex: 1,

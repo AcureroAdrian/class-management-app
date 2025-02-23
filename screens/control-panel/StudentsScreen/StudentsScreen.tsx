@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import StudentsRegisterModal from './components/StudentsRegisterModal'
 import StudentEditModal from './components/StudentEditModal'
 import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUsers } from '@/redux/actions/userActions'
-import { SafeAreaViewStyled } from '@/theme/styles'
+import Loader from '@/components/Loader/Loader'
 
 const StudentsScreen = () => {
 	const dispatch = useAppDispatch()
@@ -25,9 +24,7 @@ const StudentsScreen = () => {
 	const { loadingGetStudentUsers, studentUsersList, successGetStudentUsers, errorGetStudentUsers } = useAppSelector(
 		(state: RootState) => state.getStudentUsers,
 	)
-	const { successRegisterStudents, studentRegisteredList } = useAppSelector(
-		(state: RootState) => state.registerStudents,
-	)
+	const { successRegisterStudents, studentRegistered } = useAppSelector((state: RootState) => state.registerStudents)
 	const { successUpdateStudentUserById, studentUserByIdUpdated } = useAppSelector(
 		(state) => state.updateStudentUserById,
 	)
@@ -44,8 +41,8 @@ const StudentsScreen = () => {
 		}
 	}, [successGetStudentUsers])
 	useEffect(() => {
-		if (successRegisterStudents) {
-			setStudents((prev) => [...prev, ...(studentRegisteredList || [])])
+		if (successRegisterStudents && studentRegistered) {
+			setStudents((prev) => [...prev, studentRegistered])
 			setOpenStudentsRegisterModal(false)
 		}
 	}, [successRegisterStudents])
@@ -80,37 +77,40 @@ const StudentsScreen = () => {
 
 	return (
 		<>
-			<SafeAreaViewStyled>
-				<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
-					<ScreenHeader
-						label='Students'
-						labelButton='Add'
-						handleOnPress={() => setOpenStudentsRegisterModal(true)}
-						disabledButton={loadingGetStudentUsers}
-						iconName='plus'
-					/>
-					<TextInput
-						value={textSearch}
-						onChangeText={setTextSearch}
-						placeholder='Search students'
-						style={{
-							width: '100%',
-							backgroundColor: '#E5E7EB',
-							padding: 10,
-							borderRadius: 5,
-							fontSize: 15,
-							height: 50,
-							marginVertical: 3,
-							marginBottom: 10,
-							color: '#1F2937',
-						}}
-					/>
-					<ScrollView>
-						{errorGetStudentUsers && !students?.length ? (
-							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-								<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-							</View>
-						) : (
+			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+				<ScreenHeader
+					label='Students'
+					labelButton='Add'
+					handleOnPress={() => setOpenStudentsRegisterModal(true)}
+					disabledButton={loadingGetStudentUsers}
+					iconName='plus'
+				/>
+				{loadingGetStudentUsers ? (
+					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+						<Loader text='Loading students' />
+					</View>
+				) : errorGetStudentUsers && !students?.length ? (
+					<View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+						<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+					</View>
+				) : (
+					<>
+						<TextInput
+							value={textSearch}
+							onChangeText={setTextSearch}
+							placeholder='Search students'
+							style={{
+								width: '100%',
+								backgroundColor: '#E5E7EB',
+								padding: 10,
+								borderRadius: 5,
+								fontSize: 15,
+								height: 50,
+								marginVertical: 3,
+								color: '#1F2937',
+							}}
+						/>
+						<ScrollView>
 							<FlatList
 								nestedScrollEnabled={true}
 								scrollEnabled={false}
@@ -145,11 +145,10 @@ const StudentsScreen = () => {
 								)}
 								keyExtractor={(item) => item._id}
 							/>
-						)}
-					</ScrollView>
-				</View>
-			</SafeAreaViewStyled>
-			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
+						</ScrollView>
+					</>
+				)}
+			</View>
 			{openStudentsRegisterModal && (
 				<StudentsRegisterModal
 					openModal={openStudentsRegisterModal}

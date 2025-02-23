@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, TextInputProps, Pressable } from 'react-native'
-import { StyledCustomInputlabel, StyledCustomTextInput } from './styles/customInputFormStyles'
+import { StyledCustomInputlabel, StyledCustomTextInput } from '@/theme/styles'
 
 interface ICustomInputFormProps extends TextInputProps {
 	label?: string
@@ -12,7 +12,7 @@ const CustomInputForm = ({ label, onPress, ...props }: ICustomInputFormProps) =>
 		<View>
 			{Boolean(label?.length) && <StyledCustomInputlabel>{label}</StyledCustomInputlabel>}
 			<Pressable onPress={onPress}>
-				<StyledCustomTextInput {...props} onPressIn={onPress}  />
+				<StyledCustomTextInput {...props} onPressIn={onPress} />
 			</Pressable>
 		</View>
 	)

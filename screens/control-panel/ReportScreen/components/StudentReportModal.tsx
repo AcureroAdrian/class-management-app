@@ -113,7 +113,7 @@ const StudentReportModal = ({ openModal, closeModal }: { openModal: boolean; clo
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<KeyboardAvoidingWrapper>
 					<View>
 						<ScreenHeader label='Student Report' showBackButton={true} handleBack={closeModal} />

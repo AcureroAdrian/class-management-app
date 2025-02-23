@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, Modal, Button } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import CustomBackdrop from '@/components/CustmBackdrop/CustomBackdrop'
 import { IStudent } from '../helpers/karate-classes-interfaces'
 import PickStudentsModal from './PickStudentsModal'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUsers } from '@/redux/actions/userActions'
 import { GET_STUDENT_USERS_RESET } from '@/redux/constants/userConstants'
+import Loader from '@/components/Loader/Loader'
 
 const AssignedStudentsModal = ({
 	openModal,
@@ -63,7 +63,7 @@ const AssignedStudentsModal = ({
 
 	return (
 		<>
-			<Modal visible={openModal} animationType='slide' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 				<View
 					style={{
 						flex: 1,
@@ -81,19 +81,22 @@ const AssignedStudentsModal = ({
 						showBackButton={true}
 						handleBack={handleSaveStudentsSelected}
 					/>
-					<View style={{ width: '100%', alignItems: 'center' }}>
-						<ScrollView>
-							{!studentsSelected?.length && (
-								<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-									<Text style={{ fontSize: 16, color: 'red' }}>No students assigned</Text>
-									<Button title='Assign students' onPress={() => setOpenPickStudentsModal(true)} />
-								</View>
-							)}
-							{errorGetStudentUsers && !students?.length ? (
-								<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-									<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-								</View>
-							) : (
+					<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+						{loadingGetStudentUsers ? (
+							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+								<Loader text='Loading students' />
+							</View>
+						) : errorGetStudentUsers && !students?.length ? (
+							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+								<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+							</View>
+						) : !studentsSelected?.length ? (
+							<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
+								<Text style={{ fontSize: 16, color: 'red' }}>No students assigned</Text>
+								<Button title='Assign students' onPress={() => setOpenPickStudentsModal(true)} />
+							</View>
+						) : (
+							<ScrollView>
 								<FlatList
 									nestedScrollEnabled={true}
 									scrollEnabled={false}
@@ -146,8 +149,8 @@ const AssignedStudentsModal = ({
 									)}
 									keyExtractor={(item) => item._id}
 								/>
-							)}
-						</ScrollView>
+							</ScrollView>
+						)}
 					</View>
 				</View>
 				{openPickStudentsModal && (
@@ -160,7 +163,6 @@ const AssignedStudentsModal = ({
 					/>
 				)}
 			</Modal>
-			{loadingGetStudentUsers && <CustomBackdrop openBackdrop={loadingGetStudentUsers} label='Loading students ...' />}
 		</>
 	)
 }

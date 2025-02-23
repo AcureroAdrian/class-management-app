@@ -7,6 +7,7 @@ export interface IScreenHeaderProps {
 	labelButton?: string
 	handleOnPress?: () => void
 	disabledButton?: boolean
+	loadingButtonAction?: boolean
 	iconName?: ComponentProps<typeof AntDesign>['name']
 	showBackButton?: boolean
 	handleBack?: () => void
