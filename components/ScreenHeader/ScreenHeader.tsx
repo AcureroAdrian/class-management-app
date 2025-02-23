@@ -3,7 +3,15 @@ import { ActivityIndicator } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AntDesign } from '@expo/vector-icons'
 import { IScreenHeaderProps } from './helpers/screen-header-interfaces'
-import { ButtonContainer, HeaderContainer, HeaderTitle, ButtonText, RowContainer, BackButton, ActionButton } from './screen-header-styles'
+import {
+	ButtonContainer,
+	HeaderContainer,
+	HeaderTitle,
+	ButtonText,
+	RowContainer,
+	BackButton,
+	ActionButton,
+} from './screen-header-styles'
 
 const ScreenHeader = ({
 	label = '',
@@ -27,10 +35,7 @@ const ScreenHeader = ({
 				)}
 				<HeaderTitle>{label?.length > 17 ? label.substring(0, 17) + '...' : label}</HeaderTitle>
 			</RowContainer>
-			<ActionButton
-				onPress={handleOnPress}
-				disabled={disabledButton}
-			>
+			<ActionButton onPress={handleOnPress} disabled={disabledButton}>
 				<ButtonContainer>
 					<ButtonText>{labelButton}</ButtonText>
 					{Boolean(iconName) &&

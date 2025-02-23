@@ -205,7 +205,13 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 														{item.students.length} student{item.students.length ? 's' : ''}
 													</Text>
 												</View>
-												<View style={{ width: 30, justifyContent: 'center', alignItems: 'center' }}>
+												<View
+													style={{
+														width: item._id === deleteId ? 30 : 1,
+														justifyContent: 'center',
+														alignItems: 'center',
+													}}
+												>
 													<Pressable onPress={handleShowConfirmationModal}>
 														{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
 													</Pressable>

@@ -1,8 +1,7 @@
-import { FunctionComponent } from 'react'
 import styled from 'styled-components/native'
 import { IHeaderContainer } from './helpers/header-screen-interfaces'
 
-export const HeaderContainer: FunctionComponent<IHeaderContainer> = styled.View`
+export const HeaderContainer = styled.View<IHeaderContainer>`
 	background-color: #d93b3d;
 	width: 100%;
 	padding-top: ${(props: IHeaderContainer) => (props?.statusbarHeigth || 0) + 10}px;
