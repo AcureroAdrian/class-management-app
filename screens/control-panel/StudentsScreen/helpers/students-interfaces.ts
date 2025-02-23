@@ -17,4 +17,5 @@ export interface IFullStudent extends Omit<IStudent, '_id'> {
 	notes?: string
 	level?: TUserLevel
 	avatar?: string
+	isTeacher: boolean
 }

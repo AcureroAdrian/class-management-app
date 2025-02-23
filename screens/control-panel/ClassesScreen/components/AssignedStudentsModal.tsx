@@ -32,7 +32,7 @@ const AssignedStudentsModal = ({
 	)
 
 	useEffect(() => {
-		dispatch(getStudentUsers())
+		dispatch(getStudentUsers('students'))
 		return () => {
 			dispatch({ type: GET_STUDENT_USERS_RESET })
 		}

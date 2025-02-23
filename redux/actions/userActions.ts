@@ -38,30 +38,31 @@ export const login = (dataLogin: IDataLogin) => async (dispatch: Dispatch, getSt
 	}
 }
 
-export const getStudentUsers = () => async (dispatch: Dispatch, getState: AppStore['getState']) => {
-	try {
-		dispatch({ type: types.GET_STUDENT_USERS_REQUEST })
+export const getStudentUsers =
+	(mode: 'teachers' | 'students') => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.GET_STUDENT_USERS_REQUEST })
 
-		const {
-			userLogin: { userInfo },
-		} = getState()
+			const {
+				userLogin: { userInfo },
+			} = getState()
 
-		const config = {
-			headers: {
-				Authorization: `Bearer ${userInfo?.token}`,
-			},
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.get(`/api/users?mode=${mode}`, config)
+
+			dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.GET_STUDENT_USERS_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
 		}
-
-		const { data } = await customAxios.get('/api/users', config)
-
-		dispatch({ type: types.GET_STUDENT_USERS_SUCCESS, payload: data })
-	} catch (error: any) {
-		dispatch({
-			type: types.GET_STUDENT_USERS_FAIL,
-			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
-		})
 	}
-}
 
 export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
 	try {

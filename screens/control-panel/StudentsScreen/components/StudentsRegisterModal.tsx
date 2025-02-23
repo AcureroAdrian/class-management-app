@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Modal } from 'react-native'
+import { View, Text, Modal, Switch } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -7,13 +7,23 @@ import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
 import { levelsInitialValues } from '../helpers/student-screen-initial-values'
 import { IFullStudent } from '../helpers/students-interfaces'
-import { TUserLevel } from '@/shared/common-types'
+import { TUserLevel, TUserRole } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerStudents } from '@/redux/actions/userActions'
 import { REGISTER_STUDENTS_RESET } from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
 
-const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
+const StudentsRegisterModal = ({
+	openModal,
+	closeModal,
+	role,
+	mode,
+}: {
+	openModal: boolean
+	closeModal: () => void
+	role: TUserRole
+	mode: 'students' | 'teachers'
+}) => {
 	const dispatch = useAppDispatch()
 
 	const [studentName, setStudentName] = useState<string>('')
@@ -24,6 +34,7 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 	const [email, setEmail] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
 	const [level, setLevel] = useState<TUserLevel>()
+	const [isTeacher, setIsTeacher] = useState<boolean>(mode === 'teachers')
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -51,6 +62,7 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 			email,
 			notes,
 			level,
+			isTeacher,
 		}
 
 		if (dob) {
@@ -139,6 +151,27 @@ const StudentsRegisterModal = ({ openModal, closeModal }: { openModal: boolean; 
 						value={notes}
 						editable={!loadingRegisterStudents}
 					/>
+					{role === 'admin' && (
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'flex-start',
+								width: '100%',
+								gap: 5,
+								alignItems: 'center',
+								marginTop: 10,
+							}}
+						>
+							<Switch
+								trackColor={{ false: '#767577', true: '#81b0ff' }}
+								thumbColor={isTeacher ? '#f5dd4b' : '#f4f3f4'}
+								ios_backgroundColor='#3e3e3e'
+								onValueChange={() => setIsTeacher(!isTeacher)}
+								value={isTeacher}
+							/>
+							<Text>Is Teacher</Text>
+						</View>
+					)}
 					{(errorMessage || errorRegisterStudents) && (
 						<Text
 							style={{

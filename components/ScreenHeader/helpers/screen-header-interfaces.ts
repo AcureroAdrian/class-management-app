@@ -11,6 +11,8 @@ export interface IScreenHeaderProps {
 	iconName?: ComponentProps<typeof AntDesign>['name']
 	showBackButton?: boolean
 	handleBack?: () => void
+	additionalIcon?: ComponentProps<typeof AntDesign>['name']
+	handleAdditionalIcon?: () => void
 }
 
 export interface IHeaderContainer extends ViewProps {

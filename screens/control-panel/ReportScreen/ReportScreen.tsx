@@ -21,7 +21,7 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (role === 'admin') {
 			dispatch(getkarateClassesByAdmin())
-			dispatch(getStudentUsers())
+			dispatch(getStudentUsers('students'))
 		} else if (role === 'student') {
 			dispatch(getkarateClassesByStudentId(userInfo?._id || ''))
 		}

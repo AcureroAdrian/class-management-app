@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text } from 'react-native'
+import { View, Modal, Text, Switch } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
@@ -10,7 +10,7 @@ import { IFullStudent } from '../helpers/students-interfaces'
 import getStudentDataToUpdate from '../helpers/get-student-data-to-update'
 import { levelsInitialValues } from '../helpers/student-screen-initial-values'
 import capitalizeWords from '@/shared/capitalize-words'
-import { TUserLevel } from '@/shared/common-types'
+import { TUserLevel, TUserRole } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUserById, updateStudentUserById } from '@/redux/actions/userActions'
 import { GET_STUDENT_USER_BY_ID_RESET, UPDATE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
@@ -20,10 +20,12 @@ const StudentEditModal = ({
 	openModal,
 	closeModal,
 	studentId,
+	role,
 }: {
 	openModal: boolean
 	closeModal: () => void
 	studentId: string
+	role: TUserRole
 }) => {
 	const dispatch = useAppDispatch()
 
@@ -36,6 +38,7 @@ const StudentEditModal = ({
 	const [email, setEmail] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
 	const [level, setLevel] = useState<TUserLevel>()
+	const [isTeacher, setIsTeacher] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 
 	const { loadingGetStudentUserById, successGetStudentUserById, studentUserById, errorGetStudentUserById } =
@@ -64,6 +67,7 @@ const StudentEditModal = ({
 			setEmail(studentUserById?.email || '')
 			setNotes(studentUserById?.notes || '')
 			setLevel((studentUserById?.level as TUserLevel) || undefined)
+			setIsTeacher(studentUserById?.isTeacher || false)
 			if (studentUserById?.dateOfBirth?.year) {
 				const dob = new Date(
 					studentUserById?.dateOfBirth?.year,
@@ -104,6 +108,7 @@ const StudentEditModal = ({
 			email,
 			notes,
 			level,
+			isTeacher,
 		}
 
 		if (dob) {
@@ -205,6 +210,27 @@ const StudentEditModal = ({
 								value={notes}
 								editable={!loadingUpdateStudentUserById}
 							/>
+							{role === 'admin' && (
+								<View
+									style={{
+										flexDirection: 'row',
+										justifyContent: 'flex-start',
+										width: '100%',
+										gap: 5,
+										alignItems: 'center',
+										marginTop: 10,
+									}}
+								>
+									<Switch
+										trackColor={{ false: '#767577', true: '#81b0ff' }}
+										thumbColor={isTeacher ? '#f5dd4b' : '#f4f3f4'}
+										ios_backgroundColor='#3e3e3e'
+										onValueChange={() => setIsTeacher(!isTeacher)}
+										value={isTeacher}
+									/>
+									<Text>Is Teacher</Text>
+								</View>
+							)}
 						</View>
 						{errorMessage && (
 							<Text

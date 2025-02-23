@@ -18,6 +18,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
 	const segments: string[] = useSegments()
 
+	const [mode, setMode] = useState<'students' | 'teachers'>('students')
 	const [students, setStudents] = useState<IStudent[]>([])
 	const [filteredStudents, setFilteredStudents] = useState<IStudent[]>([])
 	const [openStudentsRegisterModal, setOpenStudentsRegisterModal] = useState<boolean>(false)
@@ -40,9 +41,9 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (segments[1] === 'students') {
 			setStudents([])
-			dispatch(getStudentUsers())
+			dispatch(getStudentUsers(mode))
 		}
-	}, [segments])
+	}, [segments, mode])
 	useEffect(() => {
 		if (successGetStudentUsers && studentUsersList) {
 			setDeleteId('')
@@ -69,15 +70,23 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (successUpdateStudentUserById) {
 			setDeleteId('')
-			setStudents((prev) =>
-				prev.map((student) => {
-					if (student._id === studentUserByIdUpdated?._id) {
-						student.name = studentUserByIdUpdated?.name
-						student.lastName = studentUserByIdUpdated?.lastName
-					}
-					return student
-				}),
-			)
+			if (
+				(mode === 'students' && !studentUserByIdUpdated?.isTeacher) ||
+				(mode === 'teachers' && studentUserByIdUpdated?.isTeacher)
+			) {
+				setStudents((prev) =>
+					prev.map((student) => {
+						if (student._id === studentUserByIdUpdated?._id) {
+							student.name = studentUserByIdUpdated?.name
+							student.lastName = studentUserByIdUpdated?.lastName
+						}
+						return student
+					}),
+				)
+			} else {
+				setStudents((prev) => prev.filter((student) => student._id !== studentUserByIdUpdated?._id))
+			}
+
 			setOpenStudentEditModal(false)
 		}
 	}, [successUpdateStudentUserById])
@@ -88,6 +97,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 			setOpenConfirmationDeleteModal(false)
 		}
 	}, [successDeleteStudentUserById])
+	useEffect(() => {}, [])
 
 	const handleSelectStudent = (student: IStudent) => {
 		setStudentIdSelected(student._id)
@@ -107,11 +117,13 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 		<>
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader
-					label='Students'
+					label={mode === 'students' ? 'Students' : 'Teachers'}
 					labelButton='Add'
 					handleOnPress={() => [setOpenStudentsRegisterModal(true), setDeleteId('')]}
 					disabledButton={loadingGetStudentUsers}
 					iconName='plus'
+					additionalIcon={role === 'admin' ? 'swap' : undefined}
+					handleAdditionalIcon={() => setMode(mode === 'students' ? 'teachers' : 'students')}
 				/>
 				{loadingGetStudentUsers ? (
 					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
@@ -126,7 +138,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 						<TextInput
 							value={textSearch}
 							onChangeText={setTextSearch}
-							placeholder='Search students'
+							placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
 							placeholderTextColor='#A0A0A0'
 							style={{
 								width: '100%',
@@ -200,6 +212,8 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 				<StudentsRegisterModal
 					openModal={openStudentsRegisterModal}
 					closeModal={() => setOpenStudentsRegisterModal(false)}
+					role={role}
+					mode={mode}
 				/>
 			)}
 			{openStudentEditModal && (
@@ -207,6 +221,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 					openModal={openStudentEditModal}
 					closeModal={() => [setOpenStudentEditModal(false), setStudentIdSelected('')]}
 					studentId={studentIdSelected}
+					role={role}
 				/>
 			)}
 			{openConfirmationDeleteModal && (
@@ -216,7 +231,11 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 						setOpenConfirmationDeleteModal(false),
 						dispatch({ type: DELETE_STUDENT_USER_BY_ID_RESET }),
 					]}
-					title='Are you sure you want to delete this student?'
+					title={
+						mode === 'students'
+							? 'Are you sure you want to delete this student?'
+							: 'Are you sure you want to delete this teacher?'
+					}
 					handleConfirm={handleConfirmDeleteStudent}
 					loadingDelete={loadingDeleteStudentUserById}
 					errorDelete={errorDeleteStudentUserById}
