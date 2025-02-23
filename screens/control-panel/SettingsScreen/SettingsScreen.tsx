@@ -9,6 +9,14 @@ import { AntDesign } from '@expo/vector-icons'
 import colors from '@/theme/colors'
 import MyProfileModal from './components/MyProfileModal'
 import InfoModal from './components/InfoModal'
+import {
+	Container,
+	Content,
+	PressableContainer,
+	LogoutButton,
+	TextBold,
+	Divider
+} from './settings-screen-styles'
 
 const SettingsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -24,29 +32,31 @@ const SettingsScreen = ({ role }: { role: TUserRole }) => {
 
 	return (
 		<>
-			<View style={{ flex: 1 }}>
+			<Container>
 				<ScreenHeader label='Settings' />
-				<View style={{ gap: 30, marginTop: 20, marginBottom: 20, padding: 20, flex: 1 }}>
+				<Content>
 					<Pressable onPress={() => setOpenMyProfileModal(true)}>
-						<View style={{ flexDirection: 'row', gap: 10 }}>
-							<AntDesign name='user' size={24} color='black' />
-							<Text>My Account</Text>
-						</View>
+						<PressableContainer>
+							<AntDesign name='user' size={26} color='black' />
+							<TextBold>My Account</TextBold>
+						</PressableContainer>
 					</Pressable>
+					<Divider />
 					<Pressable onPress={() => setOpenInfoModal(true)}>
-						<View style={{ flexDirection: 'row', gap: 10 }}>
-							<AntDesign name='infocirlce' size={24} color='black' />
-							<Text>About Miyagi Ken International</Text>
-						</View>
+						<PressableContainer>
+							<AntDesign name='infocirlce' size={26} color='black' />
+							<TextBold>About Miyagi Ken International</TextBold>
+						</PressableContainer>
 					</Pressable>
-					<Pressable onPress={handleOnLogout} style={{ justifyContent: 'flex-end' }}>
-						<View style={{ flexDirection: 'row', gap: 10 }}>
-							<AntDesign name='logout' size={24} color='black' />
-							<Text>Logout</Text>
-						</View>
-					</Pressable>
-				</View>
-			</View>
+					<Divider />
+					<LogoutButton onPress={handleOnLogout}>
+						<PressableContainer>
+							<AntDesign name='logout' size={26} color='black' />
+							<TextBold>Logout</TextBold>
+						</PressableContainer>
+					</LogoutButton>
+				</Content>
+			</Container>
 			{openMyProfileModal && (
 				<MyProfileModal openModal={openMyProfileModal} closeModal={() => setOpenMyProfileModal(false)} />
 			)}
