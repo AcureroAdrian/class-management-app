@@ -1,3 +1,5 @@
+import { TLocation } from '@/shared/common-types'
+
 interface IKarateClass {
 	name: string
 	levels: string[]
@@ -7,6 +9,7 @@ interface IKarateClass {
 	description: string
 	minAge: number
 	maxAge: number
+	location?: TLocation
 }
 
 const compareArrays = (array1: string[], array2: string[]) => {
@@ -56,6 +59,10 @@ const getDataToUpdate = (oldData: IKarateClass, newData: IKarateClass) => {
 
 	if (oldData.maxAge !== newData.maxAge) {
 		dataToUpdate.maxAge = newData.maxAge
+	}
+
+	if (oldData.location !== newData.location) {
+		dataToUpdate.location = newData.location
 	}
 
 	return { needUpdate: Boolean(Object.keys(dataToUpdate).length), dataToUpdate }

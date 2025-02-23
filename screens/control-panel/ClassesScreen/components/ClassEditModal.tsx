@@ -5,17 +5,23 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
+import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
+import AgeRangeInput from './AgeRangeInput'
 import AssignedStudentsModal from './AssignedStudentsModal'
-import { levelsInitialValues, weekDaysInitialValues } from '../helpers/karate-classes-initial-values'
+import {
+	levelsInitialValues,
+	locationsInitialValues,
+	weekDaysInitialValues,
+} from '../helpers/karate-classes-initial-values'
 import getDataToUpdate from '../helpers/get-data-to-update'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
-import { TDaysOfWeek, TUserLevel } from '@/shared/common-types'
+import { TDaysOfWeek, TLocation, TUserLevel } from '@/shared/common-types'
+import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getkarateClassById, updatekarateClassById } from '@/redux/actions/karateClassActions'
 import { GET_KARATE_CLASS_BY_ID_RESET, UPDATE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
 import colors from '@/theme/colors'
-import AgeRangeInput from './AgeRangeInput'
 
 const ClassEditModal = ({
 	openModal,
@@ -39,9 +45,11 @@ const ClassEditModal = ({
 	const [levels, setLevels] = useState<TUserLevel[]>(levelsInitialValues)
 	const [minAge, setMinAge] = useState<number>(0)
 	const [maxAge, setMaxAge] = useState<number>(100)
+	const [location, setLocation] = useState<TLocation>('spring')
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
+	const [openLocationsModal, setOpenLocationsModal] = useState<boolean>(false)
 	const [openAssignedStudentsModal, setOpenAssignedStudentsModal] = useState<boolean>(false)
 
 	const { loadingGetKarateClassById, successGetKarateClassById, karateClassById, errorGetKarateClassById } =
@@ -71,6 +79,7 @@ const ClassEditModal = ({
 			setStudentsAssigned(karateClassById.students)
 			setMinAge(karateClassById.minAge || 0)
 			setMaxAge(karateClassById.maxAge || 100)
+			setLocation(karateClassById.location || 'spring')
 			const date = new Date()
 			date.setHours(karateClassById.startTime.hour, karateClassById.startTime.minute)
 			setStartTime(date)
@@ -121,6 +130,7 @@ const ClassEditModal = ({
 			weekDays,
 			levels,
 			students: studentsAssigned,
+			location,
 		})
 
 		if (!needUpdate) {
@@ -210,6 +220,14 @@ const ClassEditModal = ({
 								editable={false}
 								onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
 							/>
+							<CustomInputForm
+								label='Location'
+								placeholder='Tap to select a location'
+								placeholderTextColor={colors.darkLight}
+								value={capitalizeWords(location)}
+								editable={false}
+								onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
+							/>
 							{errorMessage && (
 								<Text
 									style={{
@@ -262,6 +280,16 @@ const ClassEditModal = ({
 					closeModal={() => setOpenAssignedStudentsModal(false)}
 					studentsAssigned={studentsAssigned}
 					handleAssignStudents={handleAssignStudents}
+				/>
+			)}
+			{openLocationsModal && (
+				<CustomSelectModal
+					openModal={openLocationsModal}
+					closeModal={() => setOpenLocationsModal(false)}
+					title='Class Locations'
+					options={locationsInitialValues}
+					selected={location || ''}
+					handleSaveOption={(selected: string) => setLocation(selected as TLocation)}
 				/>
 			)}
 		</Modal>
