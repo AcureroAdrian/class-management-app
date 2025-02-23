@@ -11,6 +11,7 @@ export const HeaderContainer: FunctionComponent<IHeaderContainer> = styled.View`
 	padding-right: 15px;
 	flex-direction: row;
 	justify-content: space-between;
+	height: ${(props: IHeaderContainer) => (props?.statusbarHeigth || 0) + 47}px;
 `
 
 export const HeaderTitle = styled.Text`
@@ -27,4 +28,25 @@ export const ButtonContainer = styled.View`
 export const ButtonText = styled.Text`
 	color: white;
 	font-size: 14px;
+`
+
+export const RowContainer = styled.View`
+	flex-direction: row;
+	align-items: center;
+	gap: 15px;
+`
+
+export const BackButton = styled.Pressable`
+	height: 100%;
+	margin-left: -15px;
+	padding-left: 15px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`
+
+export const ActionButton = styled.Pressable`
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `
