@@ -37,6 +37,7 @@ const SelectStudentModal = ({
 					value={textSearch}
 					onChangeText={setTextSearch}
 					placeholder='Search students'
+					placeholderTextColor='#A0A0A0'
 					style={{
 						width: '100%',
 						backgroundColor: '#E5E7EB',
