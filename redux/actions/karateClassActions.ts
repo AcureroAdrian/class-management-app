@@ -118,6 +118,18 @@ export const getKarateClassesToAdminAttendance = () => async (dispatch: Dispatch
 			},
 		}
 
+		// const data = await new Promise((resolve, reject) => {
+		// 	setTimeout(() => {
+		// 		customAxios
+		// 			.get('/api/karate-classes/admin/attendance', config)
+		// 			.then((response) => {
+		// 				resolve(response.data)
+		// 			})
+		// 			.catch((error) => {
+		// 				reject(error)
+		// 			})
+		// 	}, 3000)
+		// })
 		const { data } = await customAxios.get('/api/karate-classes/admin/attendance', config)
 
 		dispatch({ type: types.GET_CLASSES_TO_ADMIN_ATTENDANCE_SUCCESS, payload: data })

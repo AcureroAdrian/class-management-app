@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { format } from 'date-fns'
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { useSegments } from 'expo-router'
+import { addHours, format } from 'date-fns'
 import { CalendarProvider, DateData, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -15,11 +16,13 @@ import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActi
 import { CenterContainer, ErrorMsgBox, SafeAreaViewStyled } from '@/theme/styles'
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
 import colors from '@/theme/colors'
+import Loader from '@/components/Loader/Loader'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 	ExpandableCalendar.defaultProps = undefined
 	const dispatch = useAppDispatch()
+	const segments: string[] = useSegments()
 	const today = new Date()
 
 	const [currentDate, setCurrentDate] = useState(format(new Date(), 'yyyy-MM-dd'))
@@ -50,11 +53,13 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	)
 
 	useEffect(() => {
-		dispatch(getKarateClassesToAdminAttendance())
+		if (segments[1] === 'attendance') {
+			dispatch(getKarateClassesToAdminAttendance())
+		}
 		return () => {
 			dispatch({ type: GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET })
 		}
-	}, [])
+	}, [segments])
 	useEffect(() => {
 		if (successGetKarateClassesToAdminAttendance) {
 			const weekDays = new Set()
@@ -77,12 +82,14 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		}
 	}, [month, year, weekDays])
 	useEffect(() => {
-		setItems([])
-		dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
+		if (successGetKarateClassesToAdminAttendance) {
+			setItems([])
+			dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
 
-		const [year, month, day] = currentDate.split('-').map(Number)
-		dispatch(getStudentAttendanceByDay(year, month, day))
-	}, [currentDate])
+			const [year, month, day] = currentDate.split('-').map(Number)
+			dispatch(getStudentAttendanceByDay(year, month, day))
+		}
+	}, [currentDate, successGetKarateClassesToAdminAttendance])
 	useEffect(() => {
 		if (successStudentAttendanceByDay) {
 			const newItems = studentAttendanceByDayList?.map((item: any) => {
@@ -187,6 +194,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 			<SafeAreaViewStyled>
 				<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 					<ScreenHeader label='Attendance' />
+
 					<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 						<ExpandableCalendar
 							initialPosition={'open' as Positions}
@@ -197,17 +205,22 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 							animateScroll={false}
 							monthFormat='MMM, yyyy'
 							displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance}
+							minDate={
+								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? '1999-01-01' : undefined
+							}
+							maxDate={
+								loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? '1999-01-02' : undefined
+							}
+							allowSelectionOutOfRange={false}
 						/>
 						<View style={{ flex: 1 }}>
 							<View style={{ backgroundColor: 'red', padding: 20 }}>
 								<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
-									{format(new Date(currentDate), 'EEEE, dd')}
+									{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
 								</Text>
 							</View>
-							{loadingStudentAttendanceByDay ? (
-								<CenterContainer>
-									<ActivityIndicator size='large' color={colors.primary} />
-								</CenterContainer>
+							{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
+								<Loader text='Loading attendance...' />
 							) : errorStudentAttendanceByDay ? (
 								<CenterContainer>
 									<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>

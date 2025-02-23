@@ -29,9 +29,9 @@ const AgendaItem = (props: ItemProps) => {
 		>
 			<Text style={{ color: 'blue', marginRight: 15 }}>{startTime}</Text>
 			<View style={{ flex: 1, backgroundColor: '#aed4f7', padding: 10, borderRadius: 10 }}>
-				<Pressable onPress={() => handleOpenAttendance(item.item)}>
+				<Pressable onPress={() => handleOpenAttendance(item.item)} style={{ flex: 1 }}>
 					<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-						<View>
+						<View style={{ flex: 1, paddingRight: 10 }}>
 							<Text numberOfLines={1} style={{ fontSize: 12, fontWeight: 400 }}>
 								{item.name}
 							</Text>

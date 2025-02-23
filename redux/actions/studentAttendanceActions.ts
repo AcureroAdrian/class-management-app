@@ -18,6 +18,18 @@ export const getStudentAttendanceByDay =
 				},
 			}
 
+			// const data = await new Promise((resolve, reject) => {
+			// 	setTimeout(() => {
+			// 		customAxios
+			// 			.get(`/api/student-attendances?year=${year}&month=${month}&day=${day}`, config)
+			// 			.then((response) => {
+			// 				resolve(response.data)
+			// 			})
+			// 			.catch((error) => {
+			// 				reject(error)
+			// 			})
+			// 	}, 2000)
+			// })
 			const { data } = await customAxios.get(`/api/student-attendances?year=${year}&month=${month}&day=${day}`, config)
 
 			dispatch({ type: types.GET_STUDENT_ATTENDANCE_BY_DAY_SUCCESS, payload: data })
