@@ -39,8 +39,10 @@ const StudentEditModal = ({
 	const [notes, setNotes] = useState<string>('')
 	const [level, setLevel] = useState<TUserLevel>()
 	const [isTeacher, setIsTeacher] = useState<boolean>(false)
+	const [isAdmin, setIsAdmin] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 
+	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingGetStudentUserById, successGetStudentUserById, studentUserById, errorGetStudentUserById } =
 		useAppSelector((state) => state.getStudentUserById)
 	const { loadingUpdateStudentUserById, errorUpdateStudentUserById } = useAppSelector(
@@ -68,6 +70,7 @@ const StudentEditModal = ({
 			setNotes(studentUserById?.notes || '')
 			setLevel((studentUserById?.level as TUserLevel) || undefined)
 			setIsTeacher(studentUserById?.isTeacher || false)
+			setIsAdmin(studentUserById?.isAdmin || false)
 			if (studentUserById?.dateOfBirth?.year) {
 				const dob = new Date(
 					studentUserById?.dateOfBirth?.year,
@@ -109,6 +112,7 @@ const StudentEditModal = ({
 			notes,
 			level,
 			isTeacher,
+			isAdmin,
 		}
 
 		if (dob) {
@@ -222,13 +226,34 @@ const StudentEditModal = ({
 									}}
 								>
 									<Switch
-										trackColor={{ false: '#767577', true: '#81b0ff' }}
-										thumbColor={isTeacher ? '#f5dd4b' : '#f4f3f4'}
+										trackColor={{ false: '#767577', true: colors.brand }}
+										thumbColor={'#f4f3f4'}
 										ios_backgroundColor='#3e3e3e'
 										onValueChange={() => setIsTeacher(!isTeacher)}
 										value={isTeacher}
 									/>
 									<Text>Is Teacher</Text>
+								</View>
+							)}
+							{userInfo?.isSuper && (
+								<View
+									style={{
+										flexDirection: 'row',
+										justifyContent: 'flex-start',
+										width: '100%',
+										gap: 5,
+										alignItems: 'center',
+										marginTop: 10,
+									}}
+								>
+									<Switch
+										trackColor={{ false: '#767577', true: colors.brand }}
+										thumbColor={'#f4f3f4'}
+										ios_backgroundColor='#3e3e3e'
+										onValueChange={() => setIsAdmin(!isAdmin)}
+										value={isAdmin}
+									/>
+									<Text>Is Admin</Text>
 								</View>
 							)}
 						</View>

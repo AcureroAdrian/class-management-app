@@ -18,4 +18,5 @@ export interface IFullStudent extends Omit<IStudent, '_id'> {
 	level?: TUserLevel
 	avatar?: string
 	isTeacher: boolean
+	isAdmin: boolean
 }

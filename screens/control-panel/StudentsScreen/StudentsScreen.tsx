@@ -53,7 +53,12 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (successRegisterStudents && studentRegistered) {
 			setDeleteId('')
-			setStudents((prev) => [...prev, studentRegistered])
+			if (
+				(mode === 'teachers' && (studentRegistered.isTeacher || studentRegistered.isAdmin)) ||
+				(mode === 'students' && !studentRegistered.isTeacher && !studentRegistered.isAdmin)
+			) {
+				setStudents((prev) => [...prev, studentRegistered])
+			}
 			setOpenStudentsRegisterModal(false)
 		}
 	}, [successRegisterStudents])
@@ -71,8 +76,8 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 		if (successUpdateStudentUserById) {
 			setDeleteId('')
 			if (
-				(mode === 'students' && !studentUserByIdUpdated?.isTeacher) ||
-				(mode === 'teachers' && studentUserByIdUpdated?.isTeacher)
+				(mode === 'students' && !studentUserByIdUpdated?.isTeacher && !studentUserByIdUpdated?.isAdmin) ||
+				(mode === 'teachers' && (studentUserByIdUpdated?.isTeacher || studentUserByIdUpdated?.isAdmin))
 			) {
 				setStudents((prev) =>
 					prev.map((student) => {
@@ -97,7 +102,6 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 			setOpenConfirmationDeleteModal(false)
 		}
 	}, [successDeleteStudentUserById])
-	useEffect(() => {}, [])
 
 	const handleSelectStudent = (student: IStudent) => {
 		setStudentIdSelected(student._id)

@@ -39,6 +39,10 @@ const getStudentDataToUpdate = (oldStudent: IFullStudent, newStudent: IFullStude
 		dataToUpdate.isTeacher = Boolean(newStudent.isTeacher)
 	}
 
+	if (Boolean(oldStudent.isAdmin) !== Boolean(newStudent.isAdmin)) {
+		dataToUpdate.isAdmin = Boolean(newStudent.isAdmin)
+	}
+
 	return { needUpdate: Boolean(Object.keys(dataToUpdate).length), dataToUpdate }
 }
 

@@ -26,6 +26,8 @@ interface IStudent {
 	_id: string
 	name: string
 	lastName: string
+	isAdmin: boolean
+	isTeacher: boolean
 }
 
 interface ILoginState {

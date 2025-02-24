@@ -35,9 +35,11 @@ const StudentsRegisterModal = ({
 	const [notes, setNotes] = useState<string>('')
 	const [level, setLevel] = useState<TUserLevel>()
 	const [isTeacher, setIsTeacher] = useState<boolean>(mode === 'teachers')
+	const [isAdmin, setIsAdmin] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingRegisterStudents, errorRegisterStudents } = useAppSelector((state) => state.registerStudents)
 
 	useEffect(() => {
@@ -63,6 +65,7 @@ const StudentsRegisterModal = ({
 			notes,
 			level,
 			isTeacher,
+			isAdmin,
 		}
 
 		if (dob) {
@@ -163,13 +166,34 @@ const StudentsRegisterModal = ({
 							}}
 						>
 							<Switch
-								trackColor={{ false: '#767577', true: '#81b0ff' }}
-								thumbColor={isTeacher ? '#f5dd4b' : '#f4f3f4'}
+								trackColor={{ false: '#767577', true: colors.brand }}
+								thumbColor={'#f4f3f4'}
 								ios_backgroundColor='#3e3e3e'
 								onValueChange={() => setIsTeacher(!isTeacher)}
 								value={isTeacher}
 							/>
 							<Text>Is Teacher</Text>
+						</View>
+					)}
+					{userInfo?.isSuper && (
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'flex-start',
+								width: '100%',
+								gap: 5,
+								alignItems: 'center',
+								marginTop: 10,
+							}}
+						>
+							<Switch
+								trackColor={{ false: '#767577', true: colors.brand }}
+								thumbColor={'#f4f3f4'}
+								ios_backgroundColor='#3e3e3e'
+								onValueChange={() => setIsAdmin(!isAdmin)}
+								value={isAdmin}
+							/>
+							<Text>Is Admin</Text>
 						</View>
 					)}
 					{(errorMessage || errorRegisterStudents) && (
