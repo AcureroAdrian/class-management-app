@@ -12,7 +12,9 @@ import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassAc
 import { getStudentAttendanceByDay } from '@/redux/actions/studentAttendanceActions'
 import { GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET } from '@/redux/constants/karateClassConstants'
 import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAttendanceConstants'
+import { deleteHolidayById, registerHolidayByDate } from '@/redux/actions/holidayActions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { DELETE_HOLIDAY_BY_ID_RESET, REGISTER_HOLIDAY_BY_DATE_RESET } from '@/redux/constants/holidayConstants'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -28,6 +30,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const [generatingMarkDates, setGeneratingMarkDates] = useState(false)
 	const [attendanceData, setAttendanceData] = useState<any>(null)
 	const [openAttendanceEditModal, setOpenAttendanceEditModal] = useState<boolean>(false)
+	const [holidayId, setHolidayId] = useState<string>('')
 
 	const {
 		loadingGetKarateClassesToAdminAttendance,
@@ -45,6 +48,15 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	)
 	const { successUpdateStudentAttendanceById, studentAttendanceByIdUpdated } = useAppSelector(
 		(state) => state.updateStudentAttendanceById,
+	)
+	const {
+		loadingRegisterHolidayByDate,
+		successRegisterHolidayByDate,
+		holidayByDateRegistered,
+		errorRegisterHolidayByDate,
+	} = useAppSelector((state) => state.registerHolidayByDate)
+	const { loadingDeleteHolidayById, successDeleteHolidayById, errorDeleteHolidayById } = useAppSelector(
+		(state) => state.deleteHolidayById,
 	)
 
 	useEffect(() => {
@@ -82,6 +94,8 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		if (successGetKarateClassesToAdminAttendance) {
 			setItems([])
 			dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
+			dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
+			dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
 
 			const [year, month, day] = currentDate.split('-').map(Number)
 			dispatch(getStudentAttendanceByDay(year, month, day))
@@ -89,7 +103,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	}, [currentDate, successGetKarateClassesToAdminAttendance])
 	useEffect(() => {
 		if (successStudentAttendanceByDay) {
-			const newItems = studentAttendanceByDayList?.map((item: any, index: number) => {
+			const newItems = studentAttendanceByDayList?.attendances?.map((item: any, index: number) => {
 				let presents = 0
 				let absents = 0
 				item.attendance.forEach((student: any) => {
@@ -111,10 +125,12 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					},
 					presents,
 					absents,
+					total: item?.students?.length,
 					item,
 				}
 			})
 			setItems(newItems || [])
+			setHolidayId(studentAttendanceByDayList?.holiday?._id)
 		}
 	}, [successStudentAttendanceByDay])
 	useEffect(() => {
@@ -177,6 +193,18 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 			setOpenAttendanceEditModal(false)
 		}
 	}, [successUpdateStudentAttendanceById])
+	useEffect(() => {
+		if (successRegisterHolidayByDate) {
+			setHolidayId(holidayByDateRegistered?._id)
+			dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
+		}
+	}, [successRegisterHolidayByDate])
+	useEffect(() => {
+		if (successDeleteHolidayById) {
+			setHolidayId('')
+			dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
+		}
+	}, [successDeleteHolidayById])
 
 	const handleDayChange = (date: string) => {
 		setCurrentDate(date)
@@ -189,12 +217,21 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		setAttendanceData(attendance)
 		setOpenAttendanceEditModal(true)
 	}
+	const handleAddHoliday = () => {
+		if (holidayId?.length) {
+			dispatch(deleteHolidayById(holidayId))
+		} else {
+			const [year, month, day] = currentDate.split('-').map(Number)
+			dispatch(registerHolidayByDate({ year, month, day }))
+		}
+	}
 
 	return (
 		<>
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='Attendance' />
 				<CalendarComponent
+					role={role}
 					currentDate={currentDate}
 					handleDayChange={handleDayChange}
 					handleChangeMonth={handleChangeMonth}
@@ -205,6 +242,11 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					errorStudentAttendanceByDay={errorStudentAttendanceByDay}
 					items={items}
 					handleOpenAttendance={handleOpenAttendance}
+					handleAddHoliday={handleAddHoliday}
+					disableHoliday={format(new Date(), 'yyyy-MM-dd') === currentDate || new Date(currentDate) < new Date()}
+					isHoliday={Boolean(holidayId?.length)}
+					loadingHoliday={loadingRegisterHolidayByDate || loadingDeleteHolidayById}
+					errorHoliday={errorRegisterHolidayByDate || errorDeleteHolidayById}
 				/>
 			</View>
 			{openAttendanceEditModal && (

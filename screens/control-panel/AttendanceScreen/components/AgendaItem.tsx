@@ -6,10 +6,11 @@ import { AntDesign } from '@expo/vector-icons'
 interface ItemProps {
 	item: any
 	handleOpenAttendance: (attendance: any) => void
+	disabled: boolean
 }
 
 const AgendaItem = (props: ItemProps) => {
-	const { item, handleOpenAttendance } = props
+	const { item, handleOpenAttendance, disabled } = props
 
 	const date = new Date()
 	date.setHours(item.startTime.hour)
@@ -29,7 +30,7 @@ const AgendaItem = (props: ItemProps) => {
 		>
 			<Text style={{ color: 'blue', marginRight: 15 }}>{startTime}</Text>
 			<View style={{ flex: 1, backgroundColor: '#aed4f7', padding: 10, borderRadius: 10 }}>
-				<Pressable onPress={() => handleOpenAttendance(item.item)} style={{ flex: 1 }}>
+				<Pressable onPress={() => handleOpenAttendance(item.item)} disabled={disabled} style={{ flex: 1 }}>
 					<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 						<View style={{ flex: 1, paddingRight: 10 }}>
 							<Text numberOfLines={1} style={{ fontSize: 12, fontWeight: 400 }}>
@@ -54,7 +55,7 @@ const AgendaItem = (props: ItemProps) => {
 										<Text style={{ color: 'white' }}>{item.presents}</Text>
 									</View>
 								)}
-								{Boolean(item.absents) && (
+								{(Boolean(item.absents) || disabled) && (
 									<View
 										style={{
 											backgroundColor: 'red',
@@ -66,7 +67,7 @@ const AgendaItem = (props: ItemProps) => {
 											borderRadius: '50%',
 										}}
 									>
-										<Text style={{ color: 'white' }}>{item.absents}</Text>
+										<Text style={{ color: 'white' }}>{disabled ? item?.total : item.absents}</Text>
 									</View>
 								)}
 							</View>

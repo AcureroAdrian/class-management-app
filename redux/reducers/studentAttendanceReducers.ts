@@ -59,7 +59,7 @@ interface IStudentReport {
 interface IGetStudentAttendanceByDayState {
 	loadingStudentAttendanceByDay?: boolean
 	successStudentAttendanceByDay?: boolean
-	studentAttendanceByDayList?: any[]
+	studentAttendanceByDayList?: { attendances: any[]; holiday?: any }
 	errorStudentAttendanceByDay?: string
 }
 interface IRegisterStudentAttendanceState {

@@ -29,6 +29,7 @@ import {
 	updateStudentAttendanceByIdReducer,
 } from './studentAttendanceReducers'
 import { deleteRecoveryClassByIdReducer } from './recoveryClassReducers'
+import { deleteHolidayByIdReducer, registerHolidayByDateReducer } from './holidayReducers'
 
 const loginPersistConfig = {
 	key: 'root',
@@ -38,6 +39,7 @@ const loginPersistConfig = {
 
 export default combineReducers({
 	bookingRecoveryClassById: bookingRecoveryClassByIdReducer,
+	deleteHolidayById: deleteHolidayByIdReducer,
 	deleteKarateClassById: deleteKarateClassByIdReducer,
 	deleteRecoveryClassById: deleteRecoveryClassByIdReducer,
 	deleteStudentUserById: deleteStudentUserByIdReducer,
@@ -52,6 +54,7 @@ export default combineReducers({
 	getStudentReportForAdmin: getStudentReportForAdminReducer,
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
+	registerHolidayByDate: registerHolidayByDateReducer,
 	registerKarateClass: registerKarateClassReducer,
 	registerStudentAttendance: registerStudentAttendanceReducer,
 	registerStudents: registerStudentsReducer,
