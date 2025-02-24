@@ -16,6 +16,7 @@ interface IUser {
 	phone?: string
 	notes?: string
 	avatar?: string
+	isSuper: boolean
 	isAdmin: boolean
 	isTeacher: boolean
 	createdAt: string

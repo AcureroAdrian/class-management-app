@@ -40,7 +40,7 @@ interface IDeleteKarateClassByIdState {
 interface IGetKarateClassesForStudentState {
 	loadingKarateClassesForStudent?: boolean
 	successKarateClassesForStudent?: boolean
-	karateClassesForStudentList?: any[]
+	karateClassesForStudentList?: { karateClasses: any[]; absents: any[] }
 	errorKarateClassesForStudent?: string
 }
 interface IGetKarateClassesByStudentIdState {
@@ -48,6 +48,12 @@ interface IGetKarateClassesByStudentIdState {
 	successKarateClassesByStudentId?: boolean
 	karateClassesByStudentIdList?: any[]
 	errorKarateClassesByStudentId?: string
+}
+interface IBookingRecoveryClassByIdState {
+	loadingBookingRecoveryClassById?: boolean
+	successBookingRecoveryClassById?: boolean
+	recoveryClassBooked?: any
+	errorBookingRecoveryClassById?: string
 }
 
 type TGetKarateClassesByAdminReducer = Reducer<IGetKarateClassesByAdminState, any>
@@ -58,6 +64,7 @@ type TGetKarateClassesToAdminAttendanceReducer = Reducer<IGetKarateClassesToAdmi
 type TDeleteKarateClassByIdReducer = Reducer<IDeleteKarateClassByIdState, any>
 type TGetKarateClassesForStudentReducer = Reducer<IGetKarateClassesForStudentState, any>
 type TGetKarateClassesByStudentIdReducer = Reducer<IGetKarateClassesByStudentIdState, any>
+type TBookingRecoveryClassByIdReducer = Reducer<IBookingRecoveryClassByIdState, any>
 
 export const getKarateClassesByAdminReducer: TGetKarateClassesByAdminReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -232,6 +239,28 @@ export const getKarateClassesByStudentIdReducer: TGetKarateClassesByStudentIdRed
 				errorKarateClassesByStudentId: action.payload,
 			}
 		case types.GET_KARATE_CLASSES_BY_STUDENT_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const bookingRecoveryClassByIdReducer: TBookingRecoveryClassByIdReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.BOOKING_RECOVERY_CLASS_BY_ID_REQUEST:
+			return { loadingBookingRecoveryClassById: true }
+		case types.BOOKING_RECOVERY_CLASS_BY_ID_SUCCESS:
+			return {
+				loadingBookingRecoveryClassById: false,
+				successBookingRecoveryClassById: true,
+				recoveryClassBooked: action.payload,
+			}
+		case types.BOOKING_RECOVERY_CLASS_BY_ID_FAIL:
+			return {
+				loadingBookingRecoveryClassById: false,
+				errorBookingRecoveryClassById: action.payload,
+			}
+		case types.BOOKING_RECOVERY_CLASS_BY_ID_RESET:
 			return {}
 		default:
 			return state

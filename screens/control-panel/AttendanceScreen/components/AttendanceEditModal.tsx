@@ -9,6 +9,7 @@ import {
 	UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET,
 } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { format } from 'date-fns'
 
 const AttendanceEditModal = ({
 	openModal,
@@ -111,6 +112,17 @@ const AttendanceEditModal = ({
 
 		return { presents, absents, late }
 	}, [attendance])
+	const isToday = useMemo(() => {
+		const today = new Date()
+		const attendanceDate = new Date(
+			attendanceData?.date?.year || 0,
+			attendanceData?.date?.month - 1 || 0,
+			attendanceData?.date?.day || 0,
+			12,
+			0,
+		)
+		return format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
+	}, [attendanceData])
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
@@ -122,8 +134,8 @@ const AttendanceEditModal = ({
 			>
 				<ScreenHeader
 					label={attendanceData?.karateClass?.name}
-					labelButton='Save'
-					iconName='save'
+					labelButton={isToday ? 'Save' : undefined}
+					iconName={isToday ? 'save' : undefined}
 					disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 					loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 					handleOnPress={handleSaveAtendance}

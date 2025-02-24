@@ -216,3 +216,29 @@ export const getkarateClassesByStudentId =
 			})
 		}
 	}
+
+export const bookingRecoveryClassById =
+	(id: string, dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.BOOKING_RECOVERY_CLASS_BY_ID_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.put('/api/karate-classes/recovery-class/' + id, dataToSend, config)
+
+			dispatch({ type: types.BOOKING_RECOVERY_CLASS_BY_ID_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.BOOKING_RECOVERY_CLASS_BY_ID_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

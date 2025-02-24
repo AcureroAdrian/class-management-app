@@ -206,48 +206,6 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					items={items}
 					handleOpenAttendance={handleOpenAttendance}
 				/>
-				{/* <CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
-					<ExpandableCalendar
-						initialPosition={'open' as Positions}
-						markedDates={markedDates}
-						allowShadow={false}
-						closeOnDayPress={false}
-						hideArrows={true}
-						animateScroll={false}
-						monthFormat='MMM, yyyy'
-						displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance || generatingMarkDates}
-						minDate={
-							loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
-								? '1999-01-01'
-								: undefined
-						}
-						maxDate={
-							loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance || generatingMarkDates
-								? '1999-01-02'
-								: undefined
-						}
-						allowSelectionOutOfRange={false}
-					/>
-					<View style={{ flex: 1 }}>
-						<View style={{ backgroundColor: 'red', padding: 20 }}>
-							<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
-								{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
-							</Text>
-						</View>
-						{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
-							<Loader text='Loading attendance...' />
-						) : errorStudentAttendanceByDay ? (
-							<CenterContainer>
-								<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
-							</CenterContainer>
-						) : (
-							<FlatList
-								data={items}
-								renderItem={({ item }) => <AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} />}
-							/>
-						)}
-					</View>
-				</CalendarProvider> */}
 			</View>
 			{openAttendanceEditModal && (
 				<AttendanceEditModal

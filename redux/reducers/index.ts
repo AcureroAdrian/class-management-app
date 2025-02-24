@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
+	bookingRecoveryClassByIdReducer,
 	deleteKarateClassByIdReducer,
 	getKarateClassByIdReducer,
 	getKarateClassesByAdminReducer,
@@ -27,6 +28,7 @@ import {
 	registerStudentAttendanceReducer,
 	updateStudentAttendanceByIdReducer,
 } from './studentAttendanceReducers'
+import { deleteRecoveryClassByIdReducer } from './recoveryClassReducers'
 
 const loginPersistConfig = {
 	key: 'root',
@@ -35,7 +37,9 @@ const loginPersistConfig = {
 }
 
 export default combineReducers({
+	bookingRecoveryClassById: bookingRecoveryClassByIdReducer,
 	deleteKarateClassById: deleteKarateClassByIdReducer,
+	deleteRecoveryClassById: deleteRecoveryClassByIdReducer,
 	deleteStudentUserById: deleteStudentUserByIdReducer,
 	getClassReportByClassIdForAdmin: getClassReportByClassIdForAdminReducer,
 	getDailyReportForAdmin: getDailyReportForAdminReducer,

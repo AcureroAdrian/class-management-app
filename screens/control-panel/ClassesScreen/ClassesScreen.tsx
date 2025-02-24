@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
 import { AntDesign } from '@expo/vector-icons'
@@ -20,6 +20,11 @@ import {
 	GET_KARATE_CLASSES_FOR_STUDENT_RESET,
 } from '@/redux/constants/karateClassConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import colors from '@/theme/colors'
+import ReserveRecoveryClassModal from './components/ReserveRecoveryClassModal'
+import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
+import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
+import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -32,6 +37,10 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const [classNameSelected, setClassNameSelected] = useState<string>('')
 	const [deleteId, setDeleteId] = useState<string>('')
 	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
+	const [recoveryClasses, setRecoveryClasses] = useState<any[]>([])
+	const [openReserveRecoveryClassModal, setOpenReserveRecoveryClassModal] = useState<boolean>(false)
+	const [openDeleteRecoveryClassModal, setOpenDeleteRecoveryClassModal] = useState<boolean>(false)
+	const [recoveryClassIdSelected, setRecoveryClassIdSelected] = useState<string>('')
 
 	const {
 		loadingKarateClassesByAdmin,
@@ -51,6 +60,15 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	)
 	const { loadingDeleteKarateClassById, successDeleteKarateClassById, karateClassDeleted, errorDeleteKarateClassById } =
 		useAppSelector((state) => state.deleteKarateClassById)
+	const { successBookingRecoveryClassById, recoveryClassBooked } = useAppSelector(
+		(state) => state.bookingRecoveryClassById,
+	)
+	const {
+		loadingDeleteRecoveryClassById,
+		successDeleteRecoveryClassById,
+		recoveryClassDeleted,
+		errorDeleteRecoveryClassById,
+	} = useAppSelector((state) => state.deleteRecoveryClassById)
 
 	useEffect(() => {
 		if (segments?.length < 2) {
@@ -75,7 +93,8 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (successKarateClassesForStudent && karateClassesForStudentList) {
 			setDeleteId('')
-			setKarateClasses(karateClassesForStudentList)
+			setKarateClasses(karateClassesForStudentList.karateClasses)
+			setRecoveryClasses(karateClassesForStudentList.absents)
 		}
 	}, [successKarateClassesForStudent])
 	useEffect(() => {
@@ -108,11 +127,63 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenConfirmationDeleteModal(false)
 		}
 	}, [successDeleteKarateClassById])
+	useEffect(() => {
+		if (successBookingRecoveryClassById) {
+			setRecoveryClasses((prev) =>
+				prev.map((recoveryClass) => {
+					if (recoveryClass._id === recoveryClassBooked.attendance) {
+						recoveryClass.recoveryClass = recoveryClassBooked
+					}
+					return recoveryClass
+				}),
+			)
+			setKarateClasses((prev) =>
+				prev.map((karateClass) => {
+					if (karateClass._id === recoveryClassBooked.karateClass) {
+						karateClass.recoveryClass = recoveryClassBooked
+					}
+					return karateClass
+				}),
+			)
+			setOpenReserveRecoveryClassModal(false)
+		}
+	}, [successBookingRecoveryClassById])
+	useEffect(() => {
+		if (successDeleteRecoveryClassById) {
+			setRecoveryClasses((prev) =>
+				prev.map((recoveryClass) => {
+					if (recoveryClass?.recoveryClass?._id === recoveryClassDeleted?.recoveryClassId) {
+						recoveryClass.recoveryClass = undefined
+					}
+					return recoveryClass
+				}),
+			)
+			setKarateClasses((prev) =>
+				prev.map((karateClass) => {
+					if (karateClass?.recoveryClass?._id === recoveryClassDeleted?.recoveryClassId) {
+						karateClass.recoveryClass = undefined
+					}
+					return karateClass
+				}),
+			)
+			setOpenDeleteRecoveryClassModal(false)
+		}
+	}, [successDeleteRecoveryClassById])
 
 	const handleClassSelect = (classId: string, className: string) => {
 		setClassIdSelected(classId)
-		setClassNameSelected(className)
-		setOpenClassEditModal(true)
+		if (role === 'admin') {
+			setClassNameSelected(className)
+			setOpenClassEditModal(true)
+		} else if (role === 'student') {
+			const classSelected = karateClasses.find((karateClass) => karateClass._id === classId)
+			if (classSelected?.recoveryClass) {
+				setRecoveryClassIdSelected(classSelected?.recoveryClass?._id)
+				setOpenDeleteRecoveryClassModal(true)
+			} else if (recoveryClassCredits) {
+				setOpenReserveRecoveryClassModal(true)
+			}
+		}
 	}
 	const handleSelectDeleteClass = (classId: string) => {
 		setDeleteId(deleteId === classId ? '' : classId)
@@ -123,6 +194,18 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const handleConfirmDeleteStudent = () => {
 		dispatch(deletekarateClassById(deleteId))
 	}
+	const handleDeleteRecoveryClass = () => {
+		dispatch(deleteRecoveryClassById(recoveryClassIdSelected))
+	}
+	const karateClassSelected = useMemo(() => {
+		if (!classIdSelected) return null
+
+		const classSelected = karateClasses.find((karateClass) => karateClass._id === classIdSelected)
+		return classSelected
+	}, [classIdSelected])
+	const recoveryClassCredits = useMemo(() => {
+		return (recoveryClasses || []).filter((e) => !e?.recoveryClass)?.length
+	}, [recoveryClasses])
 
 	return (
 		<>
@@ -136,10 +219,10 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			>
 				<ScreenHeader
 					label='Classes'
-					labelButton='Add'
+					labelButton={role === 'admin' ? 'Add' : undefined}
 					handleOnPress={() => [setOpenClassRegisterModal(true), setDeleteId('')]}
 					disabledButton={loadingKarateClassesByAdmin || loadingKarateClassesForStudent}
-					iconName='plus'
+					iconName={role === 'admin' ? 'plus' : undefined}
 				/>
 				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
 					{loadingKarateClassesByAdmin || loadingKarateClassesForStudent ? (
@@ -153,76 +236,100 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 							</Text>
 						</View>
 					) : (
-						<ScrollView>
-							<FlatList
-								data={karateClasses}
-								keyExtractor={(item) => item._id}
-								nestedScrollEnabled={true}
-								scrollEnabled={false}
-								renderItem={({ item }) => (
-									<>
-										<View
-											style={{
-												width: '100%',
-												flexDirection: 'row',
-												alignItems: 'center',
-												justifyContent: 'space-between',
-											}}
-										>
-											<Pressable
-												key={item._id}
-												onPress={() => [handleClassSelect(item._id, item.name), setDeleteId('')]}
-												onLongPress={() => handleSelectDeleteClass(item._id)}
-												style={{ width: '60%' }}
-											>
-												<View style={{ width: '100%', padding: 10, paddingHorizontal: 15, alignItems: 'flex-start' }}>
-													<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
-														{item.name?.length > 25 ? item.name.substring(0, 25) + '...' : item.name}
-													</Text>
-													<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
-														{item?.description}
-													</Text>
-												</View>
-											</Pressable>
+						<>
+							{role === 'student' && (
+								<View style={{ width: '100%', alignItems: 'flex-start', marginVertical: 10, paddingHorizontal: 10 }}>
+									<Text style={{ fontSize: 16, fontWeight: 500, color: colors.red }}>
+										You have {recoveryClassCredits} absences to recover in the following classes
+									</Text>
+									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+										<Text style={{ fontSize: 16, fontWeight: 500 }}>Reserved: </Text>
+										<AntDesign name='star' size={20} color='green' />
+									</View>
+								</View>
+							)}
+							<ScrollView>
+								<FlatList
+									data={karateClasses}
+									keyExtractor={(item) => item._id}
+									nestedScrollEnabled={true}
+									scrollEnabled={false}
+									renderItem={({ item }) => (
+										<>
 											<View
 												style={{
+													width: '100%',
 													flexDirection: 'row',
-													justifyContent: 'flex-end',
 													alignItems: 'center',
-													padding: 15,
-													width: '40%',
+													justifyContent: 'space-between',
 												}}
 											>
+												<Pressable
+													key={item._id}
+													onPress={() => [handleClassSelect(item._id, item.name), setDeleteId('')]}
+													onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
+													style={{ width: '60%' }}
+												>
+													<View style={{ width: '100%', padding: 10, paddingHorizontal: 15, alignItems: 'flex-start' }}>
+														<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
+															{item.name?.length > 25 ? item.name.substring(0, 25) + '...' : item.name}
+														</Text>
+														<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
+															{item?.description}
+														</Text>
+													</View>
+												</Pressable>
 												<View
 													style={{
 														flexDirection: 'row',
+														justifyContent: 'flex-end',
 														alignItems: 'center',
-														padding: 10,
-														paddingHorizontal: 15,
+														padding: 15,
+														width: '40%',
 													}}
 												>
-													<Text style={{ color: item.students.length ? '' : 'red' }}>
-														{item.students.length} student{item.students.length ? 's' : ''}
-													</Text>
-												</View>
-												<View
-													style={{
-														width: item._id === deleteId ? 30 : 1,
-														justifyContent: 'center',
-														alignItems: 'center',
-													}}
-												>
-													<Pressable onPress={handleShowConfirmationModal}>
-														{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
-													</Pressable>
+													<View
+														style={{
+															flexDirection: 'row',
+															alignItems: 'center',
+															padding: 10,
+															paddingHorizontal: 15,
+														}}
+													>
+														<Text style={{ color: item.students.length ? '' : 'red' }}>
+															{item.students.length} student{item.students.length ? 's' : ''}
+														</Text>
+													</View>
+													<View
+														style={{
+															width: item._id === deleteId ? 30 : 1,
+															justifyContent: 'center',
+															alignItems: 'center',
+														}}
+													>
+														<Pressable onPress={handleShowConfirmationModal}>
+															{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
+														</Pressable>
+													</View>
+													{role === 'student' && item?.recoveryClass && (
+														<View
+															style={{
+																width: 30,
+																justifyContent: 'center',
+																alignItems: 'center',
+															}}
+														>
+															<AntDesign name='star' size={20} color='green' />
+														</View>
+													)}
 												</View>
 											</View>
-										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-									</>
-								)}
-							/>
-						</ScrollView>
+											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+										</>
+									)}
+								/>
+							</ScrollView>
+						</>
 					)}
 				</View>
 			</View>
@@ -248,6 +355,31 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					handleConfirm={handleConfirmDeleteStudent}
 					loadingDelete={loadingDeleteKarateClassById}
 					errorDelete={errorDeleteKarateClassById}
+				/>
+			)}
+			{openReserveRecoveryClassModal && (
+				<ReserveRecoveryClassModal
+					openModal={openReserveRecoveryClassModal}
+					closeModal={() => [setOpenReserveRecoveryClassModal(false), setClassIdSelected('')]}
+					startTime={karateClassSelected?.startTime!}
+					weekDays={karateClassSelected?.weekDays!}
+					location={karateClassSelected?.location!}
+					karateClassId={karateClassSelected?._id!}
+					karateClassName={karateClassSelected?.name || ''}
+					attendanceId={recoveryClasses?.[0]?._id}
+				/>
+			)}
+			{openDeleteRecoveryClassModal && (
+				<DeleteRecoveryClassModal
+					openModal={openDeleteRecoveryClassModal}
+					closeModal={() => [
+						setOpenDeleteRecoveryClassModal(false),
+						setRecoveryClassIdSelected(''),
+						dispatch({ type: DELETE_RECOVERY_CLASS_BY_ID_RESET }),
+					]}
+					handleDeleteRecoveryClass={handleDeleteRecoveryClass}
+					loadingDelete={loadingDeleteRecoveryClassById}
+					errorDelete={errorDeleteRecoveryClassById}
 				/>
 			)}
 		</>
