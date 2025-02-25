@@ -144,7 +144,7 @@ const StudentEditModal = ({
 				<ScreenHeader
 					label='Student Info'
 					labelButton='Save'
-					iconName='save'
+					iconName='content-save'
 					disabledButton={loadingGetStudentUserById || loadingUpdateStudentUserById}
 					handleOnPress={handleUpdateStudent}
 					showBackButton={true}

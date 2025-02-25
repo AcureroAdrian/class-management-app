@@ -90,7 +90,7 @@ const StudentsRegisterModal = ({
 				<ScreenHeader
 					label='Add Student'
 					labelButton='Save'
-					iconName='save'
+					iconName='content-save'
 					disabledButton={loadingRegisterStudents}
 					loadingButtonAction={loadingRegisterStudents}
 					handleOnPress={handleRegisterStudents}

@@ -110,7 +110,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 				<ScreenHeader
 					label='New Class'
 					labelButton='Save'
-					iconName='save'
+					iconName='content-save'
 					disabledButton={loadingRegisterKarateClass}
 					loadingButtonAction={loadingRegisterKarateClass}
 					handleOnPress={handleRegisterClass}

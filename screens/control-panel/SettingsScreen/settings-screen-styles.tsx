@@ -1,35 +1,30 @@
-import styled from "styled-components/native";
-
-export const Divider = styled.View`
-	height: 1px;
-	background-color: #d93b3d;
-	opacity: 0.5;
-`;
+import colors from '@/theme/colors'
+import styled from 'styled-components/native'
 
 export const Container = styled.View`
 	flex: 1;
-`;
+	width: 100%;
+`
 
 export const Content = styled.View`
-	gap: 30px;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	padding: 20px;
 	flex: 1;
-`;
+	width: 100%;
+	padding: 20px;
+	gap: 20px;
+`
 
 export const PressableContainer = styled.View`
-	flex-direction: row;
-	gap: 10px;
-	display: flex;
+	padding-horizontal: 40px;
+	padding-vertical: 20px;
+	gap: 20px;
 	align-items: center;
-`;
-
-export const LogoutButton = styled.Pressable`
-	justify-content: flex-end;
-`;
+	background-color: ${colors.variants.secondary[0]};
+	border-radius: 20px;
+`
 
 export const TextBold = styled.Text`
-	font-weight: bold;
-	font-size: 17px;
-`;
+	font-weight: 500;
+	font-size: 25px;
+	text-align: center;
+	color: ${colors.variants.secondary[5]};
+`

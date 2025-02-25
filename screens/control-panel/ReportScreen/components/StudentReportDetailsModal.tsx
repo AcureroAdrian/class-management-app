@@ -68,7 +68,8 @@ const StudentReportDetailsModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 					handleOnPress={() => setShowChart(!showChart)}
-					iconName='piechart'
+					labelButton='Chart'
+					iconName='chart-pie'
 				/>
 				<View style={{ width: '100%', alignItems: 'center', paddingBottom: 20, flex: 1 }}>
 					<View

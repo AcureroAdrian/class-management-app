@@ -8,6 +8,8 @@ import { TUserRole } from '@/shared/common-types'
 import { getkarateClassesByAdmin, getkarateClassesByStudentId } from '@/redux/actions/karateClassActions'
 import { getStudentUsers } from '@/redux/actions/userActions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import colors from '@/theme/colors'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const ReportScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -32,64 +34,64 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 			<View
 				style={{
 					flex: 1,
-					flexDirection: 'column',
+					width: '100%',
 					justifyContent: 'flex-start',
 					alignItems: 'center',
 				}}
 			>
 				<ScreenHeader label='Reports' />
-				<View style={{ width: '100%', alignItems: 'center', padding: 20, gap: 30 }}>
+				<View
+					style={{ width: '100%', flex: 1, alignItems: 'center', gap: 20, paddingHorizontal: 20, paddingVertical: 20 }}
+				>
 					{role === 'admin' && (
 						<View
 							style={{
 								width: '100%',
-								padding: 15,
-								backgroundColor: 'skyblue',
-								borderRadius: 5,
-								boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+								padding: 20,
+								backgroundColor: colors.variants.secondary[0],
+								borderRadius: 20,
 							}}
 						>
 							<Pressable onPress={() => setOpenDailyReportModal(true)}>
-								<Text style={{ marginBottom: 5 }}>Daily Report</Text>
-								<Text style={{ fontSize: 12, color: '#373535' }}>
-									Daily report for all classes grouped and sorted by dayes in descending order.
+								<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Daily Report</Text>
+								<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
+									Grouped and sorted by days.
 								</Text>
+								<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
 							</Pressable>
 						</View>
 					)}
 					<View
 						style={{
 							width: '100%',
-							padding: 15,
-							backgroundColor: 'skyblue',
-							borderRadius: 5,
-							boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-							cursor: 'pointer',
+							padding: 20,
+							backgroundColor: colors.variants.secondary[0],
+							borderRadius: 20,
 						}}
 					>
 						<Pressable onPress={() => setOpenStudentReportModal(true)}>
-							<Text style={{ marginBottom: 5 }}>Student Report</Text>
-							<Text style={{ fontSize: 12, color: '#373535' }}>
-								Reveals full attendance information for a student of your choice.
+							<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Student Report</Text>
+							<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
+								Attendance information for a student.
 							</Text>
+							<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
 						</Pressable>
 					</View>
 					{role === 'admin' && (
 						<View
 							style={{
 								width: '100%',
-								padding: 15,
-								backgroundColor: 'skyblue',
-								borderRadius: 5,
-								boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-								cursor: 'pointer',
+								padding: 20,
+								backgroundColor: colors.variants.secondary[0],
+								borderRadius: 20,
 							}}
 						>
 							<Pressable onPress={() => setOpenClassReportModal(true)}>
-								<Text style={{ marginBottom: 5 }}>Class Report</Text>
-								<Text style={{ fontSize: 12, color: '#373535' }}>
-									Reveals full attendance information for a single class or all classes combined.
+								<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Class Report</Text>
+								<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
+									Grouped by classes.
 								</Text>
+								<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
 							</Pressable>
 						</View>
 					)}

@@ -26,12 +26,10 @@ import colors from '@/theme/colors'
 const ClassEditModal = ({
 	openModal,
 	closeModal,
-	className,
 	classId,
 }: {
 	openModal: boolean
 	closeModal: () => void
-	className: string
 	classId: string
 }) => {
 	const dispatch = useAppDispatch()
@@ -148,9 +146,9 @@ const ClassEditModal = ({
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, justifyContent: 'flex-start' }}>
 				<ScreenHeader
-					label={className}
+					label='Class Info'
 					labelButton='Save'
-					iconName='save'
+					iconName='content-save'
 					disabledButton={loadingGetKarateClassById || loadingUpdateKarateClassById}
 					loadingButtonAction={loadingUpdateKarateClassById}
 					handleOnPress={handleUpdateClass}

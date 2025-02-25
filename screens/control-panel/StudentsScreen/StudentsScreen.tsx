@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useSegments } from 'expo-router'
 import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -13,6 +13,7 @@ import { TUserRole } from '@/shared/common-types'
 import { deleteStudentUserById, getStudentUsers } from '@/redux/actions/userActions'
 import { DELETE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
+import colors from '@/theme/colors'
 
 const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -119,67 +120,74 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 
 	return (
 		<>
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+			<View style={{ flex: 1, width: '100%', justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader
 					label={mode === 'students' ? 'Students' : 'Teachers'}
 					labelButton='Add'
 					handleOnPress={() => [setOpenStudentsRegisterModal(true), setDeleteId('')]}
 					disabledButton={loadingGetStudentUsers}
 					iconName='plus'
-					additionalIcon={role === 'admin' ? 'swap' : undefined}
+					additionalIcon={role === 'admin' ? 'swap-horizontal' : undefined}
 					handleAdditionalIcon={() => setMode(mode === 'students' ? 'teachers' : 'students')}
 				/>
 				{loadingGetStudentUsers ? (
-					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', padding: 20 }}>
 						<Loader text='Loading students' />
 					</View>
 				) : errorGetStudentUsers && !students?.length ? (
-					<View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+					<View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', padding: 20 }}>
 						<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
 					</View>
 				) : (
 					<>
-						<TextInput
-							value={textSearch}
-							onChangeText={setTextSearch}
-							placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
-							placeholderTextColor='#A0A0A0'
-							style={{
-								width: '100%',
-								backgroundColor: '#E5E7EB',
-								padding: 10,
-								borderRadius: 5,
-								fontSize: 15,
-								height: 50,
-								marginVertical: 3,
-								color: '#1F2937',
-							}}
-						/>
+						<View style={{ width: '100%', padding: 20 }}>
+							<TextInput
+								value={textSearch}
+								onChangeText={setTextSearch}
+								placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
+								placeholderTextColor={colors.variants.secondary[2]}
+								style={{
+									width: '100%',
+									backgroundColor: colors.variants.secondary[0],
+									paddingHorizontal: 20,
+									borderRadius: 10,
+									fontSize: 18,
+									height: 50,
+									color: colors.variants.secondary[5],
+								}}
+							/>
+						</View>
 						<ScrollView>
 							<FlatList
 								nestedScrollEnabled={true}
 								scrollEnabled={false}
 								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
-								renderItem={({ item }) => (
-									<View
-										style={{ paddingHorizontal: 15, paddingTop: 15, alignItems: 'flex-start', width: '100%' }}
-										key={item._id}
-									>
+								renderItem={({ item, index }) => (
+									<>
 										<View
 											style={{
+												width: '100%',
 												flexDirection: 'row',
 												alignItems: 'center',
 												gap: 10,
-												width: '100%',
-												justifyContent: 'flex-start',
+												justifyContent: 'space-between',
+												padding: 20,
 											}}
 										>
 											<Pressable
 												onPress={() => [handleSelectStudent(item), setDeleteId('')]}
 												onLongPress={() => handleSelectDeleteStudent(item._id)}
-												style={{ width: '80%' }}
+												style={{ minWidth: '80%' }}
 											>
-												<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%' }}>
+												<View
+													style={{
+														flexDirection: 'row',
+														justifyContent: 'flex-start',
+														alignItems: 'center',
+														gap: 10,
+														width: '100%',
+													}}
+												>
 													<Image
 														source={require('@/assets/img/default-avatar.png')}
 														style={{ width: 50, height: 50, borderRadius: 50 }}
@@ -188,23 +196,27 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 													<View
 														style={{
 															justifyContent: 'center',
-															alignItems: 'flex-start',
-															flexDirection: 'column',
 														}}
 													>
-														<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-														<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+														<Text style={{ fontSize: 18, color: colors.view.black }}>{capitalizeWords(item.name)}</Text>
+														<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+															{capitalizeWords(item?.lastName)}
+														</Text>
 													</View>
 												</View>
 											</Pressable>
-											<View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
+											<View style={{ justifyContent: 'center', alignItems: 'center', width: 40 }}>
 												<Pressable onPress={handleShowConfirmationModal}>
-													{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
+													{item._id === deleteId && (
+														<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
+													)}
 												</Pressable>
 											</View>
 										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-									</View>
+										{index + 1 !== filteredStudents.length && (
+											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey' }} />
+										)}
+									</>
 								)}
 								keyExtractor={(item) => item._id}
 							/>

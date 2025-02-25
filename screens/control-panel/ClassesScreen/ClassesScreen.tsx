@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
-import { AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import Loader from '@/components/Loader/Loader'
@@ -34,7 +34,6 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const [openClassRegisterModal, setOpenClassRegisterModal] = useState<boolean>(false)
 	const [openClassEditModal, setOpenClassEditModal] = useState<boolean>(false)
 	const [classIdSelected, setClassIdSelected] = useState<string>('')
-	const [classNameSelected, setClassNameSelected] = useState<string>('')
 	const [deleteId, setDeleteId] = useState<string>('')
 	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
 	const [recoveryClasses, setRecoveryClasses] = useState<any[]>([])
@@ -170,10 +169,9 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		}
 	}, [successDeleteRecoveryClassById])
 
-	const handleClassSelect = (classId: string, className: string) => {
+	const handleClassSelect = (classId: string) => {
 		setClassIdSelected(classId)
 		if (role === 'admin') {
-			setClassNameSelected(className)
 			setOpenClassEditModal(true)
 		} else if (role === 'student') {
 			const classSelected = karateClasses.find((karateClass) => karateClass._id === classId)
@@ -212,7 +210,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			<View
 				style={{
 					flex: 1,
-					flexDirection: 'column',
+					width: '100%',
 					justifyContent: 'flex-start',
 					alignItems: 'center',
 				}}
@@ -238,97 +236,108 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					) : (
 						<>
 							{role === 'student' && (
-								<View style={{ width: '100%', alignItems: 'flex-start', marginVertical: 10, paddingHorizontal: 10 }}>
+								<View style={{ width: '100%', alignItems: 'flex-start', marginVertical: 10, paddingHorizontal: 20 }}>
 									<Text style={{ fontSize: 16, fontWeight: 500, color: colors.red }}>
 										You have {recoveryClassCredits} absences to recover in the following classes
 									</Text>
 									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
 										<Text style={{ fontSize: 16, fontWeight: 500 }}>Reserved: </Text>
-										<AntDesign name='star' size={20} color='green' />
+										<MaterialCommunityIcons name='star' size={20} color={colors.view.tertiary} />
 									</View>
 								</View>
 							)}
-							<ScrollView>
-								<FlatList
-									data={karateClasses}
-									keyExtractor={(item) => item._id}
-									nestedScrollEnabled={true}
-									scrollEnabled={false}
-									renderItem={({ item }) => (
-										<>
-											<View
-												style={{
-													width: '100%',
-													flexDirection: 'row',
-													alignItems: 'center',
-													justifyContent: 'space-between',
-												}}
-											>
-												<Pressable
-													key={item._id}
-													onPress={() => [handleClassSelect(item._id, item.name), setDeleteId('')]}
-													onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
-													style={{ width: '60%' }}
-												>
-													<View style={{ width: '100%', padding: 10, paddingHorizontal: 15, alignItems: 'flex-start' }}>
-														<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
-															{item.name?.length > 25 ? item.name.substring(0, 25) + '...' : item.name}
-														</Text>
-														<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
-															{item?.description}
-														</Text>
-													</View>
-												</Pressable>
+							<View style={{ width: '100%', flex: 1, alignItems: 'center', paddingVertical: 20 }}>
+								<ScrollView>
+									<FlatList
+										data={karateClasses}
+										keyExtractor={(item) => item._id}
+										nestedScrollEnabled={true}
+										scrollEnabled={false}
+										renderItem={({ item, index }) => (
+											<>
 												<View
 													style={{
+														width: '100%',
 														flexDirection: 'row',
-														justifyContent: 'flex-end',
 														alignItems: 'center',
-														padding: 15,
-														width: '40%',
+														justifyContent: 'space-between',
+														padding: 20,
 													}}
 												>
+													<Pressable
+														key={item._id}
+														onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
+														onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
+														style={{ width: '60%' }}
+													>
+														<View style={{ width: '100%', alignItems: 'flex-start', gap: 10 }}>
+															<Text numberOfLines={1} style={{ fontSize: 18, color: colors.view.black }}>
+																{item.name?.length > 25 ? item.name.substring(0, 25) + '...' : item.name}
+															</Text>
+															<Text numberOfLines={1} style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+																{item?.description || 'No description'}
+															</Text>
+														</View>
+													</Pressable>
 													<View
 														style={{
 															flexDirection: 'row',
+															justifyContent: 'flex-end',
 															alignItems: 'center',
-															padding: 10,
-															paddingHorizontal: 15,
+															width: '40%',
 														}}
 													>
-														<Text style={{ color: item.students.length ? '' : 'red' }}>
-															{item.students.length} student{item.students.length ? 's' : ''}
-														</Text>
-													</View>
-													<View
-														style={{
-															width: item._id === deleteId ? 30 : 1,
-															justifyContent: 'center',
-															alignItems: 'center',
-														}}
-													>
-														<Pressable onPress={handleShowConfirmationModal}>
-															{item._id === deleteId && <AntDesign name='delete' size={20} color='red' />}
-														</Pressable>
-													</View>
-													{role === 'student' && item?.recoveryClass && (
 														<View
 															style={{
-																width: 30,
-																justifyContent: 'center',
-																alignItems: 'center',
+																alignItems: 'flex-start',
+																paddingVertical: 10,
 															}}
 														>
-															<AntDesign name='star' size={20} color='green' />
+															<Text style={{ color: item.students.length ? '' : colors.view.secondary }}>
+																{item.students.length} student{item.students.length ? 's' : ''}
+															</Text>
 														</View>
-													)}
+														{item._id === deleteId && (
+															<Pressable onPress={handleShowConfirmationModal}>
+																<View
+																	style={{
+																		width: 40,
+																		justifyContent: 'center',
+																		alignItems: 'center',
+																	}}
+																>
+																	<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
+																</View>
+															</Pressable>
+														)}
+														{role === 'student' && item?.recoveryClass && (
+															<View
+																style={{
+																	width: 40,
+																	justifyContent: 'center',
+																	alignItems: 'center',
+																}}
+															>
+																<MaterialCommunityIcons name='star' size={24} color={colors.view.tertiary} />
+															</View>
+														)}
+													</View>
 												</View>
-											</View>
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-										</>
-									)}
-								/>
-							</ScrollView>
+												{karateClasses?.length !== index + 1 && (
+													<View
+														style={{
+															width: '90%',
+															alignSelf: 'center',
+															height: 1,
+															backgroundColor: colors.variants.grey[1],
+														}}
+													/>
+												)}
+											</>
+										)}
+									/>
+								</ScrollView>
+							</View>
 						</>
 					)}
 				</View>
@@ -341,7 +350,6 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					openModal={openClassEditModal}
 					closeModal={() => [setOpenClassEditModal(false), setClassIdSelected('')]}
 					classId={classIdSelected}
-					className={classNameSelected}
 				/>
 			)}
 			{openConfirmationDeleteModal && (

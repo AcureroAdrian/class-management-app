@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { ComponentProps } from 'react'
 import { ViewProps } from 'react-native'
 
@@ -8,10 +8,10 @@ export interface IScreenHeaderProps {
 	handleOnPress?: () => void
 	disabledButton?: boolean
 	loadingButtonAction?: boolean
-	iconName?: ComponentProps<typeof AntDesign>['name']
+	iconName?: ComponentProps<typeof MaterialCommunityIcons>['name']
 	showBackButton?: boolean
 	handleBack?: () => void
-	additionalIcon?: ComponentProps<typeof AntDesign>['name']
+	additionalIcon?: ComponentProps<typeof MaterialCommunityIcons>['name']
 	handleAdditionalIcon?: () => void
 }
 

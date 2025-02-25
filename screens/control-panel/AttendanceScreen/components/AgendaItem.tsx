@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { format } from 'date-fns'
-import { AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 interface ItemProps {
 	item: any
@@ -73,7 +73,7 @@ const AgendaItem = (props: ItemProps) => {
 							</View>
 						</View>
 						<View style={{ alignItems: 'center' }}>
-							<AntDesign name='user' size={24} color='#373535' />
+							<MaterialCommunityIcons name='account' size={24} color='#373535' />
 							<Text style={{ color: '#373535' }}>{item?.item?.students?.length}</Text>
 						</View>
 					</View>

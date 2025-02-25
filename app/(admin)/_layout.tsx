@@ -1,105 +1,16 @@
 import React from 'react'
-import { Tabs } from 'expo-router'
-import { AntDesign } from '@expo/vector-icons'
-
-const AdminTabsLayout = () => {
-	return (
-		<Tabs screenOptions={{ headerShown: false }}>
-			<Tabs.Screen
-				name='index'
-				options={{
-					tabBarLabel: 'Classes',
-					tabBarIcon: () => <AntDesign name='filetext1' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='report'
-				options={{
-					tabBarLabel: 'Reports',
-					tabBarIcon: () => <AntDesign name='linechart' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='attendance'
-				options={{
-					tabBarLabel: 'Attendance',
-					tabBarIcon: () => <AntDesign name='calendar' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='students'
-				options={{
-					tabBarLabel: 'Students',
-					tabBarIcon: () => <AntDesign name='user' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='settings'
-				options={{
-					tabBarLabel: 'Settings',
-					tabBarIcon: () => <AntDesign name='setting' size={24} color='blue' />,
-				}}
-			/>
-		</Tabs>
-	)
-}
-const StudentTabsLayout = () => {
-	return (
-		<Tabs screenOptions={{ headerShown: false }}>
-			<Tabs.Screen
-				name='index'
-				options={{
-					tabBarLabel: 'Classes',
-					tabBarIcon: () => <AntDesign name='filetext1' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='report'
-				options={{
-					tabBarLabel: 'Reports',
-					tabBarIcon: () => <AntDesign name='linechart' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='settings'
-				options={{
-					tabBarLabel: 'Settings',
-					tabBarIcon: () => <AntDesign name='setting' size={24} color='blue' />,
-				}}
-			/>
-		</Tabs>
-	)
-}
-const TeacherTabsLayout = () => {
-	return (
-		<Tabs screenOptions={{ headerShown: false }}>
-			<Tabs.Screen
-				name='index'
-				options={{
-					tabBarLabel: 'Classes',
-					tabBarIcon: () => <AntDesign name='filetext1' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='attendance'
-				options={{
-					tabBarLabel: 'Attendance',
-					tabBarIcon: () => <AntDesign name='calendar' size={24} color='blue' />,
-				}}
-			/>
-			<Tabs.Screen
-				name='settings'
-				options={{
-					tabBarLabel: 'Settings',
-					tabBarIcon: () => <AntDesign name='setting' size={24} color='blue' />,
-				}}
-			/>
-		</Tabs>
-	)
-}
+import TabLayout from '@/components/TabLayout/TabLayout'
+import { ITabItem } from '@/components/TabLayout/helpers/tab-layout-interfaces'
 
 const AdminLayout = () => {
-	return <AdminTabsLayout />
+	const tabs: ITabItem[] = [
+		{ id: 'admin-tab-item-1', name: 'index', label: 'Classes', icon: 'book' },
+		{ id: 'admin-tab-item-2', name: 'report', label: 'Reports', icon: 'chart-box' },
+		{ id: 'admin-tab-item-3', name: 'attendance', label: 'Attendance', icon: 'calendar' },
+		{ id: 'admin-tab-item-4', name: 'students', label: 'Students', icon: 'account-group' },
+		{ id: 'admin-tab-item-5', name: 'settings', label: 'Settings', icon: 'account-settings' },
+	]
+	return <TabLayout tabs={tabs} />
 }
 
 export default AdminLayout

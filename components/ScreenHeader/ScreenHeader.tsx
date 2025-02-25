@@ -1,17 +1,20 @@
 import React from 'react'
 import { ActivityIndicator, Pressable } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AntDesign } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { IScreenHeaderProps } from './helpers/screen-header-interfaces'
 import {
-	ButtonContainer,
 	HeaderContainer,
 	HeaderTitle,
 	ButtonText,
 	RowContainer,
 	BackButton,
 	ActionButton,
+	BackButtonContainer,
+	AdditionalButton,
+	TitleContainer,
 } from './screen-header-styles'
+import colors from '@/theme/colors'
 
 const ScreenHeader = ({
 	label = '',
@@ -29,35 +32,43 @@ const ScreenHeader = ({
 
 	return (
 		<HeaderContainer statusbarHeigth={insets.top}>
-			<RowContainer>
-				{showBackButton && (
+			{showBackButton && (
+				<BackButtonContainer>
 					<BackButton onPress={handleBack}>
-						<AntDesign name='arrowleft' size={24} color='white' style={{ marginTop: 'auto', marginBottom: 'auto' }} />
+						<MaterialCommunityIcons name='arrow-left' size={30} color={colors.view.primary} />
 					</BackButton>
-				)}
-				<HeaderTitle>{label?.length > 17 ? label.substring(0, 17) + '...' : label}</HeaderTitle>
-				{additionalIcon && (
-					<Pressable onPress={handleAdditionalIcon} style={{ width: 40, height: '100%' }}>
-						<AntDesign
-							name={additionalIcon}
-							size={24}
-							color='white'
-							style={{ marginTop: 'auto', marginBottom: 'auto' }}
-						/>
-					</Pressable>
-				)}
+				</BackButtonContainer>
+			)}
+			<RowContainer>
+				<TitleContainer>
+					<HeaderTitle>{label?.length > 17 ? label.substring(0, 17) + '...' : label}</HeaderTitle>
+					{additionalIcon && (
+						<Pressable onPress={handleAdditionalIcon}>
+							<AdditionalButton>
+								<MaterialCommunityIcons name={additionalIcon} size={30} color={colors.view.primary} />
+							</AdditionalButton>
+						</Pressable>
+					)}
+				</TitleContainer>
+				<Pressable onPress={handleOnPress} disabled={disabledButton}>
+					{labelButton && (
+						<ActionButton>
+							<ButtonText>{labelButton}</ButtonText>
+							{Boolean(iconName) &&
+								(loadingButtonAction ? (
+									<ActivityIndicator size={'small'} />
+								) : (
+									<MaterialCommunityIcons
+										name={iconName}
+										size={20}
+										color={colors.variants.primary[5]}
+										style={{ opacity: disabledButton ? 0.5 : 1 }}
+									/>
+								))}
+						</ActionButton>
+					)}
+				</Pressable>
 			</RowContainer>
-			<ActionButton onPress={handleOnPress} disabled={disabledButton}>
-				<ButtonContainer>
-					<ButtonText>{labelButton}</ButtonText>
-					{Boolean(iconName) &&
-						(loadingButtonAction ? (
-							<ActivityIndicator size={'small'} />
-						) : (
-							<AntDesign name={iconName} size={24} color='white' style={{ opacity: disabledButton ? 0.5 : 1 }} />
-						))}
-				</ButtonContainer>
-			</ActionButton>
 		</HeaderContainer>
 	)
 }
