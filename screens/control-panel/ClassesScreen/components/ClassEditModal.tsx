@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text } from 'react-native'
+import { View, Modal, Text, ScrollView } from 'react-native'
 import { format, isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
@@ -161,82 +161,86 @@ const ClassEditModal = ({
 							<Loader text='Loading class info' />
 						</View>
 					) : (
-						<View style={{ width: '90%', flex: 1 }}>
-							<CustomInputForm
-								label='Class Name'
-								placeholder='Mon 7 PM Class'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setName}
-								value={name}
-								editable={!loadingUpdateKarateClassById}
-							/>
-							<CustomInputForm
-								label='Additional Info'
-								placeholder='Its a description ...'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setDescription}
-								value={description}
-								editable={!loadingUpdateKarateClassById}
-							/>
-							<CustomInputForm
-								label='Start Time'
-								placeholder='12:00 p.m.'
-								placeholderTextColor={colors.darkLight}
-								value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-								editable={false}
-								onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
-							/>
-							<CustomInputForm
-								label='Class Students'
-								placeholder='Tap to add students'
-								placeholderTextColor={colors.darkLight}
-								value={`${studentsAssigned?.length} students (Tap to add students)`}
-								editable={false}
-								onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
-							/>
-							<CustomInputForm
-								label='Weekdays'
-								placeholder='Tap to manage class days'
-								placeholderTextColor={colors.darkLight}
-								value={
-									weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
-								}
-								editable={false}
-								onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
-							/>
-							<AgeRangeInput
-								minAge={minAge}
-								maxAge={maxAge}
-								saveMinAge={(value: number) => setMinAge(value)}
-								saveMaxAge={(value: number) => setMaxAge(value)}
-							/>
-							<CustomInputForm
-								label='Levels'
-								placeholder='Tap to manage student levels'
-								placeholderTextColor={colors.darkLight}
-								value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-								editable={false}
-								onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
-							/>
-							<CustomInputForm
-								label='Location'
-								placeholder='Tap to select a location'
-								placeholderTextColor={colors.darkLight}
-								value={capitalizeWords(location)}
-								editable={false}
-								onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
-							/>
-							{errorMessage && (
-								<Text
-									style={{
-										textAlign: 'center',
-										fontSize: 13,
-										color: 'red',
-									}}
-								>
-									{errorMessage}
-								</Text>
-							)}
+						<View style={{ flex: 1, width: '100%' }}>
+							<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+								{errorMessage && (
+									<Text
+										style={{
+											textAlign: 'center',
+											fontSize: 13,
+											color: 'red',
+										}}
+									>
+										{errorMessage}
+									</Text>
+								)}
+								<CustomInputForm
+									label='Class Name'
+									placeholder='Mon 7 PM Class'
+									placeholderTextColor={colors.darkLight}
+									onChangeText={setName}
+									value={name}
+									editable={!loadingUpdateKarateClassById}
+									multiline={true}
+								/>
+								<CustomInputForm
+									label='Additional Info'
+									placeholder='Its a description ...'
+									placeholderTextColor={colors.darkLight}
+									onChangeText={setDescription}
+									value={description}
+									editable={!loadingUpdateKarateClassById}
+									multiline={true}
+								/>
+								<CustomInputForm
+									label='Start Time'
+									placeholder='12:00 p.m.'
+									placeholderTextColor={colors.darkLight}
+									value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+									editable={false}
+									onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
+								/>
+								<CustomInputForm
+									label='Class Students'
+									placeholder='Tap to add students'
+									placeholderTextColor={colors.darkLight}
+									value={`${studentsAssigned?.length} students (Tap to add students)`}
+									editable={false}
+									onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
+								/>
+								<CustomInputForm
+									label='Weekdays'
+									placeholder='Tap to manage class days'
+									placeholderTextColor={colors.darkLight}
+									value={
+										weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
+									}
+									editable={false}
+									onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
+								/>
+								<AgeRangeInput
+									minAge={minAge}
+									maxAge={maxAge}
+									saveMinAge={(value: number) => setMinAge(value)}
+									saveMaxAge={(value: number) => setMaxAge(value)}
+								/>
+								<CustomInputForm
+									label='Levels'
+									placeholder='Tap to manage student levels'
+									placeholderTextColor={colors.darkLight}
+									value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
+									editable={false}
+									onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
+								/>
+								<CustomInputForm
+									label='Location'
+									placeholder='Tap to select a location'
+									placeholderTextColor={colors.darkLight}
+									value={capitalizeWords(location)}
+									editable={false}
+									onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
+								/>
+							</ScrollView>
 						</View>
 					)}
 				</View>

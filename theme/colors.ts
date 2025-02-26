@@ -28,6 +28,7 @@ const colors = {
 			'#101010',
 		],
 		primary: [
+			'#fbebeb',
 			'#F7D8D8',
 			'#EFB1B1',
 			'#E7898A',
@@ -39,6 +40,7 @@ const colors = {
 			'#2D090A',
 		],
 		secondary: [
+			'#dfe9f5',
 			'#C0D2EC',
 			'#81A5D9',
 			'#4278C6',

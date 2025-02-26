@@ -140,22 +140,31 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 					</View>
 				) : (
 					<>
-						<View style={{ width: '100%', padding: 20 }}>
-							<TextInput
-								value={textSearch}
-								onChangeText={setTextSearch}
-								placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
-								placeholderTextColor={colors.variants.secondary[2]}
-								style={{
-									width: '100%',
-									backgroundColor: colors.variants.secondary[0],
-									paddingHorizontal: 20,
-									borderRadius: 10,
-									fontSize: 18,
-									height: 50,
-									color: colors.variants.secondary[5],
-								}}
-							/>
+						<View style={{ width: '100%', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 8 }}>
+							<View style={{ position: 'relative', width: '100%' }}>
+								<MaterialCommunityIcons
+									style={{ position: 'absolute', left: 15, top: 10, zIndex: 1 }}
+									name='account-search'
+									size={30}
+									color={colors.variants.secondary[4]}
+								/>
+								<TextInput
+									value={textSearch}
+									onChangeText={setTextSearch}
+									placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
+									placeholderTextColor={colors.variants.secondary[2]}
+									style={{
+										width: '100%',
+										backgroundColor: colors.variants.secondary[0],
+										paddingLeft: 55,
+										paddingRight: 20,
+										borderRadius: 10,
+										fontSize: 18,
+										height: 50,
+										color: colors.variants.secondary[5],
+									}}
+								/>
+							</View>
 						</View>
 						<ScrollView>
 							<FlatList
@@ -171,13 +180,14 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 												alignItems: 'center',
 												gap: 10,
 												justifyContent: 'space-between',
-												padding: 20,
+												paddingHorizontal: 20,
+												paddingVertical: 8,
 											}}
 										>
 											<Pressable
 												onPress={() => [handleSelectStudent(item), setDeleteId('')]}
 												onLongPress={() => handleSelectDeleteStudent(item._id)}
-												style={{ minWidth: '80%' }}
+												style={{ width: '80%' }}
 											>
 												<View
 													style={{
@@ -190,7 +200,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 												>
 													<Image
 														source={require('@/assets/img/default-avatar.png')}
-														style={{ width: 50, height: 50, borderRadius: 50 }}
+														style={{ width: 48, height: 48, borderRadius: 50 }}
 														resizeMode='contain'
 													/>
 													<View
@@ -198,8 +208,8 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 															justifyContent: 'center',
 														}}
 													>
-														<Text style={{ fontSize: 18, color: colors.view.black }}>{capitalizeWords(item.name)}</Text>
-														<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+														<Text style={{ fontSize: 16, color: colors.view.black }}>{capitalizeWords(item.name)}</Text>
+														<Text style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 															{capitalizeWords(item?.lastName)}
 														</Text>
 													</View>
@@ -214,7 +224,9 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 											</View>
 										</View>
 										{index + 1 !== filteredStudents.length && (
-											<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey' }} />
+											<View style={{ width: '100%', alignItems: 'center' }}>
+												<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+											</View>
 										)}
 									</>
 								)}

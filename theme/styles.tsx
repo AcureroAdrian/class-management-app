@@ -79,18 +79,17 @@ export const SafeAreaViewStyled = styled.SafeAreaView`
 	flex: 1;
 `
 export const StyledCustomTextInput = styled.TextInput`
-	background-color: ${colors.primary};
-	padding: 5px;
+	padding-vertical: 10px;
+	padding-right: 55px;
 	font-size: 16px;
-	height: 30px;
-	margin-vertical: 5px;
-	color: ${colors.tertiary};
+	font-weight: 500;
+	color: ${colors.variants.secondary[5]};
+	margin-top: 5px;
+	border-bottom-width: 1px;
+	border-bottom-color: ${colors.variants.secondary[5]};
 `
 export const StyledCustomInputlabel = styled.Text`
-	color: ${colors.primary};
-	font-size: 13px;
+	color: ${colors.variants.secondary[5]};
+	font-size: 16px;
 	text-align: left;
-	font-weight: 400;
-	margin-top: 10px;
-	background-color: ${colors.brand};
 `

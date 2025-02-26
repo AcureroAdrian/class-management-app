@@ -1,23 +1,9 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Modal, Text } from 'react-native'
-import { format } from 'date-fns'
-import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import capitalizeWords from '@/shared/capitalize-words'
-import { useAppSelector } from '@/redux/store'
-import colors from '@/theme/colors'
-import {
-	CenterAlignContainer,
-	CenterTextConcated,
-	ConcatTextContainer,
-	LoginLogo,
-	LoginSubTitle,
-	LoginTitle,
-	SimpleTextLine,
-	TextLinkContent,
-} from '@/theme/styles'
-import { Line } from 'react-native-svg'
 import { Link } from 'expo-router'
+import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
+import { useAppSelector } from '@/redux/store'
+import { CenterAlignContainer, LoginLogo, LoginSubTitle, LoginTitle, SimpleTextLine } from '@/theme/styles'
 
 const InfoModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const { userInfo } = useAppSelector((state) => state.userLogin)
@@ -40,7 +26,7 @@ const InfoModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: 
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='Info' showBackButton={true} handleBack={closeModal} />
-				<View style={{ flex: 1, marginTop: 20, width: '90%' }}>
+				<View style={{ flex: 1, paddingVertical: 40, paddingHorizontal: 20 }}>
 					<CenterAlignContainer>
 						<LoginLogo resizeMode='contain' source={require('../../../../assets/img/logo.png')} />
 						<LoginTitle>MIYAGI KEN</LoginTitle>

@@ -63,23 +63,26 @@ const AgeRangeInput = ({
 	return (
 		<View style={{ width: '100%' }}>
 			<StyledCustomInputlabel>Age Range</StyledCustomInputlabel>
-			<View style={{ flexDirection: 'row', width: '100%', gap: 10 }}>
+			<View style={{ flexDirection: 'row', width: '100%', gap: 20, alignItems: 'center' }}>
 				<StyledCustomTextInput
 					keyboardType='numeric'
+					placeholder='min age'
 					value={String(minValue || '')}
 					onChangeText={handleMinAgeChange}
-					style={{ width: 50, backgroundColor: 'skyblue' }}
+					style={{ width: 80, paddingRight: 0, textAlign: 'center' }}
 					onBlur={handleMinAgeBlur}
 				/>
+				<Text>-</Text>
 				<StyledCustomTextInput
 					keyboardType='numeric'
 					value={String(maxValue)}
+					placeholder='max age'
 					onChangeText={handleMaxAgeChange}
 					onBlur={handleMaxAgeBlur}
-					style={{ width: 50, backgroundColor: 'skyblue' }}
+					style={{ width: 80, paddingRight: 0, textAlign: 'center' }}
 				/>
+				<Text style={{ color: colors.variants.secondary[5], fontSize: 16, fontWeight: 500 }}>{rangeText}</Text>
 			</View>
-			<Text style={{ color: colors.brand }}>{rangeText}</Text>
 		</View>
 	)
 }

@@ -77,7 +77,7 @@ const Login = () => {
 							<LoginInputArea>
 								<TextInputForm
 									label='Name'
-									icon='person'
+									icon='account'
 									placeholder='George'
 									placeholderTextColor={darkLight}
 									onChangeText={setName}
@@ -85,7 +85,7 @@ const Login = () => {
 								/>
 								<TextInputForm
 									label='Last Name'
-									icon='person'
+									icon='account'
 									placeholder='Smith'
 									placeholderTextColor={darkLight}
 									onChangeText={setLastName}

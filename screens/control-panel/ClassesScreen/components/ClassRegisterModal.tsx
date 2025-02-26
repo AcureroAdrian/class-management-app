@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text } from 'react-native'
+import { View, Modal, Text, ScrollView } from 'react-native'
 import { format, isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -106,7 +106,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1, justifyContent: 'flex-start' }}>
+			<View style={{ flex: 1, width: '100%', justifyContent: 'flex-start' }}>
 				<ScreenHeader
 					label='New Class'
 					labelButton='Save'
@@ -117,70 +117,8 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
-					<View style={{ width: '90%', flex: 1 }}>
-						<CustomInputForm
-							label='Class Name'
-							placeholder='Mon 7 PM Class'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setName}
-							value={name}
-							editable={!loadingRegisterKarateClass}
-						/>
-						<CustomInputForm
-							label='Additional Info'
-							placeholder='Its a description ...'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setDescription}
-							value={description}
-							editable={!loadingRegisterKarateClass}
-						/>
-						<CustomInputForm
-							label='Start Time'
-							placeholder='12:00 p.m.'
-							placeholderTextColor={colors.darkLight}
-							value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-							editable={false}
-							onPress={() => !loadingRegisterKarateClass && setShowDate(true)}
-						/>
-						<CustomInputForm
-							label='Class Students'
-							placeholder='Tap to add students'
-							placeholderTextColor={colors.darkLight}
-							value={`${studentsAssigned?.length} students (Tap to add students)`}
-							editable={false}
-							onPress={() => !loadingRegisterKarateClass && setOpenAssignedStudentsModal(true)}
-						/>
-						<CustomInputForm
-							label='Weekdays'
-							placeholder='Tap to manage class days'
-							placeholderTextColor={colors.darkLight}
-							value={weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined}
-							editable={false}
-							onPress={() => !loadingRegisterKarateClass && setOpenWeekDaysModal(true)}
-						/>
-						<AgeRangeInput
-							minAge={minAge}
-							maxAge={maxAge}
-							saveMinAge={(value: number) => setMinAge(value)}
-							saveMaxAge={(value: number) => setMaxAge(value)}
-						/>
-						<CustomInputForm
-							label='Levels'
-							placeholder='Tap to manage student levels'
-							placeholderTextColor={colors.darkLight}
-							value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-							editable={false}
-							onPress={() => !loadingRegisterKarateClass && setOpenLevelsModal(true)}
-						/>
-						<CustomInputForm
-							label='Location'
-							placeholder='Tap to select a location'
-							placeholderTextColor={colors.darkLight}
-							value={capitalizeWords(location)}
-							editable={false}
-							onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
-						/>
+				<View style={{ flex: 1, width: '100%' }}>
+					<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
 						{errorMessage && (
 							<Text
 								style={{
@@ -192,7 +130,71 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 								{errorMessage}
 							</Text>
 						)}
-					</View>
+						<CustomInputForm
+							label='Class Name'
+							placeholder='Mon 7 PM Class'
+							onChangeText={setName}
+							value={name}
+							editable={!loadingRegisterKarateClass}
+							multiline={true}
+							icon='account'
+						/>
+						<CustomInputForm
+							label='Additional Info'
+							placeholder='Its a description ...'
+							onChangeText={setDescription}
+							value={description}
+							editable={!loadingRegisterKarateClass}
+							multiline={true}
+							icon='note-edit'
+						/>
+						<CustomInputForm
+							label='Start Time'
+							placeholder='12:00 p.m.'
+							value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+							editable={false}
+							onPress={() => !loadingRegisterKarateClass && setShowDate(true)}
+							icon='timer'
+						/>
+						<CustomInputForm
+							label='Class Students'
+							placeholder='Tap to add students'
+							value={`${studentsAssigned?.length} students (Tap to add students)`}
+							editable={false}
+							onPress={() => !loadingRegisterKarateClass && setOpenAssignedStudentsModal(true)}
+							icon='account-group'
+						/>
+						<CustomInputForm
+							label='Weekdays'
+							placeholder='Tap to manage class days'
+							value={weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined}
+							editable={false}
+							onPress={() => !loadingRegisterKarateClass && setOpenWeekDaysModal(true)}
+							icon='calendar'
+						/>
+						<AgeRangeInput
+							minAge={minAge}
+							maxAge={maxAge}
+							saveMinAge={(value: number) => setMinAge(value)}
+							saveMaxAge={(value: number) => setMaxAge(value)}
+						/>
+						<CustomInputForm
+							label='Levels'
+							placeholder='Tap to manage student levels'
+							value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
+							editable={false}
+							onPress={() => !loadingRegisterKarateClass && setOpenLevelsModal(true)}
+							icon='karate'
+						/>
+						<CustomInputForm
+							label='Location'
+							placeholder='Tap to select a location'
+							value={capitalizeWords(location)}
+							editable={false}
+							onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
+							icon='map'
+						/>
+					</ScrollView>
 				</View>
 			</View>
 			{showDate && (

@@ -5,7 +5,7 @@ import { ITabLayoutProps } from './helpers/tab-layout-interfaces'
 import colors from '@/theme/colors'
 
 const TabLayout = ({ tabs }: ITabLayoutProps) => {
-	const sizeIcon = 28
+	const sizeIcon = 24
 	return (
 		<Tabs
 			screenOptions={{
@@ -13,7 +13,8 @@ const TabLayout = ({ tabs }: ITabLayoutProps) => {
 				tabBarActiveBackgroundColor: colors.variants.primary[0],
 				tabBarActiveTintColor: colors.variants.primary[5],
 				tabBarInactiveTintColor: colors.variants.grey[3],
-				tabBarStyle: { height: 60, backgroundColor: colors.view.primary },
+				tabBarStyle: { height: 50 },
+				tabBarLabelStyle: { fontSize: 12, fontWeight: '500' },
 			}}
 		>
 			{tabs.map((tab) => (

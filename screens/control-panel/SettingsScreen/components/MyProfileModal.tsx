@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import { View, Modal, Text } from 'react-native'
+import { View, Modal, Text, ScrollView } from 'react-native'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
@@ -29,14 +29,15 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
 				<ScreenHeader label='My Profile' showBackButton={true} handleBack={closeModal} />
 				{userInfo ? (
-					<>
-						<View style={{ flex: 1, width: '100%', padding: 20 }}>
+					<View style={{ flex: 1, width: '100%' }}>
+						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
 							<CustomInputForm
 								label='First Name'
 								placeholder='Manuel'
 								placeholderTextColor={colors.darkLight}
 								value={capitalizeWords(userInfo?.name)}
 								editable={false}
+								icon='account'
 							/>
 							<CustomInputForm
 								label='Last Name'
@@ -44,6 +45,7 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								placeholderTextColor={colors.darkLight}
 								value={capitalizeWords(userInfo?.lastName)}
 								editable={false}
+								icon='account'
 							/>
 							<CustomInputForm
 								label='Date of Birth'
@@ -51,6 +53,7 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								placeholderTextColor={colors.darkLight}
 								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
 								editable={false}
+								icon='calendar'
 							/>
 							<CustomInputForm
 								label='Level'
@@ -58,6 +61,7 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								placeholderTextColor={colors.darkLight}
 								value={capitalizeWords(userInfo.level || '')}
 								editable={false}
+								icon='karate'
 							/>
 							<CustomInputForm
 								label='Email'
@@ -65,6 +69,7 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								placeholderTextColor={colors.darkLight}
 								value={userInfo.email}
 								editable={false}
+								icon='email'
 							/>
 							<CustomInputForm
 								label='Phone'
@@ -72,19 +77,15 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								placeholderTextColor={colors.darkLight}
 								value={userInfo.phone}
 								editable={false}
+								icon='phone'
 							/>
-							<CustomInputForm
-								label='Notes'
-								placeholder='This student has 3 brothers...'
-								placeholderTextColor={colors.darkLight}
-								value={userInfo.notes}
-								editable={false}
-							/>
-						</View>
-					</>
+						</ScrollView>
+					</View>
 				) : (
-					<View>
-						<Text>You are not logged in</Text>
+					<View style={{ flex: 1, padding: 20, width: '100%' }}>
+						<Text style={{ fontSize: 24, fontWeight: 500, color: colors.variants.primary[5], textAlign: 'center' }}>
+							You are not logged in
+						</Text>
 					</View>
 				)}
 			</View>

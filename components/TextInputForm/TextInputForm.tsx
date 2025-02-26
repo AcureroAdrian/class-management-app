@@ -1,9 +1,9 @@
 import React from 'react'
 import { Pressable, View } from 'react-native'
-import { Octicons, Ionicons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { ITextInputFormProps } from './helpers/text-input-form-interface'
-import colors from '@/theme/colors'
 import { LeftIconContainer, RightIconContainer, TextInputFormInput, TextInputFormLabel } from './text-input-form-styles'
+import colors from '@/theme/colors'
 
 const TextInputForm = ({
 	label,
@@ -18,19 +18,19 @@ const TextInputForm = ({
 	return (
 		<View>
 			<LeftIconContainer>
-				<Octicons name={icon} size={30} color={colors.brand} />
+				<MaterialCommunityIcons name={icon} size={30} color={colors.brand} />
 			</LeftIconContainer>
 			<TextInputFormLabel>{label}</TextInputFormLabel>
 			{isDate ? (
-				<Pressable onPress={showDatePicker} >
-					<TextInputFormInput {...props} onPressIn={showDatePicker}/>
+				<Pressable onPress={showDatePicker}>
+					<TextInputFormInput {...props} onPressIn={showDatePicker} />
 				</Pressable>
 			) : (
 				<TextInputFormInput {...props} />
 			)}
 			{isPassword && (
 				<RightIconContainer onPress={() => setHidePassword && setHidePassword(!hidePassword)}>
-					<Ionicons name={hidePassword ? 'eye-off' : 'eye'} size={30} color={colors.darkLight} />
+					<MaterialCommunityIcons name={hidePassword ? 'eye-off' : 'eye'} size={30} color={colors.darkLight} />
 				</RightIconContainer>
 			)}
 		</View>

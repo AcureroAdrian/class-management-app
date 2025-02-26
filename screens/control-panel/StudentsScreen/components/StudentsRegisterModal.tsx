@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Modal, Switch } from 'react-native'
+import { View, Text, Modal, Switch, ScrollView } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -97,116 +97,125 @@ const StudentsRegisterModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ width: '100%', flex: 1, padding: 20 }}>
-					<CustomInputForm
-						label='First Name'
-						placeholder='Manuel'
-						placeholderTextColor={colors.darkLight}
-						onChangeText={setStudentName}
-						value={studentName}
-						editable={!loadingRegisterStudents}
-					/>
-					<CustomInputForm
-						label='Last Name'
-						placeholder='Smith'
-						placeholderTextColor={colors.darkLight}
-						onChangeText={setStudentLastName}
-						value={studentLastName}
-						editable={!loadingRegisterStudents}
-					/>
-					<CustomInputForm
-						label='Date of Birth'
-						placeholder='YYY - MM - DD'
-						placeholderTextColor={colors.darkLight}
-						value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-						editable={false}
-						onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
-					/>
-					<CustomInputForm
-						label='Level'
-						placeholder='novice'
-						placeholderTextColor={colors.darkLight}
-						value={level}
-						editable={false}
-						onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
-					/>
-					<CustomInputForm
-						label='Email'
-						placeholder='manuel@gmail.com'
-						placeholderTextColor={colors.darkLight}
-						onChangeText={setEmail}
-						value={email}
-						editable={!loadingRegisterStudents}
-					/>
-					<CustomInputForm
-						label='Phone'
-						placeholder='+506 1234 5678'
-						placeholderTextColor={colors.darkLight}
-						onChangeText={setPhone}
-						value={phone}
-						editable={!loadingRegisterStudents}
-					/>
-					<CustomInputForm
-						label='Notes'
-						placeholder='This student has 3 brothers...'
-						placeholderTextColor={colors.darkLight}
-						onChangeText={setNotes}
-						value={notes}
-						editable={!loadingRegisterStudents}
-					/>
-					{role === 'admin' && (
-						<View
-							style={{
-								flexDirection: 'row',
-								justifyContent: 'flex-start',
-								width: '100%',
-								gap: 5,
-								alignItems: 'center',
-								marginTop: 10,
-							}}
-						>
-							<Switch
-								trackColor={{ false: '#767577', true: colors.brand }}
-								thumbColor={'#f4f3f4'}
-								ios_backgroundColor='#3e3e3e'
-								onValueChange={() => setIsTeacher(!isTeacher)}
-								value={isTeacher}
-							/>
-							<Text>Is Teacher</Text>
+				<View style={{ flex: 1, width: '100%' }}>
+					<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+						{(errorMessage || errorRegisterStudents) && (
+							<Text
+								style={{
+									textAlign: 'center',
+									fontSize: 13,
+									color: 'red',
+								}}
+							>
+								{errorMessage || errorRegisterStudents}
+							</Text>
+						)}
+						<CustomInputForm
+							label='First Name'
+							placeholder='Manuel'
+							placeholderTextColor={colors.darkLight}
+							onChangeText={setStudentName}
+							value={studentName}
+							editable={!loadingRegisterStudents}
+							icon='account'
+						/>
+						<CustomInputForm
+							label='Last Name'
+							placeholder='Smith'
+							placeholderTextColor={colors.darkLight}
+							onChangeText={setStudentLastName}
+							value={studentLastName}
+							editable={!loadingRegisterStudents}
+							icon='account'
+						/>
+						<CustomInputForm
+							label='Date of Birth'
+							placeholder='YYY - MM - DD'
+							placeholderTextColor={colors.darkLight}
+							value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+							editable={false}
+							onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
+							icon='calendar'
+						/>
+						<CustomInputForm
+							label='Level'
+							placeholder='novice'
+							placeholderTextColor={colors.darkLight}
+							value={level}
+							editable={false}
+							onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
+							icon='karate'
+						/>
+						<CustomInputForm
+							label='Email'
+							placeholder='manuel@gmail.com'
+							placeholderTextColor={colors.darkLight}
+							onChangeText={setEmail}
+							value={email}
+							editable={!loadingRegisterStudents}
+							icon='email'
+						/>
+						<CustomInputForm
+							label='Phone'
+							placeholder='+506 1234 5678'
+							placeholderTextColor={colors.darkLight}
+							onChangeText={setPhone}
+							value={phone}
+							editable={!loadingRegisterStudents}
+							icon='phone'
+						/>
+						<CustomInputForm
+							label='Notes'
+							placeholder='This student has 3 brothers...'
+							placeholderTextColor={colors.darkLight}
+							onChangeText={setNotes}
+							value={notes}
+							editable={!loadingRegisterStudents}
+							icon='note'
+						/>
+						<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
+							{role === 'admin' && (
+								<View
+									style={{
+										flexDirection: 'row',
+										justifyContent: 'flex-start',
+										gap: 5,
+										alignItems: 'center',
+										marginTop: 10,
+									}}
+								>
+									<Switch
+										trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+										thumbColor={colors.variants.secondary[0]}
+										ios_backgroundColor={colors.variants.secondary[2]}
+										onValueChange={() => setIsTeacher(!isTeacher)}
+										value={isTeacher}
+									/>
+									<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
+								</View>
+							)}
+							{userInfo?.isSuper && (
+								<View
+									style={{
+										flexDirection: 'row',
+										justifyContent: 'flex-start',
+										gap: 5,
+										alignItems: 'center',
+										marginTop: 10,
+									}}
+								>
+									<Switch
+										trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+										thumbColor={colors.variants.secondary[0]}
+										ios_backgroundColor={colors.variants.secondary[2]}
+										onValueChange={() => setIsAdmin(!isAdmin)}
+										value={isAdmin}
+									/>
+									<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
+								</View>
+							)}
 						</View>
-					)}
-					{userInfo?.isSuper && (
-						<View
-							style={{
-								flexDirection: 'row',
-								justifyContent: 'flex-start',
-								width: '100%',
-								gap: 5,
-								alignItems: 'center',
-								marginTop: 10,
-							}}
-						>
-							<Switch
-								trackColor={{ false: '#767577', true: colors.brand }}
-								thumbColor={'#f4f3f4'}
-								ios_backgroundColor='#3e3e3e'
-								onValueChange={() => setIsAdmin(!isAdmin)}
-								value={isAdmin}
-							/>
-							<Text>Is Admin</Text>
-						</View>
-					)}
-					{(errorMessage || errorRegisterStudents) && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage || errorRegisterStudents}
-						</Text>
-					)}
+					</ScrollView>
 				</View>
 			</View>
 			{showDatePicker && (

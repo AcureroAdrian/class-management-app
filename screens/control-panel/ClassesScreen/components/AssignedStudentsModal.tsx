@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, Modal, Button } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudent } from '../helpers/karate-classes-interfaces'
 import PickStudentsModal from './PickStudentsModal'
@@ -9,6 +9,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUsers } from '@/redux/actions/userActions'
 import { GET_STUDENT_USERS_RESET } from '@/redux/constants/userConstants'
 import Loader from '@/components/Loader/Loader'
+import colors from '@/theme/colors'
 
 const AssignedStudentsModal = ({
 	openModal,
@@ -100,11 +101,8 @@ const AssignedStudentsModal = ({
 								nestedScrollEnabled={true}
 								scrollEnabled={false}
 								data={studentsSelected.sort((a, b) => a?.name?.localeCompare(b?.name))}
-								renderItem={({ item }) => (
-									<View
-										style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 15, alignItems: 'flex-start' }}
-										key={item._id}
-									>
+								renderItem={({ item, index }) => (
+									<View style={{ paddingTop: 12 }}>
 										<View
 											style={{
 												flexDirection: 'row',
@@ -112,6 +110,8 @@ const AssignedStudentsModal = ({
 												width: '100%',
 												flex: 1,
 												justifyContent: 'space-between',
+												paddingHorizontal: 20,
+												paddingVertical: 8,
 											}}
 										>
 											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%', flex: 1 }}>
@@ -136,14 +136,18 @@ const AssignedStudentsModal = ({
 													</Text>
 												</View>
 											</View>
-											<AntDesign
-												name='closecircle'
+											<MaterialCommunityIcons
+												name='close'
 												size={24}
-												color='red'
+												color={colors.variants.primary[5]}
 												onPress={() => handleDeleteStudent(item._id)}
 											/>
 										</View>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+										{index + 1 !== studentsSelected.length && (
+											<View style={{ width: '100%', alignItems: 'center' }}>
+												<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+											</View>
+										)}
 									</View>
 								)}
 								keyExtractor={(item) => item._id}
