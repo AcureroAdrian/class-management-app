@@ -208,8 +208,10 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 															justifyContent: 'center',
 														}}
 													>
-														<Text style={{ fontSize: 16, color: colors.view.black }}>{capitalizeWords(item.name)}</Text>
-														<Text style={{ fontSize: 14, color: colors.variants.grey[4] }}>
+														<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
+															{capitalizeWords(item.name)}
+														</Text>
+														<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 															{capitalizeWords(item?.lastName)}
 														</Text>
 													</View>

@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react'
-import { View, Text, FlatList, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, Pressable, ActivityIndicator, ScrollView } from 'react-native'
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import { format, addHours } from 'date-fns'
 import Loader from '@/components/Loader/Loader'
 import AgendaItem from './AgendaItem'
@@ -65,27 +65,40 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 				<View style={{ flex: 1 }}>
 					<View
 						style={{
-							backgroundColor: 'red',
-							padding: 20,
+							backgroundColor: colors.variants.primary[5],
+							paddingHorizontal: 20,
+							paddingVertical: 10,
 							width: '100%',
 							flexDirection: 'row',
 							justifyContent: 'space-between',
+							alignItems: 'center',
 						}}
 					>
-						<Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+						<Text style={{ fontSize: 18, fontWeight: 500, color: colors.primary }}>
 							{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
 						</Text>
 						{role === 'admin' && !disableHoliday && (
 							<Pressable
 								onPress={handleAddHoliday}
 								disabled={loadingHoliday}
-								style={{ flexDirection: 'row', alignItems: 'center', gap: 10, height: '100%' }}
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+									gap: 10,
+									height: '100%',
+									paddingVertical: 10,
+									paddingHorizontal: 15,
+									borderRadius: 20,
+									backgroundColor: colors.variants.primary[1],
+								}}
 							>
-								<Text style={{ color: colors.primary }}>{isHoliday ? 'Remove Holiday' : 'Mark as Holiday'}</Text>
+								<Text style={{ color: colors.variants.primary[5], fontWeight: 500, fontSize: 16 }}>
+									{isHoliday ? 'Remove Holiday' : 'Mark as Holiday'}
+								</Text>
 								{loadingHoliday ? (
-									<ActivityIndicator size={'small'} color={'#fff'} />
+									<ActivityIndicator size={'small'} color={colors.variants.primary[0]} />
 								) : (
-									<AntDesign name='pushpin' size={24} color={colors.primary} />
+									<MaterialCommunityIcons name='pin' size={24} color={colors.variants.primary[5]} />
 								)}
 							</Pressable>
 						)}
@@ -93,11 +106,12 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 					{isHoliday && (
 						<Text
 							style={{
-								color: 'red',
+								color: colors.variants.primary[5],
 								fontSize: 16,
 								fontWeight: 'bold',
 								width: '100%',
 								textAlign: 'center',
+								paddingHorizontal: 20,
 								paddingVertical: 10,
 							}}
 						>
@@ -107,13 +121,14 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 					{errorHoliday && (
 						<Text
 							style={{
-								color: 'red',
+								color: colors.variants.primary[5],
 								width: '100%',
 								textAlign: 'center',
 								paddingVertical: 10,
+								paddingHorizontal: 20,
 							}}
 						>
-							errorHoliday
+							{errorHoliday}
 						</Text>
 					)}
 					{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
@@ -123,13 +138,19 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 							<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
 						</CenterContainer>
 					) : (
-						<FlatList
-							data={items}
-							keyExtractor={(item) => item.id.toString()}
-							renderItem={({ item }) => (
-								<AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} disabled={isHoliday} />
-							)}
-						/>
+						<View style={{ flex: 1, width: '100%' }}>
+							<ScrollView>
+								<FlatList
+									data={items}
+									keyExtractor={(item) => String(item?.id)}
+									nestedScrollEnabled={true}
+									scrollEnabled={false}
+									renderItem={({ item }) => (
+										<AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} disabled={isHoliday} />
+									)}
+								/>
+							</ScrollView>
+						</View>
 					)}
 				</View>
 			</CalendarProvider>

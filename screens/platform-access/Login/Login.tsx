@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { ActivityIndicator, ScrollView } from 'react-native'
+import { ActivityIndicator, ScrollView, Text } from 'react-native'
 import { Link } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
@@ -22,6 +22,7 @@ import {
 } from '@/theme/styles'
 import colors from '@/theme/colors'
 import { LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
+import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 
 const { darkLight, primary } = colors
 
@@ -65,58 +66,50 @@ const Login = () => {
 
 	return (
 		<>
-			<ContainerWithoutHeader>
+			<ContainerWithoutHeader style={{ padding: 0 }}>
 				<SafeAreaViewStyled>
 					<StatusBar style='auto' />
 					<ScrollView showsVerticalScrollIndicator={false}>
 						<CenterAlignContainer>
 							<LoginLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
 							<LoginTitle>MIYAGI KEN</LoginTitle>
-							<LoginSubTitle>International Academy</LoginSubTitle>
+							<Text style={{ color: colors.variants.primary[5], marginTop: 5, fontWeight: 500, fontSize: 18 }}>
+								International Academy
+							</Text>
 							<LoginSubTitle>Account Login</LoginSubTitle>
 							<LoginInputArea>
-								<TextInputForm
-									label='Name'
-									icon='account'
-									placeholder='George'
-									placeholderTextColor={darkLight}
-									onChangeText={setName}
-									value={name}
-								/>
-								<TextInputForm
+								<CustomInputForm label='Name' icon='account' placeholder='George' onChangeText={setName} value={name} />
+								<CustomInputForm
 									label='Last Name'
 									icon='account'
 									placeholder='Smith'
-									placeholderTextColor={darkLight}
 									onChangeText={setLastName}
 									value={lastName}
 								/>
-								<TextInputForm
+								<CustomInputForm
 									label='Date of Birth'
 									icon='calendar'
 									placeholder='YYY - MM - DD'
-									placeholderTextColor={darkLight}
 									value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-									isDate={true}
 									editable={false}
-									showDatePicker={() => setShowDatePicker(true)}
+									onPress={() => setShowDatePicker(true)}
 								/>
-								<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
-								<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
-									{loadingUserLogin ? (
-										<ActivityIndicator size='large' color={primary} />
-									) : (
-										<LoginButtonText>Login</LoginButtonText>
-									)}
-								</LoginButton>
-								<Line />
-								<ConcatTextContainer>
-									<CenterTextConcated>Don't have and account already? </CenterTextConcated>
-									<Link href='/info' replace>
-										<TextLinkContent>Singup</TextLinkContent>
-									</Link>
-								</ConcatTextContainer>
 							</LoginInputArea>
+							<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
+							<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
+								{loadingUserLogin ? (
+									<ActivityIndicator size='large' color={primary} />
+								) : (
+									<LoginButtonText>Login</LoginButtonText>
+								)}
+							</LoginButton>
+							<Line />
+							<ConcatTextContainer>
+								<CenterTextConcated>Don't have and account already? </CenterTextConcated>
+								<Link href='/info' replace>
+									<TextLinkContent>Singup</TextLinkContent>
+								</Link>
+							</ConcatTextContainer>
 						</CenterAlignContainer>
 					</ScrollView>
 				</SafeAreaViewStyled>

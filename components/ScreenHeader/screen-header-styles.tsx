@@ -3,7 +3,7 @@ import { IHeaderContainer } from './helpers/header-screen-interfaces'
 import colors from '@/theme/colors'
 
 export const HeaderContainer = styled.View<IHeaderContainer>`
-	background-color: #d93b3d;
+	background-color: ${colors.variants.primary[5]};
 	width: 100%;
 	padding-horizontal: 20px;
 	padding-bottom: 20px;

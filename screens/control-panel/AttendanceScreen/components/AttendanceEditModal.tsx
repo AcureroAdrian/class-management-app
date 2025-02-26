@@ -10,6 +10,7 @@ import {
 } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { format } from 'date-fns'
+import colors from '@/theme/colors'
 
 const AttendanceEditModal = ({
 	openModal,
@@ -133,7 +134,7 @@ const AttendanceEditModal = ({
 				}}
 			>
 				<ScreenHeader
-					label={attendanceData?.karateClass?.name}
+					label='Attendance Info'
 					labelButton={isToday ? 'Save' : undefined}
 					iconName={isToday ? 'save' : undefined}
 					disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
@@ -142,72 +143,82 @@ const AttendanceEditModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View
-					style={{
-						width: '100%',
-						backgroundColor: '#E5E7EB',
-						padding: 10,
-						height: 50,
-						flexDirection: 'row',
-						justifyContent: 'space-between',
-						alignItems: 'center',
-					}}
-				>
-					<View style={{ flexDirection: 'row', gap: 10 }}>
-						{Boolean(presents) && (
-							<View
-								style={{
-									backgroundColor: 'green',
-									padding: 5,
-									width: 30,
-									height: 30,
-									justifyContent: 'center',
-									alignItems: 'center',
-									borderRadius: '50%',
-								}}
-							>
-								<Text style={{ color: 'white' }}>{presents}</Text>
-							</View>
-						)}
-						{Boolean(absents) && (
-							<View
-								style={{
-									backgroundColor: 'red',
-									padding: 5,
-									width: 30,
-									height: 30,
-									justifyContent: 'center',
-									alignItems: 'center',
-									borderRadius: '50%',
-								}}
-							>
-								<Text style={{ color: 'white' }}>{absents}</Text>
-							</View>
-						)}
-						{Boolean(late) && (
-							<View
-								style={{
-									backgroundColor: 'skyblue',
-									padding: 5,
-									width: 30,
-									height: 30,
-									justifyContent: 'center',
-									alignItems: 'center',
-									borderRadius: '50%',
-								}}
-							>
-								<Text style={{ color: 'white' }}>{late}</Text>
-							</View>
-						)}
+				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
+					<Text style={{ fontSize: 18, fontWeight: 600, color: colors.variants.secondary[5] }}>
+						{attendanceData?.karateClass?.name}
+					</Text>
+				</View>
+				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10 }}>
+					<View
+						style={{
+							width: '100%',
+							backgroundColor: colors.variants.secondary[1],
+							padding: 10,
+							height: 50,
+							borderRadius: 20,
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+						}}
+					>
+						<View style={{ flexDirection: 'row', gap: 15 }}>
+							{Boolean(presents) && (
+								<View
+									style={{
+										backgroundColor: 'green',
+										padding: 5,
+										width: 30,
+										height: 30,
+										justifyContent: 'center',
+										alignItems: 'center',
+										borderRadius: '50%',
+									}}
+								>
+									<Text style={{ color: colors.primary }}>{presents}</Text>
+								</View>
+							)}
+							{Boolean(absents) && (
+								<View
+									style={{
+										backgroundColor: colors.variants.primary[5],
+										padding: 5,
+										width: 30,
+										height: 30,
+										justifyContent: 'center',
+										alignItems: 'center',
+										borderRadius: '50%',
+									}}
+								>
+									<Text style={{ color: colors.primary }}>{absents}</Text>
+								</View>
+							)}
+							{Boolean(late) && (
+								<View
+									style={{
+										backgroundColor: 'skyblue',
+										padding: 5,
+										width: 30,
+										height: 30,
+										justifyContent: 'center',
+										alignItems: 'center',
+										borderRadius: '50%',
+									}}
+								>
+									<Text style={{ color: colors.primary }}>{late}</Text>
+								</View>
+							)}
+						</View>
+						<Text style={{ color: colors.variants.secondary[5], fontSize: 18, fontWeight: 500 }}>
+							Total: {attendance?.length}
+						</Text>
 					</View>
-					<Text>Total: {attendance?.length}</Text>
 				</View>
 				{errorMessage && (
 					<Text
 						style={{
 							textAlign: 'center',
 							fontSize: 13,
-							color: 'red',
+							color: colors.variants.primary[5],
 						}}
 					>
 						{errorMessage}
@@ -218,48 +229,53 @@ const AttendanceEditModal = ({
 						nestedScrollEnabled={true}
 						scrollEnabled={false}
 						data={attendance.sort((a, b) => a?.name?.localeCompare(b?.name))}
-						renderItem={({ item }) => (
-							<Pressable
-								onPress={() => handleSelectStudent(item.student)}
-								disabled={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
-							>
-								<View
-									style={{
-										flex: 1,
-										paddingLeft: 15,
-										paddingRight: 15,
-										paddingTop: 15,
-										alignItems: 'flex-start',
-									}}
+						renderItem={({ item, index }) => (
+							<>
+								<Pressable
+									onPress={() => handleSelectStudent(item.student)}
+									disabled={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 								>
 									<View
-										style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+										style={{
+											flex: 1,
+											paddingHorizontal: 20,
+											paddingVertical: 8,
+											alignItems: 'flex-start',
+										}}
 									>
-										<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-											<Image
-												source={require('@/assets/img/default-avatar.png')}
-												style={{ width: 50, height: 50, borderRadius: 50 }}
-												resizeMode='contain'
-											/>
-											<View
-												style={{
-													justifyContent: 'center',
-													alignItems: 'flex-start',
-													width: '100%',
-													flexDirection: 'column',
-												}}
-											>
-												<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-												<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+										<View
+											style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+										>
+											<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+												<Image
+													source={require('@/assets/img/default-avatar.png')}
+													style={{ width: 50, height: 50, borderRadius: 50 }}
+													resizeMode='contain'
+												/>
+												<View
+													style={{
+														justifyContent: 'center',
+														alignItems: 'flex-start',
+														width: '100%',
+														flexDirection: 'column',
+													}}
+												>
+													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
+													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+												</View>
 											</View>
+											{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
+											{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
+											{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
 										</View>
-										{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
-										{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
-										{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
 									</View>
-									<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
-								</View>
-							</Pressable>
+								</Pressable>
+								{index + 1 !== attendance.length && (
+									<View style={{ width: '100%', alignItems: 'center' }}>
+										<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+									</View>
+								)}
+							</>
 						)}
 						keyExtractor={(item) => item.student}
 					/>

@@ -220,6 +220,7 @@ const StudentEditModal = ({
 									onChangeText={setNotes}
 									value={notes}
 									editable={!loadingUpdateStudentUserById}
+									multiline={true}
 									icon='note'
 								/>
 								<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>

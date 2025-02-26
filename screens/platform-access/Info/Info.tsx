@@ -21,7 +21,7 @@ const Info = () => {
 		<ContainerWithoutHeader>
 			<SafeAreaViewStyled>
 				<StatusBar style='auto' />
-				<CenterAlignContainer>
+				<CenterAlignContainer style={{ padding: 20 }}>
 					<LoginLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
 					<LoginTitle>MIYAGI KEN</LoginTitle>
 					<LoginSubTitle>International Academy</LoginSubTitle>

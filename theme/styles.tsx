@@ -4,7 +4,7 @@ import colors from './colors'
 
 const StatusBarHeight = Constants.statusBarHeight
 
-const { primary, secondary, tertiary, darkLight, brand, green, red, link } = colors
+const { primary, tertiary, darkLight } = colors
 
 export const ContainerWithoutHeader = styled.View`
 	flex: 1;
@@ -16,12 +16,13 @@ export const ContainerWithoutHeader = styled.View`
 export const CenterAlignContainer = styled.View`
 	flex: 1;
 	width: 100%;
+	padding: 20px;
 	align-items: center;
 `
 export const ErrorMsgBox = styled.Text`
 	text-align: center;
 	font-size: 13px;
-	color: red;
+	color: ${colors.variants.primary[5]};
 `
 export const Line = styled.View`
 	height: 1px;
@@ -43,7 +44,7 @@ export const CenterTextConcated = styled.Text`
 	font-size: 15px;
 `
 export const TextLinkContent = styled.Text`
-	color: ${link};
+	color: ${colors.variants.secondary[4]};
 	font-size: 15px;
 	font-weight: bold;
 `
@@ -54,15 +55,14 @@ export const LoginLogo = styled.Image`
 export const LoginTitle = styled.Text`
 	font-size: 30px;
 	text-align: center;
-	font-weight: bold;
-	color: ${colors.brand};
+	font-weight: 700;
+	color: ${colors.variants.secondary[5]};
 `
 export const LoginSubTitle = styled.Text`
-	font-size: 18px;
-	margin-bottom: 20px;
-	letter-spacing: 1px;
+	margin-top: 15px;
+	font-size: 24px;
 	font-weight: bold;
-	color: ${colors.tertiary};
+	color: ${colors.variants.secondary[5]};
 `
 export const SimpleTextLine = styled.Text`
 	color: ${tertiary};

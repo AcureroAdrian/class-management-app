@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, FlatList, Modal, Button } from 'react-native'
+import { View, Text, ScrollView, Image, FlatList, Modal, Button, Pressable } from 'react-native'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudent } from '../helpers/karate-classes-interfaces'
@@ -88,12 +88,32 @@ const AssignedStudentsModal = ({
 						</View>
 					) : errorGetStudentUsers && !students?.length ? (
 						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
+							<Text style={{ fontSize: 16, color: colors.variants.primary[5] }}>{errorGetStudentUsers}</Text>
 						</View>
 					) : !studentsSelected?.length ? (
-						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: 'red' }}>No students assigned</Text>
-							<Button title='Assign students' onPress={() => setOpenPickStudentsModal(true)} />
+						<View
+							style={{
+								alignItems: 'center',
+								justifyContent: 'center',
+								width: '100%',
+								height: '100%',
+								padding: 20,
+								gap: 20,
+							}}
+						>
+							<Text style={{ fontSize: 16, color: colors.variants.primary[5] }}>No students assigned</Text>
+							<Pressable onPress={() => setOpenPickStudentsModal(true)}>
+								<View
+									style={{
+										backgroundColor: colors.variants.secondary[5],
+										paddingVertical: 10,
+										paddingHorizontal: 40,
+										borderRadius: 10,
+									}}
+								>
+									<Text style={{ color: colors.primary, fontSize: 16, fontWeight: 500 }}>Pick Students</Text>
+								</View>
+							</Pressable>
 						</View>
 					) : (
 						<ScrollView>

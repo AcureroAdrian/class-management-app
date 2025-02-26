@@ -171,6 +171,7 @@ const StudentsRegisterModal = ({
 							onChangeText={setNotes}
 							value={notes}
 							editable={!loadingRegisterStudents}
+							multiline={true}
 							icon='note'
 						/>
 						<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>

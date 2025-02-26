@@ -271,11 +271,15 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 														style={{ width: '60%' }}
 													>
 														<View style={{ width: '100%', alignItems: 'flex-start', gap: 10 }}>
-															<Text numberOfLines={1} style={{ fontSize: 18, color: colors.view.black }}>
-																{item.name?.length > 25 ? item.name.substring(0, 25) + '...' : item.name}
+															<Text style={{ fontSize: 18, color: colors.view.black }}>
+																{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
 															</Text>
-															<Text numberOfLines={1} style={{ fontSize: 16, color: colors.variants.grey[4] }}>
-																{item?.description || 'No description'}
+															<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+																{item.description
+																	? item?.description?.length > 20
+																		? item.description.substring(0, 20) + '...'
+																		: item.description
+																	: 'No description'}
 															</Text>
 														</View>
 													</Pressable>
