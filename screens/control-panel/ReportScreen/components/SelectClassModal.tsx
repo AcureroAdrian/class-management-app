@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, Modal, ScrollView, FlatList, Pressable } from 'react-native'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { useAppSelector } from '@/redux/store'
+import colors from '@/theme/colors'
 
 const SelectClassModal = ({
 	openModal,
@@ -30,9 +31,11 @@ const SelectClassModal = ({
 							]}
 							renderItem={({ item }) => (
 								<Pressable onPress={() => selectClass(item._id)}>
-									<View style={{ paddingVertical: 10, paddingHorizontal: 20, gap: 10 }}>
+									<View style={{ paddingVertical: 20, paddingHorizontal: 20 }}>
 										<Text numberOfLines={2}>{item.name}</Text>
-										<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginTop: 10 }} />
+									</View>
+									<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
+										<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 									</View>
 								</Pressable>
 							)}

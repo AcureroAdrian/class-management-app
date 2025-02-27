@@ -82,7 +82,7 @@ const ReserveRecoveryClassModal = ({
 					}}
 				>
 					<Text style={{ fontSize: 16, fontWeight: 'bold' }}>Booking Recovery Class</Text>
-					<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginVertical: 10 }} />
+					<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 					<Text style={{ fontSize: 14, fontWeight: 'bold' }}>Booking details:</Text>
 					<View style={{ flexDirection: 'row', width: '100%', gap: 10 }}>
 						<Text style={{ fontWeight: 'bold' }}>Class:</Text>

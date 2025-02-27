@@ -226,8 +226,8 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 											</View>
 										</View>
 										{index + 1 !== filteredStudents.length && (
-											<View style={{ width: '100%', alignItems: 'center' }}>
-												<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+											<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
+												<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 											</View>
 										)}
 									</>

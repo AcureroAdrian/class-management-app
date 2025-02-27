@@ -94,73 +94,61 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 					<Text style={{ padding: 20, fontSize: 16, color: colors.brand }}>
 						Select the class, start and end dates for the report
 					</Text>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
+					<View style={{ width: '100%', paddingHorizontal: 20, gap: 40 }}>
 						<CustomInputForm
 							label='Class'
-							placeholderTextColor={colors.darkLight}
 							value={classSelected}
 							editable={false}
-							onPress={() => setOpenClassesModal(true)}
-							style={{
-								fontSize: 15,
-							}}
+							onPress={() => !loadingClassReportByClassIdForAdmin && setOpenClassesModal(true)}
+							icon='book'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='Start Time'
-							placeholderTextColor={colors.darkLight}
 							value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowStartDate(true)}
-							style={{
-								fontSize: 15,
-							}}
+							onPress={() => !loadingClassReportByClassIdForAdmin && setShowStartDate(true)}
+							icon='calendar'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='End Time'
-							placeholderTextColor={colors.darkLight}
 							value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowEndDate(true)}
-							style={{
-								fontSize: 15,
-							}}
+							onPress={() => !loadingClassReportByClassIdForAdmin && setShowEndDate(true)}
+							icon='calendar'
 						/>
 					</View>
 					<Pressable onPress={handleGenerateClassReport}>
 						<View
 							style={{
-								paddingHorizontal: 20,
+								paddingHorizontal: 40,
 								paddingVertical: 10,
-								backgroundColor: colors.brand,
+								backgroundColor: colors.variants.secondary[5],
 								borderRadius: 10,
-								marginTop: 20,
+								marginTop: 40,
 								height: 40,
 								justifyContent: 'center',
 								alignItems: 'center',
-								width: 200,
 							}}
 						>
 							{loadingClassReportByClassIdForAdmin ? (
-								<ActivityIndicator size='small' color={colors.primary} />
+								<ActivityIndicator size='small' color={colors.view.primary} />
 							) : (
-								<Text style={{ color: colors.primary }}>Generate Report</Text>
+								<Text style={{ color: colors.view.primary, fontSize: 16, fontWeight: 500 }}>Generate Report</Text>
 							)}
 						</View>
 					</Pressable>
 					{errorMessage && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage}
-						</Text>
+						<View style={{ marginTop: 40, width: '100%', alignItems: 'center' }}>
+							<Text
+								style={{
+									textAlign: 'center',
+									fontSize: 16,
+									color: colors.variants.primary[5],
+								}}
+							>
+								{errorMessage}
+							</Text>
+						</View>
 					)}
 				</View>
 			</View>

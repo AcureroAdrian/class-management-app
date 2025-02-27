@@ -30,7 +30,7 @@ const DeleteRecoveryClassModal = ({ openModal, closeModal, handleDeleteRecoveryC
 					}}
 				>
 					<Text style={{ fontSize: 16, fontWeight: 'bold' }}>Delete Recovery Class</Text>
-					<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginVertical: 10 }} />
+					<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 					<Text>Are you sure you want to delete this recovery class reservation?</Text>
 					{errorDelete && <Text style={{ color: 'red', marginTop: 10 }}>{errorDelete}</Text>}
 					<View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20, gap: 10 }}>

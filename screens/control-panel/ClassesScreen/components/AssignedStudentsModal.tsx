@@ -148,10 +148,10 @@ const AssignedStudentsModal = ({
 														flexDirection: 'column',
 													}}
 												>
-													<Text numberOfLines={1} style={{ fontWeight: 400, fontSize: 16 }}>
+													<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
 														{capitalizeWords(item.name)}
 													</Text>
-													<Text numberOfLines={1} style={{ fontSize: 15, color: 'grey' }}>
+													<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 														{capitalizeWords(item?.lastName)}
 													</Text>
 												</View>
@@ -164,8 +164,8 @@ const AssignedStudentsModal = ({
 											/>
 										</View>
 										{index + 1 !== studentsSelected.length && (
-											<View style={{ width: '100%', alignItems: 'center' }}>
-												<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+											<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
+												<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 											</View>
 										)}
 									</View>

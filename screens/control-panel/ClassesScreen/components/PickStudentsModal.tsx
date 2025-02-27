@@ -95,15 +95,19 @@ const PickStudentsModal = ({
 														flexDirection: 'column',
 													}}
 												>
-													<Text style={{ fontWeight: 400, fontSize: 16 }}>{capitalizeWords(item.name)}</Text>
-													<Text style={{ fontSize: 15, color: 'grey' }}>{capitalizeWords(item?.lastName)}</Text>
+													<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
+														{capitalizeWords(item.name)}
+													</Text>
+													<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
+														{capitalizeWords(item?.lastName)}
+													</Text>
 												</View>
 											</View>
 										</View>
 									</Pressable>
 									{index + 1 !== filteredStudents.length && (
-										<View style={{ width: '100%', alignItems: 'center' }}>
-											<View style={{ width: '90%', height: 1, backgroundColor: colors.variants.grey[0] }} />
+										<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
+											<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
 										</View>
 									)}
 								</>

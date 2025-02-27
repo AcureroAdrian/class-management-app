@@ -5,6 +5,7 @@ import { AntDesign } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IDailyReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
+import colors from '@/theme/colors'
 
 const DailyReportDetailsModal = ({
 	openModal,
@@ -19,7 +20,7 @@ const DailyReportDetailsModal = ({
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1 }}>
 				<ScreenHeader label='Reports' showBackButton={true} handleBack={closeModal} />
-				<View style={{ width: '100%', alignItems: 'center', paddingBottom: 20, flex: 1 }}>
+				<View style={{ width: '100%', flex: 1 }}>
 					<ScrollView>
 						<FlatList
 							nestedScrollEnabled={true}
@@ -30,20 +31,22 @@ const DailyReportDetailsModal = ({
 							renderItem={({ item }) => (
 								<View
 									style={{
-										paddingHorizontal: 10,
-										marginVertical: 10,
+										paddingHorizontal: 20,
+										paddingVertical: 20,
 									}}
 								>
 									<View
 										style={{
-											borderColor: 'skyblue',
-											borderWidth: 1,
 											width: '100%',
 											paddingHorizontal: 10,
-											backgroundColor: 'skyblue',
+											paddingVertical: 5,
+											backgroundColor: colors.variants.secondary[1],
 										}}
 									>
-										<Text numberOfLines={1} style={{ fontSize: 12 }}>
+										<Text
+											numberOfLines={1}
+											style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
+										>
 											{format(new Date(item._id), 'MMMM dd, yyyy')}
 										</Text>
 									</View>
@@ -58,26 +61,28 @@ const DailyReportDetailsModal = ({
 												<>
 													<View
 														style={{
-															borderColor: 'skyblue',
+															borderColor: colors.variants.secondary[1],
 															borderWidth: 1,
 															width: '100%',
 															padding: 10,
 														}}
 													>
-														<Text numberOfLines={1} style={{ fontSize: 12 }}>
+														<Text
+															numberOfLines={1}
+															style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
+														>
 															{item.karateClassName}
 														</Text>
 													</View>
 													<View
 														style={{
-															borderColor: 'skyblue',
-															borderWidth: 1,
 															width: '100%',
 															padding: 5,
 															marginTop: 5,
-															backgroundColor: 'skyblue',
+															backgroundColor: colors.variants.secondary[1],
 															flexDirection: 'row',
 															justifyContent: 'space-between',
+															alignItems: 'center',
 														}}
 													>
 														<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -86,14 +91,14 @@ const DailyReportDetailsModal = ({
 																	style={{
 																		backgroundColor: 'green',
 																		padding: 5,
-																		width: 24,
-																		height: 24,
+																		width: 30,
+																		height: 30,
 																		justifyContent: 'center',
 																		alignItems: 'center',
 																		borderRadius: '50%',
 																	}}
 																>
-																	<Text style={{ color: 'white', fontSize: 10 }}>{presents}</Text>
+																	<Text style={{ color: colors.view.primary, fontSize: 14 }}>{presents}</Text>
 																</View>
 															)}
 															{Boolean(absents) && (
@@ -101,18 +106,21 @@ const DailyReportDetailsModal = ({
 																	style={{
 																		backgroundColor: 'red',
 																		padding: 5,
-																		width: 24,
-																		height: 24,
+																		width: 30,
+																		height: 30,
 																		justifyContent: 'center',
 																		alignItems: 'center',
 																		borderRadius: '50%',
 																	}}
 																>
-																	<Text style={{ color: 'white', fontSize: 10 }}>{absents}</Text>
+																	<Text style={{ color: colors.view.primary, fontSize: 14 }}>{absents}</Text>
 																</View>
 															)}
 														</View>
-														<Text numberOfLines={1} style={{ fontSize: 12 }}>
+														<Text
+															numberOfLines={1}
+															style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
+														>
 															Total: {item.attendance.length}
 														</Text>
 													</View>
@@ -133,7 +141,7 @@ const DailyReportDetailsModal = ({
 																>
 																	<View
 																		style={{
-																			borderColor: 'skyblue',
+																			borderColor: colors.variants.secondary[1],
 																			borderWidth: 1,
 																			width: '100%',
 																			padding: 10,
@@ -166,7 +174,7 @@ const DailyReportDetailsModal = ({
 																	</View>
 																	<View
 																		style={{
-																			borderColor: 'skyblue',
+																			borderColor: colors.variants.secondary[1],
 																			borderWidth: 1,
 																			padding: 10,
 																			alignItems: 'center',

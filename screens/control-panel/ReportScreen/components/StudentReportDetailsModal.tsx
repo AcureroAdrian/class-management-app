@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView, Pressable } from 'react-native'
 import PieChart, { Slice } from 'react-native-pie-chart'
 import { format } from 'date-fns'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudentReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
+import colors from '@/theme/colors'
 
 const StudentReportDetailsModal = ({
 	openModal,
@@ -45,7 +46,7 @@ const StudentReportDetailsModal = ({
 			result.push({
 				value: presents,
 				color: 'green',
-				label: { text: `${(presents / total) * 100}%`, fill: '#fff', fontSize: 15 },
+				label: { text: `${Math.round((presents / total) * 100)}%`, fill: colors.view.primary, fontSize: 18 },
 			})
 		}
 
@@ -53,7 +54,7 @@ const StudentReportDetailsModal = ({
 			result.push({
 				value: absents,
 				color: 'red',
-				label: { text: `${(absents / total) * 100}%`, fill: '#fff', fontSize: 15 },
+				label: { text: `${Math.round((absents / total) * 100)}%`, fill: colors.view.primary, fontSize: 18 },
 			})
 		}
 
@@ -62,7 +63,7 @@ const StudentReportDetailsModal = ({
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1 }}>
+			<View style={{ flex: 1, width: '100%' }}>
 				<ScreenHeader
 					label='Reports'
 					showBackButton={true}
@@ -71,20 +72,19 @@ const StudentReportDetailsModal = ({
 					labelButton='Chart'
 					iconName='chart-pie'
 				/>
-				<View style={{ width: '100%', alignItems: 'center', paddingBottom: 20, flex: 1 }}>
+				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
 					<View
 						style={{
 							width: '100%',
-							padding: 10,
+							padding: 20,
 							flexDirection: 'row',
 							alignItems: 'center',
 							gap: 10,
-							height: 60,
 						}}
 					>
 						<Image
 							source={require('@/assets/img/default-avatar.png')}
-							style={{ width: 40, height: 40, borderRadius: 30 }}
+							style={{ width: 50, height: 50, borderRadius: 30 }}
 							resizeMode='contain'
 						/>
 						<View
@@ -95,18 +95,23 @@ const StudentReportDetailsModal = ({
 								flexDirection: 'column',
 							}}
 						>
-							<Text style={{ fontWeight: 400, fontSize: 12 }}>
+							<Text style={{ fontWeight: 500, fontSize: 16, color: colors.view.black }}>
 								{capitalizeWords(studentReports?.[0]?.student?.name)}
 							</Text>
-							<Text style={{ fontSize: 12 }}>{capitalizeWords(studentReports?.[0]?.student?.lastName)}</Text>
+							<Text style={{ fontSize: 14, color: colors.variants.grey[4] }}>
+								{capitalizeWords(studentReports?.[0]?.student?.lastName)}
+							</Text>
 						</View>
+					</View>
+					<View style={{ width: '100%', paddingHorizontal: 20, alignItems: 'center' }}>
+						<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[2] }} />
 					</View>
 					{showChart && (
 						<View style={{ margin: 20 }}>
-							<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 40 }}>
 								<PieChart widthAndHeight={180} series={series} />
 								<View style={{ gap: 5 }}>
-									<Text>Total: {total}</Text>
+									<Text style={{ fontSize: 16 }}>Total: {total}</Text>
 									{Boolean(presents) && (
 										<View style={{ flexDirection: 'row', gap: 5 }}>
 											<View
@@ -122,7 +127,7 @@ const StudentReportDetailsModal = ({
 											>
 												<Text style={{ color: 'white', fontSize: 10 }}>{presents}</Text>
 											</View>
-											<Text>Present</Text>
+											<Text style={{ fontSize: 16 }}>Present</Text>
 										</View>
 									)}
 									{Boolean(absents) && (
@@ -140,7 +145,7 @@ const StudentReportDetailsModal = ({
 											>
 												<Text style={{ color: 'white', fontSize: 10 }}>{absents}</Text>
 											</View>
-											<Text>Absent</Text>
+											<Text style={{ fontSize: 16 }}>Absent</Text>
 										</View>
 									)}
 								</View>
@@ -151,10 +156,10 @@ const StudentReportDetailsModal = ({
 						<View
 							style={{
 								flexDirection: 'row',
-								backgroundColor: 'skyblue',
-								padding: 5,
-								gap: 10,
-								borderRadius: 5,
+								backgroundColor: colors.variants.secondary[1],
+								padding: 10,
+								gap: 20,
+								borderRadius: 40,
 							}}
 						>
 							<Pressable onPress={() => setFilter('all')}>
@@ -162,13 +167,13 @@ const StudentReportDetailsModal = ({
 									style={{
 										alignItems: 'center',
 										justifyContent: 'center',
-										height: 30,
+										height: 40,
 										width: 40,
-										backgroundColor: filter === 'all' ? '#fff' : '',
-										borderRadius: 5,
+										backgroundColor: filter === 'all' ? colors.variants.secondary[2] : '',
+										borderRadius: 20,
 									}}
 								>
-									<Text>ALL</Text>
+									<Text style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}>ALL</Text>
 								</View>
 							</Pressable>
 							<Pressable onPress={() => setFilter('present')}>
@@ -176,13 +181,13 @@ const StudentReportDetailsModal = ({
 									style={{
 										alignItems: 'center',
 										justifyContent: 'center',
-										height: 30,
+										height: 40,
 										width: 40,
-										backgroundColor: filter === 'present' ? '#fff' : '',
-										borderRadius: 5,
+										backgroundColor: filter === 'present' ? colors.variants.secondary[2] : '',
+										borderRadius: 20,
 									}}
 								>
-									<AntDesign name='check' size={20} color='green' />
+									<MaterialCommunityIcons name='check' size={30} color='green' />
 								</View>
 							</Pressable>
 							<Pressable onPress={() => setFilter('absent')}>
@@ -190,13 +195,13 @@ const StudentReportDetailsModal = ({
 									style={{
 										alignItems: 'center',
 										justifyContent: 'center',
-										height: 30,
+										height: 40,
 										width: 40,
-										backgroundColor: filter === 'absent' ? '#fff' : '',
-										borderRadius: 5,
+										backgroundColor: filter === 'absent' ? colors.variants.secondary[2] : '',
+										borderRadius: 20,
 									}}
 								>
-									<AntDesign name='close' size={30} color='red' />
+									<MaterialCommunityIcons name='close' size={30} color='red' />
 								</View>
 							</Pressable>
 						</View>
@@ -207,18 +212,18 @@ const StudentReportDetailsModal = ({
 								width: '100%',
 								flexDirection: 'row',
 								alignItems: 'center',
-								backgroundColor: 'lightgrey',
+								backgroundColor: colors.variants.secondary[5],
 								paddingVertical: 5,
 							}}
 						>
 							<View style={{ width: 80, alignItems: 'center', justifyContent: 'center' }}>
-								<Text style={{ fontSize: 12 }}>Date</Text>
+								<Text style={{ fontSize: 12, textAlign: 'center', color: colors.view.primary }}>Date</Text>
 							</View>
 							<View style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-								<Text style={{ fontSize: 12 }}>Status</Text>
+								<Text style={{ fontSize: 12, textAlign: 'center', color: colors.view.primary }}>Status</Text>
 							</View>
 							<View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-								<Text style={{ fontSize: 12 }}>Class</Text>
+								<Text style={{ fontSize: 12, textAlign: 'center', color: colors.view.primary }}>Class</Text>
 							</View>
 						</View>
 					</View>
@@ -236,12 +241,12 @@ const StudentReportDetailsModal = ({
 												width: 80,
 												alignItems: 'center',
 												justifyContent: 'center',
-												backgroundColor: 'lightgrey',
+												backgroundColor: colors.variants.secondary[1],
 												height: 30,
 												marginTop: 5,
 											}}
 										>
-											<Text style={{ fontSize: 12 }}>
+											<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
 												{format(new Date(item.date.year, item.date.month - 1, item.date.day), 'MM.dd.yy')}
 											</Text>
 										</View>
@@ -250,7 +255,7 @@ const StudentReportDetailsModal = ({
 												width: 50,
 												alignItems: 'center',
 												justifyContent: 'center',
-												backgroundColor: 'lightgrey',
+												backgroundColor: colors.variants.secondary[1],
 												height: 30,
 												marginTop: 5,
 											}}
@@ -266,13 +271,15 @@ const StudentReportDetailsModal = ({
 												alignItems: 'center',
 												flexDirection: 'row',
 												flex: 1,
-												backgroundColor: 'lightgrey',
+												backgroundColor: colors.variants.secondary[1],
 												height: 30,
 												marginTop: 5,
 												paddingLeft: 5,
 											}}
 										>
-											<Text style={{ fontSize: 12 }}>{item.karateClassName}</Text>
+											<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
+												{item.karateClassName}
+											</Text>
 										</View>
 									</View>
 								)}

@@ -62,67 +62,60 @@ const DailyReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View>
+			<View style={{ flex: 1, width: '100%', justifyContent: 'flex-start' }}>
 				<ScreenHeader label='Daily Report' showBackButton={true} handleBack={closeModal} />
 				<View style={{ width: '100%', alignItems: 'center' }}>
 					<Text style={{ padding: 20, fontSize: 16, color: colors.brand }}>
 						Select start and end dates for the report
 					</Text>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
+					<View style={{ width: '100%', paddingHorizontal: 20, gap: 40 }}>
 						<CustomInputForm
 							label='Start Time'
-							placeholderTextColor={colors.darkLight}
 							value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowStartDate(true)}
-							style={{
-								fontSize: 15,
-							}}
+							onPress={() => !loadingDailyReportForAdmin && setShowStartDate(true)}
+							icon='calendar'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='End Time'
-							placeholderTextColor={colors.darkLight}
 							value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowEndDate(true)}
-							style={{
-								fontSize: 15,
-							}}
+							onPress={() => !loadingDailyReportForAdmin && setShowEndDate(true)}
+							icon='calendar'
 						/>
 					</View>
 					<Pressable onPress={handleGetDailyReportForAdmin} disabled={loadingDailyReportForAdmin}>
 						<View
 							style={{
-								paddingHorizontal: 20,
+								paddingHorizontal: 40,
 								paddingVertical: 10,
-								backgroundColor: colors.brand,
+								backgroundColor: colors.variants.secondary[5],
 								borderRadius: 10,
-								marginTop: 20,
+								marginTop: 40,
 								height: 40,
 								justifyContent: 'center',
 								alignItems: 'center',
-								width: 200,
 							}}
 						>
 							{loadingDailyReportForAdmin ? (
-								<ActivityIndicator size='small' color={colors.primary} />
+								<ActivityIndicator size='small' color={colors.view.primary} />
 							) : (
-								<Text style={{ color: colors.primary }}>Generate Report</Text>
+								<Text style={{ color: colors.view.primary, fontSize: 16, fontWeight: 500 }}>Generate Report</Text>
 							)}
 						</View>
 					</Pressable>
 					{errorMessage && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage}
-						</Text>
+						<View style={{ marginTop: 40, width: '100%', alignItems: 'center' }}>
+							<Text
+								style={{
+									textAlign: 'center',
+									fontSize: 16,
+									color: colors.variants.primary[5],
+								}}
+							>
+								{errorMessage}
+							</Text>
+						</View>
 					)}
 				</View>
 			</View>

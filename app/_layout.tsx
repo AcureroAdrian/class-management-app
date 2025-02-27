@@ -13,7 +13,7 @@ const StackLayout = () => {
 
 	useEffect(() => {
 		const newPath = userInfo
-			? userInfo?.isAdmin
+			? userInfo?.isAdmin || userInfo?.isSuper
 				? '/(admin)'
 				: userInfo?.isTeacher
 					? '/(teacher)'

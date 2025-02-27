@@ -14,6 +14,7 @@ import { getStudentReportForAdmin } from '@/redux/actions/studentAttendanceActio
 import { GET_STUDENT_REPORT_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
+import { getStudentUsers } from '@/redux/actions/userActions'
 
 const StudentReportModal = ({
 	openModal,
@@ -52,6 +53,8 @@ const StudentReportModal = ({
 	useEffect(() => {
 		if (role === 'student') {
 			setStudentId(userInfo?._id || '')
+		} else {
+			dispatch(getStudentUsers('students'))
 		}
 	}, [userInfo])
 	useEffect(() => {
@@ -141,73 +144,68 @@ const StudentReportModal = ({
 							? 'Select class, start and end dates for the report'
 							: 'Select student, class, start and end dates for the report'}
 					</Text>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
+					<View style={{ width: '100%', paddingHorizontal: 20, gap: 40 }}>
 						<CustomInputForm
 							label='Student'
-							placeholderTextColor={colors.darkLight}
 							value={studentSelected}
 							editable={false}
-							onPress={() => role === 'admin' && setOpenStudentsModal(true)}
+							onPress={() => role === 'admin' && !loadingStudentReportForAdmin && setOpenStudentsModal(true)}
+							icon='account'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='Class'
-							placeholderTextColor={colors.darkLight}
 							value={classSelected}
 							editable={false}
-							onPress={() => setOpenClassesModal(true)}
+							onPress={() => !loadingStudentReportForAdmin && setOpenClassesModal(true)}
+							icon='book'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='Start Time'
-							placeholderTextColor={colors.darkLight}
 							value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowStartDate(true)}
+							onPress={() => !loadingStudentReportForAdmin && setShowStartDate(true)}
+							icon='calendar'
 						/>
-					</View>
-					<View style={{ width: '100%', paddingHorizontal: 20 }}>
 						<CustomInputForm
 							label='End Time'
-							placeholderTextColor={colors.darkLight}
 							value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
 							editable={false}
-							onPress={() => setShowEndDate(true)}
+							onPress={() => !loadingStudentReportForAdmin && setShowEndDate(true)}
+							icon='calendar'
 						/>
 					</View>
 					<Pressable onPress={handleGenerateClassReport}>
 						<View
 							style={{
-								paddingHorizontal: 20,
+								paddingHorizontal: 40,
 								paddingVertical: 10,
-								backgroundColor: colors.brand,
+								backgroundColor: colors.variants.secondary[5],
 								borderRadius: 10,
-								marginTop: 20,
+								marginTop: 40,
 								height: 40,
 								justifyContent: 'center',
 								alignItems: 'center',
-								width: 200,
 							}}
 						>
 							{loadingStudentReportForAdmin ? (
-								<ActivityIndicator size='small' color={colors.primary} />
+								<ActivityIndicator size='small' color={colors.view.primary} />
 							) : (
-								<Text style={{ color: colors.primary }}>Generate Report</Text>
+								<Text style={{ color: colors.view.primary, fontSize: 16, fontWeight: 500 }}>Generate Report</Text>
 							)}
 						</View>
 					</Pressable>
 					{errorMessage && (
-						<Text
-							style={{
-								textAlign: 'center',
-								fontSize: 13,
-								color: 'red',
-							}}
-						>
-							{errorMessage}
-						</Text>
+						<View style={{ marginTop: 40, width: '100%', alignItems: 'center' }}>
+							<Text
+								style={{
+									textAlign: 'center',
+									fontSize: 16,
+									color: colors.variants.primary[5],
+								}}
+							>
+								{errorMessage}
+							</Text>
+						</View>
 					)}
 				</View>
 			</View>

@@ -38,9 +38,9 @@ const ConfirmationDeleteModal = ({
 					}}
 				>
 					<Text style={{ fontSize: 16, fontWeight: 'bold' }}>Delete</Text>
-					<View style={{ width: '100%', height: 1, backgroundColor: 'lightgrey', marginVertical: 10 }} />
+					<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0], marginVertical: 10 }} />
 					<Text>{title}</Text>
-					{errorDelete && <Text style={{ color: 'red', marginTop: 10 }}>{errorDelete}</Text>}
+					{errorDelete && <Text style={{ color: colors.variants.primary[5], marginTop: 10 }}>{errorDelete}</Text>}
 					<View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20, gap: 10 }}>
 						<Pressable onPress={closeModal} disabled={loadingDelete}>
 							<View
