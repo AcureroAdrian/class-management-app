@@ -4,6 +4,9 @@ export interface IStudent {
 	_id: string
 	name: string
 	lastName: string
+	scheduledDeletionDate?: string
+	isAdmin: boolean
+	isTeacher: boolean
 }
 
 export interface IFullStudent extends Omit<IStudent, '_id'> {

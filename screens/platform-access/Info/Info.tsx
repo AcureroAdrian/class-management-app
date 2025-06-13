@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, ScrollView } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { Link } from 'expo-router'
 import {
@@ -21,6 +21,7 @@ const Info = () => {
 		<ContainerWithoutHeader>
 			<SafeAreaViewStyled>
 				<StatusBar style='auto' />
+				<ScrollView>
 				<CenterAlignContainer style={{ padding: 20 }}>
 					<LoginLogo resizeMode='contain' source={require('../../../assets/img/logo.png')} />
 					<LoginTitle>MIYAGI KEN</LoginTitle>
@@ -60,6 +61,7 @@ const Info = () => {
 						</Link>
 					</ConcatTextContainer>
 				</CenterAlignContainer>
+				</ScrollView>
 			</SafeAreaViewStyled>
 		</ContainerWithoutHeader>
 	)

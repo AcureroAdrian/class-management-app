@@ -1,0 +1,14 @@
+android/
+package-lock.json
+.eslintrc.js
+.eslintignore
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.env*
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*

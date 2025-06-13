@@ -19,6 +19,7 @@ export const getkarateClassesByAdmin = () => async (dispatch: Dispatch, getState
 
 		const { data } = await customAxios.get('/api/karate-classes', config)
 
+
 		dispatch({ type: types.GET_KARATE_CLASS_BY_ADMIN_SUCCESS, payload: data })
 	} catch (error: any) {
 		dispatch({

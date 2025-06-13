@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text, Switch, ScrollView } from 'react-native'
+import { View, Modal, Text, Switch, ScrollView, KeyboardAvoidingView } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUserById, updateStudentUserById } from '@/redux/actions/userActions'
 import { GET_STUDENT_USER_BY_ID_RESET, UPDATE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
+import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 
 const StudentEditModal = ({
 	openModal,
@@ -157,115 +158,118 @@ const StudentEditModal = ({
 					</View>
 				) : (
 					<>
-						<View style={{ flex: 1, width: '100%' }}>
-							<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
-								<CustomInputForm
-									label='First Name'
-									placeholder='Manuel'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setName}
-									value={name}
-									editable={!loadingUpdateStudentUserById}
-									icon='account'
-								/>
-								<CustomInputForm
-									label='Last Name'
-									placeholder='Smith'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setLastName}
-									value={lastName}
-									editable={!loadingUpdateStudentUserById}
-									icon='account'
-								/>
-								<CustomInputForm
-									label='Date of Birth'
-									placeholder='YYY - MM - DD'
-									placeholderTextColor={colors.darkLight}
-									value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-									editable={false}
-									onPress={() => !loadingUpdateStudentUserById && setShowDatePicker(true)}
-									icon='calendar'
-								/>
-								<CustomInputForm
-									label='Level'
-									placeholder='novice'
-									placeholderTextColor={colors.darkLight}
-									value={level}
-									editable={false}
-									onPress={() => !loadingUpdateStudentUserById && setOpenLevelModal(true)}
-									icon='karate'
-								/>
-								<CustomInputForm
-									label='Email'
-									placeholder='manuel@gmail.com'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setEmail}
-									value={email}
-									editable={!loadingUpdateStudentUserById}
-									icon='email'
-								/>
-								<CustomInputForm
-									label='Phone'
-									placeholder='+506 1234 5678'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setPhone}
-									value={phone}
-									editable={!loadingUpdateStudentUserById}
-									icon='phone'
-								/>
-								<CustomInputForm
-									label='Notes'
-									placeholder='This student has 3 brothers...'
-									placeholderTextColor={colors.darkLight}
-									onChangeText={setNotes}
-									value={notes}
-									editable={!loadingUpdateStudentUserById}
-									multiline={true}
-									icon='note'
-								/>
-								<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
-									{role === 'admin' && (
-										<View
-											style={{
-												flexDirection: 'row',
-												justifyContent: 'flex-start',
-												gap: 5,
-												alignItems: 'center',
-												marginTop: 10,
-											}}
-										>
-											<Switch
-												trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-												thumbColor={colors.variants.secondary[0]}
-												ios_backgroundColor={colors.variants.secondary[2]}
-												onValueChange={() => setIsTeacher(!isTeacher)}
-												value={isTeacher}
-											/>
-											<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
-										</View>
-									)}
-									{userInfo?.isSuper && (
-										<View
-											style={{
-												flexDirection: 'row',
-												justifyContent: 'flex-start',
-												gap: 5,
-												alignItems: 'center',
-												marginTop: 10,
-											}}
-										>
-											<Switch
-												trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-												thumbColor={colors.variants.secondary[0]}
-												ios_backgroundColor={colors.variants.secondary[2]}
-												onValueChange={() => setIsAdmin(!isAdmin)}
-												value={isAdmin}
-											/>
-											<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
-										</View>
-									)}
-								</View>
-							</ScrollView>
+						<View style={{ flex: 1, width: '100%', paddingBottom: 25 }}>
+							<KeyboardAvoidingWrapper>
+								<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+									<CustomInputForm
+										label='First Name'
+										placeholder='Manuel'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setName}
+										value={name}
+										editable={!loadingUpdateStudentUserById}
+										icon='account'
+									/>
+									<CustomInputForm
+										label='Last Name'
+										placeholder='Smith'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setLastName}
+										value={lastName}
+										editable={!loadingUpdateStudentUserById}
+										icon='account'
+									/>
+									<CustomInputForm
+										label='Date of Birth'
+										placeholder='YYY - MM - DD'
+										placeholderTextColor={colors.darkLight}
+										value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+										editable={false}
+										onPress={() => !loadingUpdateStudentUserById && setShowDatePicker(true)}
+										icon='calendar'
+									/>
+									<CustomInputForm
+										label='Level'
+										placeholder='novice'
+										placeholderTextColor={colors.darkLight}
+										value={level}
+										editable={false}
+										onPress={() => (console.log('onPress'), !loadingUpdateStudentUserById && setOpenLevelModal(true))}
+										icon='karate'
+									/>
+									<CustomInputForm
+										label='Email'
+										placeholder='manuel@gmail.com'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setEmail}
+										value={email}
+										editable={!loadingUpdateStudentUserById}
+										icon='email'
+									/>
+									<CustomInputForm
+										label='Phone'
+										placeholder='+506 1234 5678'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setPhone}
+										value={phone}
+										editable={!loadingUpdateStudentUserById}
+										icon='phone'
+									/>
+									<CustomInputForm
+										label='Notes'
+										placeholder='This student has 3 brothers...'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setNotes}
+										value={notes}
+										editable={!loadingUpdateStudentUserById}
+										multiline={true}
+										submitBehavior='blurAndSubmit'
+										icon='note'
+									/>
+									<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
+										{role === 'admin' && (
+											<View
+												style={{
+													flexDirection: 'row',
+													justifyContent: 'flex-start',
+													gap: 5,
+													alignItems: 'center',
+													marginTop: 10,
+												}}
+											>
+												<Switch
+													trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+													thumbColor={colors.variants.secondary[0]}
+													ios_backgroundColor={colors.variants.secondary[2]}
+													onValueChange={() => setIsTeacher(!isTeacher)}
+													value={isTeacher}
+												/>
+												<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
+											</View>
+										)}
+										{userInfo?.isSuper && (
+											<View
+												style={{
+													flexDirection: 'row',
+													justifyContent: 'flex-start',
+													gap: 5,
+													alignItems: 'center',
+													marginTop: 10,
+												}}
+											>
+												<Switch
+													trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+													thumbColor={colors.variants.secondary[0]}
+													ios_backgroundColor={colors.variants.secondary[2]}
+													onValueChange={() => setIsAdmin(!isAdmin)}
+													value={isAdmin}
+												/>
+												<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
+											</View>
+										)}
+									</View>
+								</ScrollView>
+							</KeyboardAvoidingWrapper>
 						</View>
 						{errorMessage && (
 							<Text

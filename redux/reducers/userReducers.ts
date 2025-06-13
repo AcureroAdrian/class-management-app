@@ -26,6 +26,7 @@ interface IStudent {
 	_id: string
 	name: string
 	lastName: string
+	scheduledDeletionDate?: string
 	isAdmin: boolean
 	isTeacher: boolean
 }
@@ -63,7 +64,11 @@ interface IUpdateStudentUserByIdState {
 interface IDeleteStudentUserByIdState {
 	loadingDeleteStudentUserById?: boolean
 	successDeleteStudentUserById?: boolean
-	studentUserDeleted?: { studentId: string }
+	studentUserDeleted?: { 
+		studentId: string
+		message?: string
+		scheduledDeletionDate?: string
+	}
 	errorDeleteStudentUserById?: string
 }
 

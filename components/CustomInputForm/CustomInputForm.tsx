@@ -15,7 +15,7 @@ const CustomInputForm = ({ label, onPress, icon, ...props }: ICustomInputFormPro
 		<View style={{ width: '100%', position: 'relative' }}>
 			{Boolean(label?.length) && <StyledCustomInputlabel>{label}</StyledCustomInputlabel>}
 			<Pressable onPress={onPress}>
-				<StyledCustomTextInput placeholderTextColor={colors.variants.secondary[2]} {...props} onPressIn={onPress} />
+				<StyledCustomTextInput placeholderTextColor={colors.variants.secondary[2]} {...props} onPress={onPress} />
 			</Pressable>
 			{icon && (
 				<View
