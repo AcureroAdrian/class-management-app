@@ -8,6 +8,19 @@ export interface IClass {
 	weekDays: TDaysOfWeek[]
 	location?: TLocation
 	students: string[]
+	recoveryClass?: {
+		_id: string
+		karateClass: string
+		student: string
+		attendance: string
+		date: {
+			year: number
+			month: number
+			day: number
+			hour: number
+			minute: number
+		}
+	}
 }
 
 export interface IStudent {

@@ -166,3 +166,28 @@ export const deleteStudentUserById =
 			})
 		}
 	}
+
+export const registerTrialStudent = (dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.REGISTER_TRIAL_STUDENT_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.post('/api/users/trial-student', dataToSend, config)
+
+		dispatch({ type: types.REGISTER_TRIAL_STUDENT_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.REGISTER_TRIAL_STUDENT_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}

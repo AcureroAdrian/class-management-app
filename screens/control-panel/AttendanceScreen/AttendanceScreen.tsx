@@ -129,6 +129,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					item,
 				}
 			})
+
 			setItems(newItems || [])
 			setHolidayId(studentAttendanceByDayList?.holiday?._id)
 		}
@@ -160,7 +161,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					return item
 				}),
 			)
-			setOpenAttendanceEditModal(false)
+			setOpenAttendanceEditModal(false);
 		}
 	}, [successRegisterStudentAttendance])
 	useEffect(() => {

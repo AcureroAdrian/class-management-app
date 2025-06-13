@@ -1,18 +1,28 @@
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
 
-const KeyboardAvoidingWrapper = ({ children }: { children: ReactNode | ReactNode[] }) => {
+type KeyboardAvoidingWrapperProps = KeyboardAwareScrollViewProps & {
+  children: ReactNode | ReactNode[];
+  extraScrollHeight?: number;
+};
+
+const KeyboardAvoidingWrapper = ({
+  children,
+  extraScrollHeight = 20,
+  ...props
+}: KeyboardAvoidingWrapperProps) => {
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       enableOnAndroid={true}
+      enableAutomaticScroll={true}
       keyboardShouldPersistTaps="handled"
-	  enableAutomaticScroll={true}
+      keyboardOpeningTime={250}
+      extraScrollHeight={extraScrollHeight}
+      {...props}
     >
-      <View style={{ flex: 1 }}>
-        {children}
-      </View>
+      <View style={{ flex: 1 }}>{children}</View>
     </KeyboardAwareScrollView>
   );
 };

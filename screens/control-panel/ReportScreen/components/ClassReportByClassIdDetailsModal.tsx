@@ -167,6 +167,46 @@ const ClassReportByClassIdDetailsModal = ({
 																			<Text style={{ fontSize: 10, color: 'grey' }}>
 																				{capitalizeWords(item?.student.lastName)}
 																			</Text>
+																			
+																			{/* Badges Container */}
+																			<View style={{ flexDirection: 'row', marginTop: 2, gap: 2 }}>
+																				{item.student.isTrial && (
+																					<View style={{ 
+																						backgroundColor: '#FFF3CD', 
+																						paddingHorizontal: 4, 
+																						paddingVertical: 1, 
+																						borderRadius: 4 
+																					}}>
+																						<Text style={{ color: '#856404', fontSize: 8, fontWeight: '600' }}>TRIAL</Text>
+																					</View>
+																				)}
+																				{item.isDayOnly && (
+																					<View style={{ 
+																						backgroundColor: '#E1F5FE', 
+																						paddingHorizontal: 4, 
+																						paddingVertical: 1, 
+																						borderRadius: 4 
+																					}}>
+																						<Text style={{ color: '#01579B', fontSize: 8, fontWeight: '600' }}>DAY</Text>
+																					</View>
+																				)}
+																			</View>
+																			
+																			{/* Observations */}
+																			{item.observations && (
+																				<View style={{ 
+																					marginTop: 4, 
+																					padding: 6, 
+																					backgroundColor: colors.variants.secondary[0], 
+																					borderRadius: 4,
+																					borderLeftWidth: 3,
+																					borderLeftColor: colors.variants.primary[4]
+																				}}>
+																					<Text style={{ fontSize: 10, color: colors.variants.secondary[4], fontStyle: 'italic' }}>
+																						"Nota: {item.observations}"
+																					</Text>
+																				</View>
+																			)}
 																		</View>
 																	</View>
 																	<View

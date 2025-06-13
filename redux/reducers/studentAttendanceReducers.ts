@@ -74,6 +74,12 @@ interface IUpdateStudentAttendanceByIdState {
 	studentAttendanceByIdUpdated?: any
 	errorUpdateStudentAttendanceById?: string
 }
+interface IAddStudentToAttendanceState {
+	loadingAddStudentToAttendance?: boolean
+	successAddStudentToAttendance?: boolean
+	studentAddedToAttendance?: any
+	errorAddStudentToAttendance?: string
+}
 interface IGetDailyReportForAdminState {
 	loadingDailyReportForAdmin?: boolean
 	successDailyReportForAdmin?: boolean
@@ -96,6 +102,7 @@ interface IGetStudentReportForAdminState {
 type TGetStudentAttendanceByDayReducer = Reducer<IGetStudentAttendanceByDayState, any>
 type TRegisterStudentAttendanceReducer = Reducer<IRegisterStudentAttendanceState, any>
 type TUpdateStudentAttendanceByIdReducer = Reducer<IUpdateStudentAttendanceByIdState, any>
+type TAddStudentToAttendanceReducer = Reducer<IAddStudentToAttendanceState, any>
 type TGetDailyReportForAdminReducer = Reducer<IGetDailyReportForAdminState, any>
 type TGetClassReportByClassIdForAdminReducer = Reducer<IGetDailyReportForAdminState, any>
 type TGetStudentReportForAdminReducer = Reducer<IGetStudentReportForAdminState, any>
@@ -160,6 +167,28 @@ export const updateStudentAttendanceByIdReducer: TUpdateStudentAttendanceByIdRed
 				errorUpdateStudentAttendanceById: action.payload,
 			}
 		case types.UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const addStudentToAttendanceReducer: TAddStudentToAttendanceReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.ADD_STUDENT_TO_ATTENDANCE_REQUEST:
+			return { loadingAddStudentToAttendance: true }
+		case types.ADD_STUDENT_TO_ATTENDANCE_SUCCESS:
+			return {
+				loadingAddStudentToAttendance: false,
+				successAddStudentToAttendance: true,
+				studentAddedToAttendance: action.payload,
+			}
+		case types.ADD_STUDENT_TO_ATTENDANCE_FAIL:
+			return {
+				loadingAddStudentToAttendance: false,
+				errorAddStudentToAttendance: action.payload,
+			}
+		case types.ADD_STUDENT_TO_ATTENDANCE_RESET:
 			return {}
 		default:
 			return state

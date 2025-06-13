@@ -22,6 +22,8 @@ interface IUser {
 	isTeacher: boolean
 	createdAt: string
 	token: string
+	scheduledDeletionDate?: string
+	isTrial?: boolean
 }
 interface IStudent {
 	_id: string
@@ -30,12 +32,32 @@ interface IStudent {
 	scheduledDeletionDate?: string
 	isAdmin: boolean
 	isTeacher: boolean
+	isTrial?: boolean
 }
 
-interface ILoginState {
+interface IUserLogin {
+	_id: string
+	userId: string
+	avatar: string
+	name: string
+	lastName: string
+	email: string
+	level: string
+	dateOfBirth: {
+		year: number
+		month: number
+		day: number
+	}
+	createdAt: string
+	isSuper: boolean
+	isAdmin: boolean
+	isTeacher: boolean
+	token: string
+}
+
+interface IUserLoginState {
 	loadingUserLogin?: boolean
-	successUserLogin?: boolean
-	userInfo?: IUser
+	userInfo?: IUserLogin
 	errorUserLogin?: string
 }
 interface IGetStudentUsersState {
@@ -47,8 +69,14 @@ interface IGetStudentUsersState {
 interface IRegisterStudentsState {
 	loadingRegisterStudents?: boolean
 	successRegisterStudents?: boolean
-	studentRegistered?: IStudent
+	studentRegistered?: IUser
 	errorRegisterStudents?: string
+}
+interface IRegisterTrialStudentState {
+	loadingRegisterTrialStudent?: boolean
+	successRegisterTrialStudent?: boolean
+	trialStudentRegistered?: IUser
+	errorRegisterTrialStudent?: string
 }
 interface IGetStudentUserByIdState {
 	loadingGetStudentUserById?: boolean
@@ -73,9 +101,10 @@ interface IDeleteStudentUserByIdState {
 	errorDeleteStudentUserById?: string
 }
 
-type TUserLoginReducer = Reducer<ILoginState, any>
+type TUserLoginReducer = Reducer<IUserLoginState, any>
 type TGetStudentUsersReducer = Reducer<IGetStudentUsersState, any>
 type TRegisterStudentsReducer = Reducer<IRegisterStudentsState, any>
+type TRegisterTrialStudentReducer = Reducer<IRegisterTrialStudentState, any>
 type TGetStudentUserByIdReducer = Reducer<IGetStudentUserByIdState, any>
 type TUpdateStudentUserByIdReducer = Reducer<IUpdateStudentUserByIdState, any>
 type TDeleteStudentUserByIdReducer = Reducer<IDeleteStudentUserByIdState, any>
@@ -87,7 +116,6 @@ export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 		case types.USER_LOGIN_SUCCESS:
 			return {
 				loadingUserLogin: false,
-				successUserLogin: true,
 				userInfo: action.payload,
 			}
 		case types.USER_LOGIN_FAIL:
@@ -140,6 +168,28 @@ export const registerStudentsReducer: TRegisterStudentsReducer = (state = {}, ac
 				errorRegisterStudents: action.payload,
 			}
 		case types.REGISTER_STUDENTS_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const registerTrialStudentReducer: TRegisterTrialStudentReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.REGISTER_TRIAL_STUDENT_REQUEST:
+			return { loadingRegisterTrialStudent: true }
+		case types.REGISTER_TRIAL_STUDENT_SUCCESS:
+			return {
+				loadingRegisterTrialStudent: false,
+				successRegisterTrialStudent: true,
+				trialStudentRegistered: action.payload,
+			}
+		case types.REGISTER_TRIAL_STUDENT_FAIL:
+			return {
+				loadingRegisterTrialStudent: false,
+				errorRegisterTrialStudent: action.payload,
+			}
+		case types.REGISTER_TRIAL_STUDENT_RESET:
 			return {}
 		default:
 			return state
