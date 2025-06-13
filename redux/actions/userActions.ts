@@ -5,9 +5,7 @@ import { AppStore } from '../store'
 import customAxios from '@/config/axios'
 
 interface IDataLogin {
-	name: string
-	lastName: string
-	dateOfBirth: Date
+	userId: string
 }
 
 export const login = (dataLogin: IDataLogin) => async (dispatch: Dispatch, getState: AppStore['getState']) => {

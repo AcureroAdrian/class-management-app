@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerStudents } from '@/redux/actions/userActions'
 import { REGISTER_STUDENTS_RESET } from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
+import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 
 const StudentsRegisterModal = ({
 	openModal,
@@ -26,6 +27,7 @@ const StudentsRegisterModal = ({
 }) => {
 	const dispatch = useAppDispatch()
 
+	const [userId, setUserId] = useState<string>('')
 	const [studentName, setStudentName] = useState<string>('')
 	const [studentLastName, setStudentLastName] = useState<string>('')
 	const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
@@ -50,6 +52,15 @@ const StudentsRegisterModal = ({
 	}, [])
 
 	const handleRegisterStudents = () => {
+		if (!userId?.length) {
+			return setErrorMessage('User ID is required')
+		}
+		if (userId.length < 6) {
+			return setErrorMessage('User ID must be at least 6 characters long')
+		}
+		if (!/^[A-Za-z0-9]+$/.test(userId)) {
+			return setErrorMessage(`User ID ${userId} must contain only letters and numbers`)
+		}
 		if (!studentName?.length) {
 			return setErrorMessage('First name is required')
 		}
@@ -58,6 +69,7 @@ const StudentsRegisterModal = ({
 		}
 
 		const studentData: IFullStudent = {
+			userId: userId.toUpperCase(),
 			name: studentName?.trim(),
 			lastName: studentLastName?.trim(),
 			phone,
@@ -98,125 +110,138 @@ const StudentsRegisterModal = ({
 					handleBack={closeModal}
 				/>
 				<View style={{ flex: 1, width: '100%' }}>
-					<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
-						{(errorMessage || errorRegisterStudents) && (
-							<Text
-								style={{
-									textAlign: 'center',
-									fontSize: 13,
-									color: 'red',
-								}}
-							>
-								{errorMessage || errorRegisterStudents}
-							</Text>
-						)}
-						<CustomInputForm
-							label='First Name'
-							placeholder='Manuel'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setStudentName}
-							value={studentName}
-							editable={!loadingRegisterStudents}
-							icon='account'
-						/>
-						<CustomInputForm
-							label='Last Name'
-							placeholder='Smith'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setStudentLastName}
-							value={studentLastName}
-							editable={!loadingRegisterStudents}
-							icon='account'
-						/>
-						<CustomInputForm
-							label='Date of Birth'
-							placeholder='YYY - MM - DD'
-							placeholderTextColor={colors.darkLight}
-							value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-							editable={false}
-							onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
-							icon='calendar'
-						/>
-						<CustomInputForm
-							label='Level'
-							placeholder='novice'
-							placeholderTextColor={colors.darkLight}
-							value={level}
-							editable={false}
-							onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
-							icon='karate'
-						/>
-						<CustomInputForm
-							label='Email'
-							placeholder='manuel@gmail.com'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setEmail}
-							value={email}
-							editable={!loadingRegisterStudents}
-							icon='email'
-						/>
-						<CustomInputForm
-							label='Phone'
-							placeholder='+506 1234 5678'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setPhone}
-							value={phone}
-							editable={!loadingRegisterStudents}
-							icon='phone'
-						/>
-						<CustomInputForm
-							label='Notes'
-							placeholder='This student has 3 brothers...'
-							placeholderTextColor={colors.darkLight}
-							onChangeText={setNotes}
-							value={notes}
-							editable={!loadingRegisterStudents}
-							multiline={true}
-							icon='note'
-						/>
-						<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
-							{role === 'admin' && (
-								<View
+					<KeyboardAvoidingWrapper>
+						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+							{(errorMessage || errorRegisterStudents) && (
+								<Text
 									style={{
-										flexDirection: 'row',
-										justifyContent: 'flex-start',
-										gap: 5,
-										alignItems: 'center',
-										marginTop: 10,
+										textAlign: 'center',
+										fontSize: 13,
+										color: 'red',
 									}}
 								>
-									<Switch
-										trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-										thumbColor={colors.variants.secondary[0]}
-										ios_backgroundColor={colors.variants.secondary[2]}
-										onValueChange={() => setIsTeacher(!isTeacher)}
-										value={isTeacher}
-									/>
-									<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
-								</View>
+									{errorMessage || errorRegisterStudents}
+								</Text>
 							)}
-							{userInfo?.isSuper && (
-								<View
-									style={{
-										flexDirection: 'row',
-										justifyContent: 'flex-start',
-										gap: 5,
-										alignItems: 'center',
-										marginTop: 10,
-									}}
-								>
-									<Switch
-										trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-										thumbColor={colors.variants.secondary[0]}
-										ios_backgroundColor={colors.variants.secondary[2]}
-										onValueChange={() => setIsAdmin(!isAdmin)}
-										value={isAdmin}
-									/>
-									<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
-								</View>
-							)}
-						</View>
-					</ScrollView>
+							<CustomInputForm
+								label='User ID'
+								placeholder='USER123'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setUserId}
+								value={userId}
+								editable={!loadingRegisterStudents}
+								icon='account-key'
+								autoCapitalize='characters'
+								maxLength={20}
+							/>
+							<CustomInputForm
+								label='First Name'
+								placeholder='Manuel'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setStudentName}
+								value={studentName}
+								editable={!loadingRegisterStudents}
+								icon='account'
+							/>
+							<CustomInputForm
+								label='Last Name'
+								placeholder='Smith'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setStudentLastName}
+								value={studentLastName}
+								editable={!loadingRegisterStudents}
+								icon='account'
+							/>
+							<CustomInputForm
+								label='Date of Birth'
+								placeholder='YYY - MM - DD'
+								placeholderTextColor={colors.darkLight}
+								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+								editable={false}
+								onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
+								icon='calendar'
+							/>
+							<CustomInputForm
+								label='Level'
+								placeholder='novice'
+								placeholderTextColor={colors.darkLight}
+								value={level}
+								editable={false}
+								onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
+								icon='karate'
+							/>
+							<CustomInputForm
+								label='Email'
+								placeholder='manuel@gmail.com'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setEmail}
+								value={email}
+								editable={!loadingRegisterStudents}
+								icon='email'
+							/>
+							<CustomInputForm
+								label='Phone'
+								placeholder='+506 1234 5678'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setPhone}
+								value={phone}
+								editable={!loadingRegisterStudents}
+								icon='phone'
+							/>
+							<CustomInputForm
+								label='Notes'
+								placeholder='This student has 3 brothers...'
+								placeholderTextColor={colors.darkLight}
+								onChangeText={setNotes}
+								value={notes}
+								editable={!loadingRegisterStudents}
+								multiline={true}
+								icon='note'
+							/>
+							<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
+								{role === 'admin' && (
+									<View
+										style={{
+											flexDirection: 'row',
+											justifyContent: 'flex-start',
+											gap: 5,
+											alignItems: 'center',
+											marginTop: 10,
+										}}
+									>
+										<Switch
+											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+											thumbColor={colors.variants.secondary[0]}
+											ios_backgroundColor={colors.variants.secondary[2]}
+											onValueChange={() => setIsTeacher(!isTeacher)}
+											value={isTeacher}
+										/>
+										<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
+									</View>
+								)}
+								{userInfo?.isSuper && (
+									<View
+										style={{
+											flexDirection: 'row',
+											justifyContent: 'flex-start',
+											gap: 5,
+											alignItems: 'center',
+											marginTop: 10,
+										}}
+									>
+										<Switch
+											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
+											thumbColor={colors.variants.secondary[0]}
+											ios_backgroundColor={colors.variants.secondary[2]}
+											onValueChange={() => setIsAdmin(!isAdmin)}
+											value={isAdmin}
+										/>
+										<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
+									</View>
+								)}
+							</View>
+						</ScrollView>
+					</KeyboardAvoidingWrapper>
 				</View>
 			</View>
 			{showDatePicker && (

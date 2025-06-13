@@ -2,6 +2,7 @@ import { TUserLevel } from '@/shared/common-types'
 
 export interface IStudent {
 	_id: string
+	userId: string
 	name: string
 	lastName: string
 	scheduledDeletionDate?: string
@@ -10,6 +11,7 @@ export interface IStudent {
 }
 
 export interface IFullStudent extends Omit<IStudent, '_id'> {
+	userId: string
 	dateOfBirth?: {
 		year: number
 		month: number

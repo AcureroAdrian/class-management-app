@@ -4,6 +4,7 @@ import { TUserLevel } from '@/shared/common-types'
 
 interface IUser {
 	_id: string
+	userId: string
 	name: string
 	lastName: string
 	dateOfBirth?: {

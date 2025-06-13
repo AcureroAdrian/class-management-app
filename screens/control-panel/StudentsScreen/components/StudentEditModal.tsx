@@ -30,6 +30,7 @@ const StudentEditModal = ({
 }) => {
 	const dispatch = useAppDispatch()
 
+	const [userId, setUserId] = useState<string>('')
 	const [name, setName] = useState<string>('')
 	const [lastName, setLastName] = useState<string>('')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -64,6 +65,7 @@ const StudentEditModal = ({
 	}, [studentId])
 	useEffect(() => {
 		if (successGetStudentUserById) {
+			setUserId(studentUserById?.userId || '')
 			setName(capitalizeWords(studentUserById?.name || ''))
 			setLastName(capitalizeWords(studentUserById?.lastName || ''))
 			setPhone(studentUserById?.phone || '')
@@ -96,6 +98,15 @@ const StudentEditModal = ({
 
 	const handleUpdateStudent = () => {
 		setErrorMessage(null)
+		if (!userId?.length) {
+			return setErrorMessage('User ID is required')
+		}
+		if (userId.length < 6) {
+			return setErrorMessage('User ID must be at least 6 characters long')
+		}
+		if (!/^[A-Za-z0-9]+$/.test(userId)) {
+			return setErrorMessage(`User ID ${userId} must contain only letters and numbers`)
+		}
 		if (!name?.length) {
 			return setErrorMessage('First name is required')
 		}
@@ -106,6 +117,7 @@ const StudentEditModal = ({
 		if (!studentUserById) return closeModal()
 
 		const newData: IFullStudent = {
+			userId: userId.toUpperCase(),
 			name,
 			lastName,
 			phone,
@@ -161,6 +173,17 @@ const StudentEditModal = ({
 						<View style={{ flex: 1, width: '100%', paddingBottom: 25 }}>
 							<KeyboardAvoidingWrapper>
 								<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+									<CustomInputForm
+										label='User ID'
+										placeholder='USER123'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setUserId}
+										value={userId}
+										editable={!loadingUpdateStudentUserById && (role === 'admin' || userInfo?.isSuper)}
+										icon='account-key'
+										autoCapitalize='characters'
+										maxLength={20}
+									/>
 									<CustomInputForm
 										label='First Name'
 										placeholder='Manuel'

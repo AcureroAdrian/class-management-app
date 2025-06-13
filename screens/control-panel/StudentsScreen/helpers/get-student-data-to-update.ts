@@ -3,6 +3,10 @@ import { IFullStudent } from './students-interfaces'
 const getStudentDataToUpdate = (oldStudent: IFullStudent, newStudent: IFullStudent) => {
 	const dataToUpdate: { [key: string]: any } = {}
 
+	if (oldStudent.userId?.trim()?.toUpperCase() !== newStudent.userId?.trim()?.toUpperCase()) {
+		dataToUpdate.userId = newStudent.userId
+	}
+
 	if (oldStudent.name?.trim() !== newStudent.name?.toLowerCase()?.trim()) {
 		dataToUpdate.name = newStudent.name
 	}
