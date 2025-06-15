@@ -15,6 +15,7 @@ import { GET_STUDENT_ATTENDANCE_BY_DAY_RESET } from '@/redux/constants/studentAt
 import { deleteHolidayById, registerHolidayByDate } from '@/redux/actions/holidayActions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { DELETE_HOLIDAY_BY_ID_RESET, REGISTER_HOLIDAY_BY_DATE_RESET } from '@/redux/constants/holidayConstants'
+import { isStudentPresent } from '@/shared/attendance-helpers'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -107,10 +108,9 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 				let presents = 0
 				let absents = 0
 				item.attendance.forEach((student: any) => {
-					if (student.attendanceStatus === 'present') {
+					if (isStudentPresent(student.attendanceStatus)) {
 						presents++
-					}
-					if (student.attendanceStatus === 'absent') {
+					} else {
 						absents++
 					}
 				})
@@ -146,10 +146,9 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 						let presents = 0
 						let absents = 0
 						studentAttendanceRegistered.attendance.forEach((student: any) => {
-							if (student.attendanceStatus === 'present') {
+							if (isStudentPresent(student.attendanceStatus)) {
 								presents++
-							}
-							if (student.attendanceStatus === 'absent') {
+							} else {
 								absents++
 							}
 						})
@@ -176,10 +175,9 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 						let presents = 0
 						let absents = 0
 						studentAttendanceByIdUpdated.attendance.forEach((student: any) => {
-							if (student.attendanceStatus === 'present') {
+							if (isStudentPresent(student.attendanceStatus)) {
 								presents++
-							}
-							if (student.attendanceStatus === 'absent') {
+							} else {
 								absents++
 							}
 						})

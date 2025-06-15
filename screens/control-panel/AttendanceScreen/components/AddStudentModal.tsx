@@ -8,6 +8,7 @@ import { addStudentToAttendance } from '@/redux/actions/studentAttendanceActions
 import capitalizeWords from '@/shared/capitalize-words'
 import { REGISTER_TRIAL_STUDENT_RESET } from '@/redux/constants/userConstants'
 import { ADD_STUDENT_TO_ATTENDANCE_RESET } from '@/redux/constants/studentAttendanceConstants'
+import { Badge, BADGE_CONFIG } from '@/shared/Badge'
 
 interface AddStudentModalProps {
 	visible: boolean
@@ -140,7 +141,7 @@ const AddStudentModal = ({
 						color: colors.primary,
 						flex: 1
 					}}>
-						Agregar Estudiante
+						Add Student
 					</Text>
 					<Pressable
 						onPress={handleClose}
@@ -168,7 +169,7 @@ const AddStudentModal = ({
 									borderWidth: 1,
 									borderColor: colors.variants.grey[1]
 								}}
-								placeholder="Buscar estudiante..."
+								placeholder="Search student..."
 								placeholderTextColor={colors.variants.grey[3]}
 								value={searchText}
 								onChangeText={setSearchText}
@@ -187,18 +188,15 @@ const AddStudentModal = ({
 									flexDirection: 'row',
 									alignItems: 'center',
 									gap: 10,
-									borderWidth: 2,
-									borderColor: colors.variants.primary[4],
-									borderStyle: 'dashed'
 								}}
 							>
-								<MaterialCommunityIcons name="account-plus" size={24} color={colors.variants.primary[4]} />
+								<MaterialCommunityIcons name="account-plus" size={24} color={colors.primary} />
 								<Text style={{
 									fontSize: 16,
 									fontWeight: '600',
-									color: colors.variants.primary[4]
+									color: colors.primary
 								}}>
-									Crear Estudiante Trial
+									Create a Trial Student
 								</Text>
 							</Pressable>
 						</View>
@@ -246,15 +244,11 @@ const AddStudentModal = ({
 														<Text style={{ color: '#856404', fontSize: 10, fontWeight: '600' }}>TRIAL</Text>
 													</View>
 												)}
+												{item.isTrial && (
+													<Badge {...BADGE_CONFIG.trial}/>
+												)}
 												{item.scheduledDeletionDate && (
-													<View style={{ 
-														backgroundColor: '#FFEBEE', 
-														paddingHorizontal: 6, 
-														paddingVertical: 2, 
-														borderRadius: 8 
-													}}>
-														<Text style={{ color: '#C62828', fontSize: 10, fontWeight: '600' }}>DEL</Text>
-													</View>
+													<Badge {...BADGE_CONFIG.scheduledDeletion}/>
 												)}
 											</View>
 										</View>
@@ -278,7 +272,7 @@ const AddStudentModal = ({
 													fontWeight: '600',
 													textAlign: 'center'
 												}}>
-													Permanente
+													Permanent
 												</Text>
 											</Pressable>
 											<Pressable
@@ -289,18 +283,17 @@ const AddStudentModal = ({
 													paddingHorizontal: 15,
 													paddingVertical: 8,
 													borderRadius: 8,
-													borderWidth: 1,
-													borderColor: colors.variants.primary[4],
+
 													opacity: loadingAddStudentToAttendance ? 0.7 : 1
 												}}
 											>
 												<Text style={{
-													color: colors.variants.primary[4],
+													color: colors.primary,
 													fontSize: 12,
 													fontWeight: '600',
 													textAlign: 'center'
 												}}>
-													Solo Hoy
+													Day only
 												</Text>
 											</Pressable>
 										</View>
@@ -323,7 +316,7 @@ const AddStudentModal = ({
 										textAlign: 'center',
 										marginTop: 10
 									}}>
-										No se encontraron estudiantes disponibles
+										No available students found
 									</Text>
 								</View>
 							)}
@@ -339,13 +332,13 @@ const AddStudentModal = ({
 							marginBottom: 20,
 							textAlign: 'center'
 						}}>
-							Crear Estudiante Trial
+							Create Trial Student
 						</Text>
 
 						<View style={{ gap: 15 }}>
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Nombre *
+									First Name *
 								</Text>
 								<TextInput
 									style={{
@@ -357,7 +350,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="Nombre del estudiante"
+									placeholder="Student's first name"
 									value={newTrialStudent.name}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, name: text }))}
 								/>
@@ -365,7 +358,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Apellido *
+									Last Name *
 								</Text>
 								<TextInput
 									style={{
@@ -377,7 +370,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="Apellido del estudiante"
+									placeholder="Student's last name"
 									value={newTrialStudent.lastName}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, lastName: text }))}
 								/>
@@ -385,7 +378,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									ID Usuario (opcional)
+									User ID (optional)
 								</Text>
 								<TextInput
 									style={{
@@ -397,7 +390,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="ID único del estudiante"
+									placeholder="Unique student ID"
 									value={newTrialStudent.userId}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, userId: text }))}
 								/>
@@ -405,7 +398,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Nivel (opcional)
+									Level (optional)
 								</Text>
 								<TextInput
 									style={{
@@ -417,7 +410,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="Nivel del estudiante"
+									placeholder="Student's level"
 									value={newTrialStudent.level}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, level: text }))}
 								/>
@@ -425,7 +418,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Teléfono (opcional)
+									Phone (optional)
 								</Text>
 								<TextInput
 									style={{
@@ -437,7 +430,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="Número de teléfono"
+									placeholder="Phone number"
 									value={newTrialStudent.phone}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, phone: text }))}
 									keyboardType="phone-pad"
@@ -446,7 +439,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Email (opcional)
+									Email (optional)
 								</Text>
 								<TextInput
 									style={{
@@ -458,7 +451,7 @@ const AddStudentModal = ({
 										borderWidth: 1,
 										borderColor: colors.variants.grey[1]
 									}}
-									placeholder="Correo electrónico"
+									placeholder="Email address"
 									value={newTrialStudent.email}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, email: text }))}
 									keyboardType="email-address"
@@ -468,7 +461,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Notas (opcional)
+									Notes (optional)
 								</Text>
 								<TextInput
 									style={{
@@ -482,7 +475,7 @@ const AddStudentModal = ({
 										minHeight: 80,
 										textAlignVertical: 'top'
 									}}
-									placeholder="Notas adicionales sobre el estudiante"
+									placeholder="Additional notes about the student"
 									value={newTrialStudent.notes}
 									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, notes: text }))}
 									multiline={true}
@@ -513,7 +506,7 @@ const AddStudentModal = ({
 									fontSize: 16,
 									fontWeight: '600'
 								}}>
-									Cancelar
+									Cancel
 								</Text>
 							</Pressable>
 							<Pressable
@@ -533,7 +526,7 @@ const AddStudentModal = ({
 									fontSize: 16,
 									fontWeight: '600'
 								}}>
-									{loadingRegisterTrialStudent ? 'Creando...' : 'Crear y Agregar'}
+									{loadingRegisterTrialStudent ? 'Creating...' : 'Create and Add'}
 								</Text>
 							</Pressable>
 						</View>

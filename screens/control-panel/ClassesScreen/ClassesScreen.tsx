@@ -25,6 +25,7 @@ import ReserveRecoveryClassModal from './components/ReserveRecoveryClassModal'
 import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
 import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
 import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
+import { formatClassSchedule } from './helpers/format-class-schedule'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -83,12 +84,14 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			dispatch({ type: GET_KARATE_CLASSES_FOR_STUDENT_RESET })
 		}
 	}, [segments])
+
 	useEffect(() => {
 		if (successKarateClassesByAdmin && karateClassesByAdminList) {
 			setDeleteId('')
 			setKarateClasses(karateClassesByAdminList)
 		}
 	}, [successKarateClassesByAdmin])
+
 	useEffect(() => {
 		if (successKarateClassesForStudent && karateClassesForStudentList) {
 			setDeleteId('')
@@ -96,6 +99,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setRecoveryClasses(karateClassesForStudentList.absents)
 		}
 	}, [successKarateClassesForStudent])
+
 	useEffect(() => {
 		if (successRegisterKarateClass) {
 			setDeleteId('')
@@ -103,6 +107,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenClassRegisterModal(false)
 		}
 	}, [successRegisterKarateClass])
+
 	useEffect(() => {
 		if (successUpdateKarateClassById) {
 			setDeleteId('')
@@ -119,6 +124,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenClassEditModal(false)
 		}
 	}, [successUpdateKarateClassById])
+
 	useEffect(() => {
 		if (successDeleteKarateClassById) {
 			setDeleteId('')
@@ -126,6 +132,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenConfirmationDeleteModal(false)
 		}
 	}, [successDeleteKarateClassById])
+
 	useEffect(() => {
 		if (successBookingRecoveryClassById) {
 			setRecoveryClasses((prev) =>
@@ -147,6 +154,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenReserveRecoveryClassModal(false)
 		}
 	}, [successBookingRecoveryClassById])
+
 	useEffect(() => {
 		if (successDeleteRecoveryClassById) {
 			setRecoveryClasses((prev) =>
@@ -296,6 +304,11 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 															<Text style={{ color: item.students.length ? '' : colors.view.secondary }}>
 																{item.students.length} student{item.students.length ? 's' : ''}
 															</Text>
+															{item.weekDays && item.weekDays.length > 0 && item.startTime && (
+																<Text style={{ fontSize: 12, marginTop: 2, color: colors.view.grey[5] }}>
+																	{formatClassSchedule(item.weekDays, item.startTime, role)}
+																</Text>
+															)}
 															{item.location && (
 																<Text
 																	style={{
@@ -305,23 +318,19 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 																			item.location === 'spring'
 																				? colors.variants.primary[4]
 																				: item.location === 'katy'
-																				? colors.variants.secondary[2]
-																				: colors.variants.grey[5],
+																					? colors.variants.secondary[2]
+																					: colors.variants.grey[5],
 																		fontWeight: '500',
 																	}}
 																>
-																	{item.location === 'spring' ? 'Spring' : item.location === 'katy' ? 'Katy' : item.location}
+																	{item.location === 'spring'
+																		? 'Spring'
+																		: item.location === 'katy'
+																			? 'Katy'
+																			: item.location}
 																</Text>
 															)}
-															{item.startTime && (
-																<Text style={{ fontSize: 12, marginTop: 2, color: colors.view.grey[5] }}>
-																	{item.startTime.hour > 12 
-																		? item.startTime.hour - 12 
-																		: item.startTime.hour}:{item.startTime.minute < 10 
-																		? '0' + item.startTime.minute 
-																		: item.startTime.minute} {item.startTime.hour >= 12 ? 'PM' : 'AM'}
-																</Text>
-															)}
+															
 														</View>
 														{item._id === deleteId && (
 															<Pressable onPress={handleShowConfirmationModal}>

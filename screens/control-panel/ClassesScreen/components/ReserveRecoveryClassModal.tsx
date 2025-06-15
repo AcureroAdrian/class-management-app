@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
-import { format, nextDay } from 'date-fns'
-import getNumberOfWeekDay from '../helpers/get-number-of-week-day'
+import { format } from 'date-fns'
+import { getNextClassDate } from '../helpers/get-next-class-date'
 import { IReserveRecoveryClassModalProps } from '../helpers/karate-classes-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
@@ -49,16 +49,7 @@ const ReserveRecoveryClassModal = ({
 		)
 	}
 	const nextDayForClass = useMemo(() => {
-		const nextDayForWeekDay = weekDays.map((weekDay) => {
-			const weekDayNumber = getNumberOfWeekDay(weekDay)
-			return nextDay(new Date(), weekDayNumber)
-		})
-
-		nextDayForWeekDay.sort((a: Date, b: Date) => {
-			return a > b ? 1 : -1
-		})
-
-		return nextDayForWeekDay[0]
+		return getNextClassDate(weekDays)
 	}, [weekDays])
 
 	return (

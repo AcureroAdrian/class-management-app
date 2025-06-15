@@ -14,6 +14,7 @@ import { deleteStudentUserById, getStudentUsers } from '@/redux/actions/userActi
 import { DELETE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
+import { Badge, BADGE_CONFIG } from '@/shared/Badge'
 
 const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -192,7 +193,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 											<Pressable
 												onPress={() => [handleSelectStudent(item), setDeleteId('')]}
 												onLongPress={() => handleSelectDeleteStudent(item._id)}
-												style={{ width: '80%' }}
+												style={{ width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
 											>
 												<View
 													style={{
@@ -220,20 +221,15 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 														<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 															{capitalizeWords(item?.lastName)}
 														</Text>
-														{item.scheduledDeletionDate && (
-															<View
-																style={{
-																	position: 'absolute',
-																	top: -2,
-																	right: -8,
-																	width: 8,
-																	height: 8,
-																	borderRadius: 4,
-																	backgroundColor: '#ff4444',
-																}}
-															/>
-														)}
 													</View>
+												</View>
+												<View style={{ flexDirection: 'column', marginTop: 4, gap: 4 }}>
+												{item.isTrial && (
+													<Badge {...BADGE_CONFIG.trial}/>
+												)}
+												{item.scheduledDeletionDate && (
+													<Badge {...BADGE_CONFIG.scheduledDeletion}/>
+												)}
 												</View>
 											</Pressable>
 											<View style={{ justifyContent: 'center', alignItems: 'center', width: 40 }}>

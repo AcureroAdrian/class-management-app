@@ -13,14 +13,19 @@ import { format } from 'date-fns'
 import colors from '@/theme/colors'
 import StudentNotesModal from './StudentNotesModal'
 import AddStudentModal from './AddStudentModal'
+import AttendanceStatusModal from './AttendanceStatusModal'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import { TAttendanceStatus } from '@/shared/common-types'
+import { getMacroStatus, toggleBasicAttendance, isStudentPresent } from '@/shared/attendance-helpers'
+import StatusIcon from '@/shared/StatusIcon'
+import { Badge, BADGE_CONFIG } from '@/shared/Badge'
 
 // Interface para el attendance item
 interface IAttendanceItem {
 	student: string
 	name: string
 	lastName: string
-	attendanceStatus: 'present' | 'absent' | 'late'
+	attendanceStatus: TAttendanceStatus
 	observations: string
 	isDayOnly: boolean
 	isTrial: boolean
@@ -29,27 +34,6 @@ interface IAttendanceItem {
 	recoveryClassId?: string
 }
 
-// Componente Badge reutilizable
-const Badge = ({ text, backgroundColor, textColor }: { text: string; backgroundColor: string; textColor: string }) => (
-	<View
-		style={{
-			backgroundColor,
-			paddingHorizontal: 6,
-			paddingVertical: 2,
-			borderRadius: 8,
-		}}
-	>
-		<Text style={{ color: textColor, fontSize: 10, fontWeight: '600' }}>{text}</Text>
-	</View>
-)
-
-// Configuración de badges
-const BADGE_CONFIG = {
-	trial: { backgroundColor: '#FFF3CD', textColor: '#856404', text: 'TRIAL' },
-	dayOnly: { backgroundColor: '#E1F5FE', textColor: '#01579B', text: 'DAY' },
-	recovery: { backgroundColor: '#FFF9C4', textColor: '#F57F17', text: 'MAKEUP' },
-	scheduledDeletion: { backgroundColor: '#FFEBEE', textColor: '#C62828', text: 'DEL' },
-}
 
 const AttendanceEditModal = ({
 	openModal,
@@ -67,6 +51,8 @@ const AttendanceEditModal = ({
 	const [openNotesModal, setOpenNotesModal] = useState<boolean>(false)
 	const [selectedStudentForNotes, setSelectedStudentForNotes] = useState<any>(null)
 	const [openAddStudentModal, setOpenAddStudentModal] = useState<boolean>(false)
+	const [openStatusModal, setOpenStatusModal] = useState<boolean>(false)
+	const [selectedStudentForStatus, setSelectedStudentForStatus] = useState<IAttendanceItem | null>(null)
 
 	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance } = useAppSelector(
 		(state) => state.registerStudentAttendance,
@@ -85,9 +71,14 @@ const AttendanceEditModal = ({
 	useEffect(() => {
 		if (attendanceData && attendanceData.karateClass) {
 			const attendanceItem: IAttendanceItem[] = []
+
 			
 			// Check for existing attendance
 			if (attendanceData.attendance && attendanceData.attendance.length > 0) {
+
+			console.log(attendanceData)
+
+
 				// Real attendance exists
 				attendanceData.attendance.forEach((studentAttendance: any) => {
 					const studentInfo = attendanceData.karateClass.students.find(
@@ -108,6 +99,7 @@ const AttendanceEditModal = ({
 					})
 				})
 			} else {
+
 				// Virtual attendance - create from class students
 				const classStudents = attendanceData.karateClass.students || []
 				const recoveryStudents = attendanceData.karateClass.recoveryClasses || []
@@ -123,7 +115,7 @@ const AttendanceEditModal = ({
 						isDayOnly: student.isDayOnly || false,
 						isTrial: student.isTrial || false,
 						scheduledDeletionDate: student.scheduledDeletionDate,
-						isRecovery: false,
+						isRecovery: student.isRecovery || false,
 						recoveryClassId: undefined,
 					})
 				})
@@ -197,7 +189,7 @@ const AttendanceEditModal = ({
 		setAttendance((prev) =>
 			prev.map((item) => {
 				if (item?.student === studentId) {
-					item.attendanceStatus = item.attendanceStatus === 'present' ? 'absent' : 'present'
+					item.attendanceStatus = toggleBasicAttendance(item.attendanceStatus)
 				}
 				return item
 			}),
@@ -219,10 +211,30 @@ const AttendanceEditModal = ({
 		setOpenNotesModal(false)
 		setSelectedStudentForNotes(null)
 	}
+
+	const handleOpenStatusModal = (student: IAttendanceItem) => {
+		setSelectedStudentForStatus(student)
+		setOpenStatusModal(true)
+	}
+
+	const handleSelectStatus = (status: TAttendanceStatus) => {
+		if (selectedStudentForStatus) {
+			setAttendance((prev) =>
+				prev.map((item) => {
+					if (item?.student === selectedStudentForStatus.student) {
+						item.attendanceStatus = status
+					}
+					return item
+				}),
+			)
+		}
+		setOpenStatusModal(false)
+		setSelectedStudentForStatus(null)
+	}
 	//MEMORIZE CONSTANTS
 	const { presents, absents, late } = useMemo(() => {
-		const presents = attendance?.filter((student) => student?.attendanceStatus === 'present')?.length
-		const absents = attendance?.filter((student) => student?.attendanceStatus === 'absent')?.length
+		const presents = attendance?.filter((student) => isStudentPresent(student?.attendanceStatus))?.length
+		const absents = attendance?.filter((student) => !isStudentPresent(student?.attendanceStatus))?.length
 		const late = attendance?.filter((student) => student?.attendanceStatus === 'late')?.length
 
 		return { presents, absents, late }
@@ -397,43 +409,61 @@ const AttendanceEditModal = ({
 													{/* Badges Container */}
 													<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
 														{item.isTrial && (
-															<Badge text='TRIAL' backgroundColor={BADGE_CONFIG.trial.backgroundColor} textColor={BADGE_CONFIG.trial.textColor} />
+															<Badge  {...BADGE_CONFIG.trial}/>
 														)}
 														{item.isDayOnly && (
-															<Badge text='DAY' backgroundColor={BADGE_CONFIG.dayOnly.backgroundColor} textColor={BADGE_CONFIG.dayOnly.textColor} />
+															<Badge {...BADGE_CONFIG.dayOnly}/>
 														)}
 														{item.scheduledDeletionDate && (
-															<Badge text='DEL' backgroundColor={BADGE_CONFIG.scheduledDeletion.backgroundColor} textColor={BADGE_CONFIG.scheduledDeletion.textColor} />
+															<Badge {...BADGE_CONFIG.scheduledDeletion}/>
 														)}
 														{item.isRecovery  && (
-															<Badge text='MAKEUP' backgroundColor={BADGE_CONFIG.recovery.backgroundColor} textColor={BADGE_CONFIG.recovery.textColor} />
+															<Badge {...BADGE_CONFIG.recovery}/>
 														)}
 													</View>
 												</View>
 											</View>
 											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-												{/* Notes Icon */}
-													<Pressable
-														onPress={() => handleOpenNotesModal(item)}
-														disabled={!canEdit}
+												{/* Notes Indicator */}
+												{item.observations && (
+													<View
 														style={{
 															padding: 5,
 															borderRadius: 5,
 															backgroundColor: colors.variants.secondary[1],
-															opacity: canEdit ? 1 : 0.5,
 														}}
 													>
 														<MaterialCommunityIcons
 															name='pencil'
-															size={18}
-															color={item.observations ? colors.variants.primary[5] : colors.variants.grey[4]}
+															size={16}
+															color={colors.variants.primary[5]}
 														/>
-													</Pressable>
+													</View>
+												)}
 
 												{/* Attendance Status Icon */}
-												{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
-												{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
-												{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
+												<StatusIcon
+													status={item.attendanceStatus} 
+													size={24} 
+												/>
+
+												{/* Three Dots Menu */}
+												<Pressable
+													onPress={() => handleOpenStatusModal(item)}
+													disabled={!canEdit}
+													style={{
+														padding: 5,
+														borderRadius: 5,
+														backgroundColor: colors.variants.secondary[1],
+														opacity: canEdit ? 1 : 0.5,
+													}}
+												>
+													<MaterialCommunityIcons
+														name='dots-horizontal'
+														size={18}
+														color={colors.variants.grey[4]}
+													/>
+												</Pressable>
 											</View>
 										</View>
 									</View>
@@ -512,6 +542,23 @@ const AttendanceEditModal = ({
 					// Refresh attendance data when student is added
 					// This would trigger a re-fetch of the attendance data
 				}}
+			/>
+
+			{/* Attendance Status Modal */}
+			<AttendanceStatusModal
+				visible={openStatusModal}
+				onClose={() => {
+					setOpenStatusModal(false)
+					setSelectedStudentForStatus(null)
+				}}
+				onSelectStatus={handleSelectStatus}
+				onAddNote={() => {
+					if (selectedStudentForStatus) {
+						handleOpenNotesModal(selectedStudentForStatus)
+					}
+				}}
+				currentStatus={selectedStudentForStatus?.attendanceStatus || 'present'}
+				studentName={selectedStudentForStatus ? `${capitalizeWords(selectedStudentForStatus.name)} ${capitalizeWords(selectedStudentForStatus.lastName)}` : ''}
 			/>
 		</Modal>
 
