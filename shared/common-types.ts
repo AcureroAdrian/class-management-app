@@ -4,7 +4,7 @@ export type TUserLevel = 'novice' | 'beginner' | 'intermediate' | 'advanced' | '
 
 export type TStatus = 'active' | 'inactive' | 'deleted'
 
-export type TAttendanceStatus = 'present' | 'absent' //| 'late' | 'excused'
+export type TAttendanceStatus = 'present' | 'absent' | 'late' | 'good-behavior' | 'bad-behavior' | 'sick'
 
 export type TUserRole = 'admin' | 'student' | 'teacher'
 

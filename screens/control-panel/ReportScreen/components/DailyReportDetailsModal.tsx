@@ -6,6 +6,8 @@ import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IDailyReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import colors from '@/theme/colors'
+import { isStudentPresent } from '@/shared/attendance-helpers'
+import StatusIcon from '@/shared/StatusIcon'
 
 const DailyReportDetailsModal = ({
 	openModal,
@@ -55,8 +57,8 @@ const DailyReportDetailsModal = ({
 										keyExtractor={(item) => item._id}
 										style={{ width: '100%', marginTop: 5 }}
 										renderItem={({ item }) => {
-											const presents = item.attendance.filter((item) => item.attendanceStatus === 'present')?.length
-											const absents = item.attendance.filter((item) => item.attendanceStatus === 'absent')?.length
+											const presents = item.attendance.filter((item) => isStudentPresent(item.attendanceStatus))?.length
+											const absents = item.attendance.filter((item) => !isStudentPresent(item.attendanceStatus))?.length
 											return (
 												<>
 													<View
@@ -181,12 +183,10 @@ const DailyReportDetailsModal = ({
 																			justifyContent: 'center',
 																		}}
 																	>
-																		{item.attendanceStatus === 'present' && (
-																			<AntDesign name='check' size={30} color='green' />
-																		)}
-																		{item.attendanceStatus === 'absent' && (
-																			<AntDesign name='close' size={30} color='red' />
-																		)}
+																		<StatusIcon 
+																			status={item.attendanceStatus} 
+																			size={30} 
+																		/>
 																	</View>
 																</View>
 															)}

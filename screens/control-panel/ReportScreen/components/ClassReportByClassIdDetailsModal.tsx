@@ -6,6 +6,8 @@ import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IClassReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import colors from '@/theme/colors'
+import { isStudentPresent } from '@/shared/attendance-helpers'
+import StatusIcon from '@/shared/StatusIcon'
 
 const ClassReportByClassIdDetailsModal = ({
 	openModal,
@@ -51,8 +53,8 @@ const ClassReportByClassIdDetailsModal = ({
 										style={{ width: '100%' }}
 										renderItem={({ item }) => {
 											const attendanceDate = new Date(item.date.year, item.date.month - 1, item.date.day)
-											const presents = item.attendance.filter((item) => item.attendanceStatus === 'present')?.length
-											const absents = item.attendance.filter((item) => item.attendanceStatus === 'absent')?.length
+											const presents = item.attendance.filter((item) => isStudentPresent(item.attendanceStatus))?.length
+											const absents = item.attendance.filter((item) => !isStudentPresent(item.attendanceStatus))?.length
 											return (
 												<>
 													<View
@@ -203,7 +205,7 @@ const ClassReportByClassIdDetailsModal = ({
 																					borderLeftColor: colors.variants.primary[4]
 																				}}>
 																					<Text style={{ fontSize: 10, color: colors.variants.secondary[4], fontStyle: 'italic' }}>
-																						"Nota: {item.observations}"
+																						"Note: {item.observations}"
 																					</Text>
 																				</View>
 																			)}
@@ -218,12 +220,10 @@ const ClassReportByClassIdDetailsModal = ({
 																			justifyContent: 'center',
 																		}}
 																	>
-																		{item.attendanceStatus === 'present' && (
-																			<AntDesign name='check' size={30} color='green' />
-																		)}
-																		{item.attendanceStatus === 'absent' && (
-																			<AntDesign name='close' size={30} color={colors.variants.primary[5]} />
-																		)}
+																		<StatusIcon 
+																			status={item.attendanceStatus} 
+																			size={30} 
+																		/>
 																	</View>
 																</View>
 															)}

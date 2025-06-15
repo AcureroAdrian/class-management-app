@@ -127,7 +127,7 @@ const StudentsRegisterModal = ({
 								label='User ID'
 								placeholder='USER123'
 								placeholderTextColor={colors.darkLight}
-								onChangeText={setUserId}
+								onChangeText={(text) => setUserId(text.trim().toUpperCase())}
 								value={userId}
 								editable={!loadingRegisterStudents}
 								icon='account-key'
@@ -252,6 +252,7 @@ const StudentsRegisterModal = ({
 					onCancel={() => setShowDatePicker(false)}
 					display='spinner'
 					date={dob}
+					maximumDate={new Date()}
 				/>
 			)}
 			{openLevelModal && (

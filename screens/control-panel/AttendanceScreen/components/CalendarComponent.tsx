@@ -30,7 +30,7 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 			errorHoliday,
 			disableHoliday,
 		} = this.props
-		// console.log('render fix');
+		// console.log('render fix')
 		// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 		ExpandableCalendar.defaultProps = undefined
 

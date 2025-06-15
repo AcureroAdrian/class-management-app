@@ -9,7 +9,7 @@ type KeyboardAvoidingWrapperProps = KeyboardAwareScrollViewProps & {
 
 const KeyboardAvoidingWrapper = ({
   children,
-  extraScrollHeight = 20,
+  extraScrollHeight = 0,
   ...props
 }: KeyboardAvoidingWrapperProps) => {
   return (

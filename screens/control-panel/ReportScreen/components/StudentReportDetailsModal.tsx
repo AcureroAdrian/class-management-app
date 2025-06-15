@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView, Pressable } from 'react-native'
 import PieChart, { Slice } from 'react-native-pie-chart'
 import { format } from 'date-fns'
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudentReport } from '../helpers/report-screen-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import colors from '@/theme/colors'
+import { TAttendanceStatus } from '@/shared/common-types'
+import { isStudentPresent, getStatusColor, getStatusIcon } from '@/shared/attendance-helpers'
 
 const StudentReportDetailsModal = ({
 	openModal,
@@ -18,24 +20,28 @@ const StudentReportDetailsModal = ({
 	studentReports: IStudentReport[]
 }) => {
 	const [showChart, setShowChart] = useState<boolean>(true)
-	const [filter, setFilter] = useState('all')
+	const [filter, setFilter] = useState<'all' | 'present' | 'absent' | TAttendanceStatus>('all')
 	const [reportsFiltered, setReportsFiltered] = useState<IStudentReport[]>([])
 
 	useEffect(() => {
 		let result: IStudentReport[] = []
 		if (filter === 'all') {
 			result = studentReports
+		} else if (filter === 'present') {
+			result = studentReports.filter((report) => isStudentPresent(report.attendanceStatus))
+		} else if (filter === 'absent') {
+			result = studentReports.filter((report) => !isStudentPresent(report.attendanceStatus))
 		} else {
 			result = studentReports.filter((report) => report.attendanceStatus === filter)
 		}
 		setReportsFiltered(result)
 	}, [filter, studentReports])
 	const presents = useMemo(() => {
-		return studentReports?.filter((report) => report.attendanceStatus === 'present')?.length
-	}, [])
+		return studentReports?.filter((report) => isStudentPresent(report.attendanceStatus))?.length
+	}, [studentReports])
 	const absents = useMemo(() => {
-		return studentReports?.filter((report) => report.attendanceStatus === 'absent')?.length
-	}, [])
+		return studentReports?.filter((report) => !isStudentPresent(report.attendanceStatus))?.length
+	}, [studentReports])
 	const total = useMemo(() => {
 		return studentReports?.length || 0
 	}, [])
@@ -172,8 +178,9 @@ const StudentReportDetailsModal = ({
 								flexDirection: 'row',
 								backgroundColor: colors.variants.secondary[1],
 								padding: 10,
-								gap: 20,
+								gap: 10,
 								borderRadius: 40,
+								justifyContent: 'center',
 							}}
 						>
 							<Pressable onPress={() => setFilter('all')}>
@@ -183,11 +190,11 @@ const StudentReportDetailsModal = ({
 										justifyContent: 'center',
 										height: 40,
 										width: 40,
-										backgroundColor: filter === 'all' ? colors.variants.secondary[2] : '',
+										backgroundColor: filter === 'all' ? colors.variants.secondary[2] : 'transparent',
 										borderRadius: 20,
 									}}
 								>
-									<Text style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}>ALL</Text>
+									<Text style={{ fontSize: 10, fontWeight: 600, color: colors.variants.secondary[5] }}>ALL</Text>
 								</View>
 							</Pressable>
 							<Pressable onPress={() => setFilter('present')}>
@@ -197,11 +204,53 @@ const StudentReportDetailsModal = ({
 										justifyContent: 'center',
 										height: 40,
 										width: 40,
-										backgroundColor: filter === 'present' ? colors.variants.secondary[2] : '',
+										backgroundColor: filter === 'present' ? colors.variants.secondary[2] : 'transparent',
 										borderRadius: 20,
 									}}
 								>
-									<MaterialCommunityIcons name='check' size={30} color='green' />
+									<AntDesign name='check' size={24} color={getStatusColor('present')} />
+								</View>
+							</Pressable>
+							<Pressable onPress={() => setFilter('good-behavior')}>
+								<View
+									style={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										height: 40,
+										width: 40,
+										backgroundColor: filter === 'good-behavior' ? colors.variants.secondary[2] : 'transparent',
+										borderRadius: 20,
+									}}
+								>
+									<AntDesign name='smile-circle' size={24} color={getStatusColor('good-behavior')} />
+								</View>
+							</Pressable>
+							<Pressable onPress={() => setFilter('bad-behavior')}>
+								<View
+									style={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										height: 40,
+										width: 40,
+										backgroundColor: filter === 'bad-behavior' ? colors.variants.secondary[2] : 'transparent',
+										borderRadius: 20,
+									}}
+								>
+									<AntDesign name='frown' size={24} color={getStatusColor('bad-behavior')} />
+								</View>
+							</Pressable>
+							<Pressable onPress={() => setFilter('late')}>
+								<View
+									style={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										height: 40,
+										width: 40,
+										backgroundColor: filter === 'late' ? colors.variants.secondary[2] : 'transparent',
+										borderRadius: 20,
+									}}
+								>
+									<AntDesign name='exclamation' size={24} color={getStatusColor('late')} />
 								</View>
 							</Pressable>
 							<Pressable onPress={() => setFilter('absent')}>
@@ -211,11 +260,25 @@ const StudentReportDetailsModal = ({
 										justifyContent: 'center',
 										height: 40,
 										width: 40,
-										backgroundColor: filter === 'absent' ? colors.variants.secondary[2] : '',
+										backgroundColor: filter === 'absent' ? colors.variants.secondary[2] : 'transparent',
 										borderRadius: 20,
 									}}
 								>
-									<MaterialCommunityIcons name='close' size={30} color='red' />
+									<AntDesign name='close' size={24} color={getStatusColor('absent')} />
+								</View>
+							</Pressable>
+							<Pressable onPress={() => setFilter('sick')}>
+								<View
+									style={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										height: 40,
+										width: 40,
+										backgroundColor: filter === 'sick' ? colors.variants.secondary[2] : 'transparent',
+										borderRadius: 20,
+									}}
+								>
+									<FontAwesome name='plus-square' size={20} color={getStatusColor('sick')} />
 								</View>
 							</Pressable>
 						</View>
@@ -250,7 +313,7 @@ const StudentReportDetailsModal = ({
 								data={reportsFiltered}
 								renderItem={({ item }) => (
 									<View style={{ width: '100%', marginTop: 8 }}>
-										<View style={{ width: '100%', flexDirection: 'row', alignItems: 'flex-start', gap: 5 }}>
+										<View style={{ width: '100%', flexDirection: 'row', alignItems: 'stretch', gap: 5 }}>
 											<View
 												style={{
 													width: 80,
@@ -275,11 +338,11 @@ const StudentReportDetailsModal = ({
 													paddingVertical: 5,
 												}}
 											>
-												{item.attendanceStatus === 'present' ? (
-													<AntDesign name='check' size={20} color='green' />
-												) : (
-													<AntDesign name='close' size={20} color='red' />
-												)}
+												<AntDesign 
+													name={getStatusIcon(item.attendanceStatus) as any} 
+													size={20} 
+													color={getStatusColor(item.attendanceStatus)} 
+												/>
 											</View>
 											<View
 												style={{
@@ -331,7 +394,7 @@ const StudentReportDetailsModal = ({
 														borderLeftColor: colors.variants.primary[4]
 													}}>
 														<Text style={{ fontSize: 10, color: colors.variants.secondary[4], fontStyle: 'italic' }}>
-															"Nota: {item.observations}"
+															"Note: {item.observations}"
 														</Text>
 													</View>
 												)}
