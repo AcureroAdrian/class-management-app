@@ -1,0 +1,547 @@
+import React, { useState, useEffect } from 'react'
+import { View, Modal, Text, FlatList, Pressable, TextInput, ScrollView, Image } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import colors from '@/theme/colors'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { getStudentUsers, registerTrialStudent } from '@/redux/actions/userActions'
+import { addStudentToAttendance } from '@/redux/actions/studentAttendanceActions'
+import capitalizeWords from '@/shared/capitalize-words'
+import { REGISTER_TRIAL_STUDENT_RESET } from '@/redux/constants/userConstants'
+import { ADD_STUDENT_TO_ATTENDANCE_RESET } from '@/redux/constants/studentAttendanceConstants'
+
+interface AddStudentModalProps {
+	visible: boolean
+	onClose: () => void
+	attendanceId: string
+	currentStudents: string[]
+	onStudentAdded: () => void
+	classId?: string
+	date?: any
+}
+
+const AddStudentModal = ({
+	visible,
+	onClose,
+	attendanceId,
+	currentStudents,
+	onStudentAdded,
+	classId,
+	date,
+}: AddStudentModalProps) => {
+	const dispatch = useAppDispatch()
+	
+	const [showCreateTrial, setShowCreateTrial] = useState(false)
+	const [searchText, setSearchText] = useState('')
+	const [newTrialStudent, setNewTrialStudent] = useState({
+		name: '',
+		lastName: '',
+		userId: '',
+		level: '',
+		phone: '',
+		email: '',
+		notes: '',
+	})
+
+	const { studentUsersList } = useAppSelector(state => state.getStudentUsers)
+	const { loadingRegisterTrialStudent, successRegisterTrialStudent, trialStudentRegistered } = 
+		useAppSelector(state => state.registerTrialStudent)
+	const { loadingAddStudentToAttendance, successAddStudentToAttendance } = 
+		useAppSelector(state => state.addStudentToAttendance)
+
+	useEffect(() => {
+		if (visible) {
+			dispatch(getStudentUsers('students'))
+		}
+	}, [visible])
+
+	useEffect(() => {
+		if (successRegisterTrialStudent && trialStudentRegistered) {
+			// Automatically add the new trial student to attendance
+			dispatch(addStudentToAttendance({
+				studentId: trialStudentRegistered._id,
+				attendanceId,
+				isDayOnly: true,
+				addPermanently: false,
+				classId,
+				date
+			}))
+			dispatch({ type: REGISTER_TRIAL_STUDENT_RESET })
+		}
+	}, [successRegisterTrialStudent, trialStudentRegistered])
+
+	useEffect(() => {
+		if (successAddStudentToAttendance) {
+			onStudentAdded()
+			handleClose()
+			dispatch({ type: ADD_STUDENT_TO_ATTENDANCE_RESET })
+		}
+	}, [successAddStudentToAttendance])
+
+	const availableStudents = studentUsersList?.filter((student: any) => 
+		!currentStudents.includes(student._id) &&
+		(student.name.toLowerCase().includes(searchText.toLowerCase()) ||
+		 student.lastName.toLowerCase().includes(searchText.toLowerCase()))
+	) || []
+
+	const handleClose = () => {
+		setShowCreateTrial(false)
+		setSearchText('')
+		setNewTrialStudent({
+			name: '',
+			lastName: '',
+			userId: '',
+			level: '',
+			phone: '',
+			email: '',
+			notes: '',
+		})
+		onClose()
+	}
+
+	const handleCreateTrialStudent = () => {
+		if (!newTrialStudent.name || !newTrialStudent.lastName) {
+			return
+		}
+		dispatch(registerTrialStudent(newTrialStudent))
+	}
+
+	const handleAddStudent = (studentId: string, isDayOnly: boolean, addPermanently: boolean) => {
+		dispatch(addStudentToAttendance({
+			studentId,
+			attendanceId,
+			isDayOnly,
+			addPermanently,
+			classId,
+			date
+		}))
+	}
+
+	return (
+		<Modal
+			visible={visible}
+			animationType="slide"
+			onRequestClose={handleClose}
+			statusBarTranslucent={true}
+		>
+			<View style={{ flex: 1, backgroundColor: colors.primary }}>
+				{/* Header */}
+				<View style={{
+					paddingTop: 50,
+					paddingHorizontal: 20,
+					paddingBottom: 20,
+					backgroundColor: colors.variants.primary[4],
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'space-between'
+				}}>
+					<Text style={{
+						fontSize: 20,
+						fontWeight: '600',
+						color: colors.primary,
+						flex: 1
+					}}>
+						Agregar Estudiante
+					</Text>
+					<Pressable
+						onPress={handleClose}
+						style={{
+							padding: 8,
+							borderRadius: 8,
+							backgroundColor: 'rgba(255,255,255,0.2)'
+						}}
+					>
+						<MaterialCommunityIcons name="close" size={24} color={colors.primary} />
+					</Pressable>
+				</View>
+
+				{!showCreateTrial ? (
+					<>
+						{/* Search Bar */}
+						<View style={{ paddingHorizontal: 20, paddingVertical: 15 }}>
+							<TextInput
+								style={{
+									backgroundColor: colors.variants.secondary[1],
+									borderRadius: 10,
+									paddingHorizontal: 15,
+									paddingVertical: 12,
+									fontSize: 16,
+									borderWidth: 1,
+									borderColor: colors.variants.grey[1]
+								}}
+								placeholder="Buscar estudiante..."
+								placeholderTextColor={colors.variants.grey[3]}
+								value={searchText}
+								onChangeText={setSearchText}
+							/>
+						</View>
+
+						{/* Create Trial Student Button */}
+						<View style={{ paddingHorizontal: 20, paddingBottom: 15 }}>
+							<Pressable
+								onPress={() => setShowCreateTrial(true)}
+								style={{
+									backgroundColor: colors.variants.secondary[2],
+									paddingVertical: 15,
+									paddingHorizontal: 20,
+									borderRadius: 10,
+									flexDirection: 'row',
+									alignItems: 'center',
+									gap: 10,
+									borderWidth: 2,
+									borderColor: colors.variants.primary[4],
+									borderStyle: 'dashed'
+								}}
+							>
+								<MaterialCommunityIcons name="account-plus" size={24} color={colors.variants.primary[4]} />
+								<Text style={{
+									fontSize: 16,
+									fontWeight: '600',
+									color: colors.variants.primary[4]
+								}}>
+									Crear Estudiante Trial
+								</Text>
+							</Pressable>
+						</View>
+
+						{/* Students List */}
+						<FlatList
+							data={availableStudents}
+							keyExtractor={(item) => item._id}
+							style={{ flex: 1 }}
+							renderItem={({ item }) => (
+								<View style={{
+									paddingHorizontal: 20,
+									paddingVertical: 10,
+									borderBottomWidth: 1,
+									borderBottomColor: colors.variants.grey[1]
+								}}>
+									<View style={{
+										flexDirection: 'row',
+										alignItems: 'center',
+										gap: 15
+									}}>
+										<Image
+											source={require('@/assets/img/default-avatar.png')}
+											style={{ width: 50, height: 50, borderRadius: 25 }}
+											resizeMode='contain'
+										/>
+										<View style={{ flex: 1 }}>
+											<Text style={{
+												fontSize: 16,
+												fontWeight: '600',
+												color: colors.view.black
+											}}>
+												{capitalizeWords(item.name)} {capitalizeWords(item.lastName)}
+											</Text>
+											
+											{/* Badges */}
+											<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
+												{item.isTrial && (
+													<View style={{ 
+														backgroundColor: '#FFF3CD', 
+														paddingHorizontal: 6, 
+														paddingVertical: 2, 
+														borderRadius: 8 
+													}}>
+														<Text style={{ color: '#856404', fontSize: 10, fontWeight: '600' }}>TRIAL</Text>
+													</View>
+												)}
+												{item.scheduledDeletionDate && (
+													<View style={{ 
+														backgroundColor: '#FFEBEE', 
+														paddingHorizontal: 6, 
+														paddingVertical: 2, 
+														borderRadius: 8 
+													}}>
+														<Text style={{ color: '#C62828', fontSize: 10, fontWeight: '600' }}>DEL</Text>
+													</View>
+												)}
+											</View>
+										</View>
+										
+										{/* Action Buttons */}
+										<View style={{ gap: 8 }}>
+											<Pressable
+												onPress={() => handleAddStudent(item._id, false, true)}
+												disabled={loadingAddStudentToAttendance}
+												style={{
+													backgroundColor: colors.variants.primary[4],
+													paddingHorizontal: 15,
+													paddingVertical: 8,
+													borderRadius: 8,
+													opacity: loadingAddStudentToAttendance ? 0.7 : 1
+												}}
+											>
+												<Text style={{
+													color: colors.primary,
+													fontSize: 12,
+													fontWeight: '600',
+													textAlign: 'center'
+												}}>
+													Permanente
+												</Text>
+											</Pressable>
+											<Pressable
+												onPress={() => handleAddStudent(item._id, true, false)}
+												disabled={loadingAddStudentToAttendance}
+												style={{
+													backgroundColor: colors.variants.secondary[3],
+													paddingHorizontal: 15,
+													paddingVertical: 8,
+													borderRadius: 8,
+													borderWidth: 1,
+													borderColor: colors.variants.primary[4],
+													opacity: loadingAddStudentToAttendance ? 0.7 : 1
+												}}
+											>
+												<Text style={{
+													color: colors.variants.primary[4],
+													fontSize: 12,
+													fontWeight: '600',
+													textAlign: 'center'
+												}}>
+													Solo Hoy
+												</Text>
+											</Pressable>
+										</View>
+									</View>
+								</View>
+							)}
+							ListEmptyComponent={() => (
+								<View style={{ 
+									padding: 40, 
+									alignItems: 'center' 
+								}}>
+									<MaterialCommunityIcons 
+										name="account-search" 
+										size={64} 
+										color={colors.variants.grey[3]} 
+									/>
+									<Text style={{
+										fontSize: 16,
+										color: colors.variants.grey[4],
+										textAlign: 'center',
+										marginTop: 10
+									}}>
+										No se encontraron estudiantes disponibles
+									</Text>
+								</View>
+							)}
+						/>
+					</>
+				) : (
+					/* Create Trial Student Form */
+					<ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+						<Text style={{
+							fontSize: 18,
+							fontWeight: '600',
+							color: colors.variants.secondary[5],
+							marginBottom: 20,
+							textAlign: 'center'
+						}}>
+							Crear Estudiante Trial
+						</Text>
+
+						<View style={{ gap: 15 }}>
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Nombre *
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="Nombre del estudiante"
+									value={newTrialStudent.name}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, name: text }))}
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Apellido *
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="Apellido del estudiante"
+									value={newTrialStudent.lastName}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, lastName: text }))}
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									ID Usuario (opcional)
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="ID único del estudiante"
+									value={newTrialStudent.userId}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, userId: text }))}
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Nivel (opcional)
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="Nivel del estudiante"
+									value={newTrialStudent.level}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, level: text }))}
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Teléfono (opcional)
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="Número de teléfono"
+									value={newTrialStudent.phone}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, phone: text }))}
+									keyboardType="phone-pad"
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Email (opcional)
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1]
+									}}
+									placeholder="Correo electrónico"
+									value={newTrialStudent.email}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, email: text }))}
+									keyboardType="email-address"
+									autoCapitalize="none"
+								/>
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									Notas (opcional)
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1],
+										minHeight: 80,
+										textAlignVertical: 'top'
+									}}
+									placeholder="Notas adicionales sobre el estudiante"
+									value={newTrialStudent.notes}
+									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, notes: text }))}
+									multiline={true}
+									numberOfLines={4}
+								/>
+							</View>
+						</View>
+
+						{/* Action Buttons */}
+						<View style={{
+							flexDirection: 'row',
+							gap: 10,
+							marginTop: 30,
+							marginBottom: 20
+						}}>
+							<Pressable
+								onPress={() => setShowCreateTrial(false)}
+								style={{
+									flex: 1,
+									backgroundColor: colors.variants.grey[2],
+									paddingVertical: 15,
+									borderRadius: 10,
+									alignItems: 'center'
+								}}
+							>
+								<Text style={{
+									color: colors.variants.grey[5],
+									fontSize: 16,
+									fontWeight: '600'
+								}}>
+									Cancelar
+								</Text>
+							</Pressable>
+							<Pressable
+								onPress={handleCreateTrialStudent}
+								disabled={!newTrialStudent.name || !newTrialStudent.lastName || loadingRegisterTrialStudent}
+								style={{
+									flex: 1,
+									backgroundColor: colors.variants.primary[4],
+									paddingVertical: 15,
+									borderRadius: 10,
+									alignItems: 'center',
+									opacity: (!newTrialStudent.name || !newTrialStudent.lastName || loadingRegisterTrialStudent) ? 0.7 : 1
+								}}
+							>
+								<Text style={{
+									color: colors.primary,
+									fontSize: 16,
+									fontWeight: '600'
+								}}>
+									{loadingRegisterTrialStudent ? 'Creando...' : 'Crear y Agregar'}
+								</Text>
+							</Pressable>
+						</View>
+					</ScrollView>
+				)}
+			</View>
+		</Modal>
+	)
+}
+
+export default AddStudentModal 

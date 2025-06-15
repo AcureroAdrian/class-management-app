@@ -28,57 +28,57 @@ export const getStudentAttendanceByDay =
 		}
 	}
 
-export const registerStudentAttendance =
-	(dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
-		try {
-			dispatch({ type: types.REGISTER_STUDENT_ATTENDANCE_REQUEST })
+export const registerStudentAttendance = (studentAttendance: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.REGISTER_STUDENT_ATTENDANCE_REQUEST })
 
-			const {
-				userLogin: { userInfo },
-			} = getState()
+		const {
+			userLogin: { userInfo },
+		} = getState()
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${userInfo?.token}`,
-				},
-			}
-
-			const { data } = await customAxios.post('/api/student-attendances', dataToSend, config)
-
-			dispatch({ type: types.REGISTER_STUDENT_ATTENDANCE_SUCCESS, payload: data })
-		} catch (error: any) {
-			dispatch({
-				type: types.REGISTER_STUDENT_ATTENDANCE_FAIL,
-				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
-			})
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
 		}
+
+		const { data } = await customAxios.post('/api/student-attendances/', studentAttendance, config)
+
+		dispatch({ type: types.REGISTER_STUDENT_ATTENDANCE_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.REGISTER_STUDENT_ATTENDANCE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
 	}
+}
 
-export const updateStudentAttendanceById =
-	(id: string, dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
-		try {
-			dispatch({ type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_REQUEST })
+export const updateStudentAttendanceById = (id: string, attendanceData: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_REQUEST })
 
-			const {
-				userLogin: { userInfo },
-			} = getState()
+		const {
+			userLogin: { userInfo },
+		} = getState()
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${userInfo?.token}`,
-				},
-			}
-
-			const { data } = await customAxios.patch('/api/student-attendances/' + id, dataToSend, config)
-
-			dispatch({ type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_SUCCESS, payload: data })
-		} catch (error: any) {
-			dispatch({
-				type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_FAIL,
-				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
-			})
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
 		}
+
+		const { data } = await customAxios.patch('/api/student-attendances/' + id, attendanceData, config)
+
+		dispatch({ type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.UPDATE_STUDENT_ATTENDANCE_BY_ID_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
 	}
+}
 
 export const getDailyReportForAdmin =
 	(startDate: string, endDate: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
@@ -167,3 +167,28 @@ export const getStudentReportForAdmin =
 			})
 		}
 	}
+
+export const addStudentToAttendance = (dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.ADD_STUDENT_TO_ATTENDANCE_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.post('/api/student-attendances/add-student-to-attendance', dataToSend, config)
+
+		dispatch({ type: types.ADD_STUDENT_TO_ATTENDANCE_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.ADD_STUDENT_TO_ATTENDANCE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}

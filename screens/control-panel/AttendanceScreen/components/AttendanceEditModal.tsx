@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
 import { registerStudentAttendance, updateStudentAttendanceById } from '@/redux/actions/studentAttendanceActions'
@@ -11,6 +11,45 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { format } from 'date-fns'
 import colors from '@/theme/colors'
+import StudentNotesModal from './StudentNotesModal'
+import AddStudentModal from './AddStudentModal'
+import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+
+// Interface para el attendance item
+interface IAttendanceItem {
+	student: string
+	name: string
+	lastName: string
+	attendanceStatus: 'present' | 'absent' | 'late'
+	observations: string
+	isDayOnly: boolean
+	isTrial: boolean
+	scheduledDeletionDate?: Date
+	isRecovery: boolean
+	recoveryClassId?: string
+}
+
+// Componente Badge reutilizable
+const Badge = ({ text, backgroundColor, textColor }: { text: string; backgroundColor: string; textColor: string }) => (
+	<View
+		style={{
+			backgroundColor,
+			paddingHorizontal: 6,
+			paddingVertical: 2,
+			borderRadius: 8,
+		}}
+	>
+		<Text style={{ color: textColor, fontSize: 10, fontWeight: '600' }}>{text}</Text>
+	</View>
+)
+
+// Configuración de badges
+const BADGE_CONFIG = {
+	trial: { backgroundColor: '#FFF3CD', textColor: '#856404', text: 'TRIAL' },
+	dayOnly: { backgroundColor: '#E1F5FE', textColor: '#01579B', text: 'DAY' },
+	recovery: { backgroundColor: '#FFF9C4', textColor: '#F57F17', text: 'MAKEUP' },
+	scheduledDeletion: { backgroundColor: '#FFEBEE', textColor: '#C62828', text: 'DEL' },
+}
 
 const AttendanceEditModal = ({
 	openModal,
@@ -23,8 +62,11 @@ const AttendanceEditModal = ({
 }) => {
 	const dispatch = useAppDispatch()
 
-	const [attendance, setAttendance] = useState<any[]>([])
+	const [attendance, setAttendance] = useState<IAttendanceItem[]>([])
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
+	const [openNotesModal, setOpenNotesModal] = useState<boolean>(false)
+	const [selectedStudentForNotes, setSelectedStudentForNotes] = useState<any>(null)
+	const [openAddStudentModal, setOpenAddStudentModal] = useState<boolean>(false)
 
 	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance } = useAppSelector(
 		(state) => state.registerStudentAttendance,
@@ -41,24 +83,71 @@ const AttendanceEditModal = ({
 		}
 	}, [])
 	useEffect(() => {
-		if (attendanceData) {
-			if (!attendanceData?.students?.length) {
-				setErrorMessage('No students found')
-				return
+		if (attendanceData && attendanceData.karateClass) {
+			const attendanceItem: IAttendanceItem[] = []
+			
+			// Check for existing attendance
+			if (attendanceData.attendance && attendanceData.attendance.length > 0) {
+				// Real attendance exists
+				attendanceData.attendance.forEach((studentAttendance: any) => {
+					const studentInfo = attendanceData.karateClass.students.find(
+						(student: any) => student._id === studentAttendance.student
+					)
+					
+					attendanceItem.push({
+						student: studentAttendance.student,
+						name: studentInfo?.name || 'Unknown',
+						lastName: studentInfo?.lastName || '',
+						attendanceStatus: studentAttendance.attendanceStatus,
+						observations: studentAttendance.observations || '',
+						isDayOnly: studentAttendance.isDayOnly || false,
+						isTrial: studentInfo?.isTrial || false,
+						scheduledDeletionDate: studentInfo?.scheduledDeletionDate,
+						isRecovery: studentAttendance.isRecovery || false,
+						recoveryClassId: studentAttendance.recoveryClassId,
+					})
+				})
+			} else {
+				// Virtual attendance - create from class students
+				const classStudents = attendanceData.karateClass.students || []
+				const recoveryStudents = attendanceData.karateClass.recoveryClasses || []
+
+				// Add regular class students
+				classStudents.forEach((student: any) => {
+					attendanceItem.push({
+						student: student._id,
+						name: student.name,
+						lastName: student.lastName,
+						attendanceStatus: 'absent',
+						observations: '',
+						isDayOnly: student.isDayOnly || false,
+						isTrial: student.isTrial || false,
+						scheduledDeletionDate: student.scheduledDeletionDate,
+						isRecovery: false,
+						recoveryClassId: undefined,
+					})
+				})
+
+				// Add recovery students
+				recoveryStudents.forEach((recoveryClass: any) => {
+					if (recoveryClass.student && !attendanceItem.some(item => item.student === recoveryClass.student._id)) {
+						attendanceItem.push({
+							student: recoveryClass.student._id,
+							name: recoveryClass.student.name,
+							lastName: recoveryClass.student.lastName,
+							attendanceStatus: 'absent',
+							observations: '',
+							isDayOnly: recoveryClass.student.isDayOnly || false,
+							isTrial: recoveryClass.student.isTrial || false,
+							scheduledDeletionDate: recoveryClass.student.scheduledDeletionDate,
+							isRecovery: true,
+							recoveryClassId: recoveryClass._id,
+						})
+					}
+				})
 			}
 
-			const newAttendance = attendanceData?.students?.map((student: any) => {
-				const existsAttendance = attendanceData?.attendance?.find((item: any) => item?.student === student?._id)
-				return {
-					student: student?._id,
-					name: student?.name,
-					lastName: student?.lastName,
-					attendanceStatus: 'present',
-					...(existsAttendance || {}),
-				}
-			})
-
-			setAttendance(newAttendance)
+			setAttendance(attendanceItem)
 		}
 	}, [attendanceData])
 	useEffect(() => {
@@ -78,20 +167,29 @@ const AttendanceEditModal = ({
 			setErrorMessage('No attendance found')
 			return
 		}
+
 		const validAttendance = attendance?.map((e) => ({
 			student: e?.student,
 			attendanceStatus: e?.attendanceStatus,
+			observations: e?.observations,
+			isDayOnly: e?.isDayOnly,
+			isRecovery: e?.isRecovery,
+			recoveryClassId: e?.recoveryClassId,
 		}))
+
 		const studentAttendance = {
 			karateClass: attendanceData?.karateClass?._id,
 			date: attendanceData?.date,
 			attendance: validAttendance,
 		}
 
-		if (attendanceData?._id) {
-			dispatch(updateStudentAttendanceById(attendanceData?._id, { attendance: validAttendance }))
-		} else {
+		// Check if it's a virtual attendance (starts with 'virtual-') or no _id
+		if (attendanceData?.isVirtual || !attendanceData?._id || attendanceData?._id?.startsWith('virtual-')) {
+			// Create new real attendance from virtual
 			dispatch(registerStudentAttendance(studentAttendance))
+		} else {
+			// Update existing real attendance
+			dispatch(updateStudentAttendanceById(attendanceData?._id, { attendance: validAttendance }))
 		}
 	}
 	const handleSelectStudent = (studentId: string) => {
@@ -105,6 +203,22 @@ const AttendanceEditModal = ({
 			}),
 		)
 	}
+	const handleOpenNotesModal = (student: any) => {
+		setSelectedStudentForNotes(student)
+		setOpenNotesModal(true)
+	}
+	const handleSaveNotes = (studentId: string, notes: string) => {
+		setAttendance((prev) =>
+			prev.map((item) => {
+				if (item?.student === studentId) {
+					item.observations = notes
+				}
+				return item
+			}),
+		)
+		setOpenNotesModal(false)
+		setSelectedStudentForNotes(null)
+	}
 	//MEMORIZE CONSTANTS
 	const { presents, absents, late } = useMemo(() => {
 		const presents = attendance?.filter((student) => student?.attendanceStatus === 'present')?.length
@@ -113,6 +227,19 @@ const AttendanceEditModal = ({
 
 		return { presents, absents, late }
 	}, [attendance])
+	const canEdit = useMemo(() => {
+		const today = new Date()
+		const attendanceDate = new Date(
+			attendanceData?.date?.year || 0,
+			attendanceData?.date?.month - 1 || 0,
+			attendanceData?.date?.day || 0,
+			12,
+			0,
+		)
+		// Allow editing for today and future dates (not past dates)
+		return attendanceDate >= today || format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
+	}, [attendanceData])
+
 	const isToday = useMemo(() => {
 		const today = new Date()
 		const attendanceDate = new Date(
@@ -135,8 +262,8 @@ const AttendanceEditModal = ({
 			>
 				<ScreenHeader
 					label='Attendance Info'
-					labelButton={isToday ? 'Save' : undefined}
-					iconName={isToday ? 'content-save' : undefined}
+					labelButton={canEdit ? 'Save' : undefined}
+					iconName={canEdit ? 'content-save' : undefined}
 					disabledButton={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 					loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 					handleOnPress={handleSaveAtendance}
@@ -233,7 +360,7 @@ const AttendanceEditModal = ({
 							<>
 								<Pressable
 									onPress={() => handleSelectStudent(item.student)}
-									disabled={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+									disabled={!canEdit || loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 								>
 									<View
 										style={{
@@ -266,11 +393,48 @@ const AttendanceEditModal = ({
 													<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 														{capitalizeWords(item?.lastName)}
 													</Text>
+
+													{/* Badges Container */}
+													<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
+														{item.isTrial && (
+															<Badge text='TRIAL' backgroundColor={BADGE_CONFIG.trial.backgroundColor} textColor={BADGE_CONFIG.trial.textColor} />
+														)}
+														{item.isDayOnly && (
+															<Badge text='DAY' backgroundColor={BADGE_CONFIG.dayOnly.backgroundColor} textColor={BADGE_CONFIG.dayOnly.textColor} />
+														)}
+														{item.scheduledDeletionDate && (
+															<Badge text='DEL' backgroundColor={BADGE_CONFIG.scheduledDeletion.backgroundColor} textColor={BADGE_CONFIG.scheduledDeletion.textColor} />
+														)}
+														{item.isRecovery  && (
+															<Badge text='MAKEUP' backgroundColor={BADGE_CONFIG.recovery.backgroundColor} textColor={BADGE_CONFIG.recovery.textColor} />
+														)}
+													</View>
 												</View>
 											</View>
-											{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
-											{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
-											{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
+											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+												{/* Notes Icon */}
+													<Pressable
+														onPress={() => handleOpenNotesModal(item)}
+														disabled={!canEdit}
+														style={{
+															padding: 5,
+															borderRadius: 5,
+															backgroundColor: colors.variants.secondary[1],
+															opacity: canEdit ? 1 : 0.5,
+														}}
+													>
+														<MaterialCommunityIcons
+															name='pencil'
+															size={18}
+															color={item.observations ? colors.variants.primary[5] : colors.variants.grey[4]}
+														/>
+													</Pressable>
+
+												{/* Attendance Status Icon */}
+												{item.attendanceStatus === 'present' && <AntDesign name='check' size={24} color='green' />}
+												{item.attendanceStatus === 'absent' && <AntDesign name='close' size={24} color='red' />}
+												{/* {item.attendanceStatus === 'late' && <AntDesign name='hourglass' size={24} color='skyblue' />}*/}
+											</View>
 										</View>
 									</View>
 								</Pressable>
@@ -283,9 +447,74 @@ const AttendanceEditModal = ({
 						)}
 						keyExtractor={(item) => item.student}
 					/>
+
+					{/* Floating Add Student Button */}
+					{canEdit && (
+						<View style={{ alignItems: 'center', paddingVertical: 20 }}>
+							<Pressable
+								onPress={() => setOpenAddStudentModal(true)}
+								style={{
+									backgroundColor: colors.variants.primary[4],
+									width: 60,
+									height: 60,
+									borderRadius: 30,
+									justifyContent: 'center',
+									alignItems: 'center',
+									shadowColor: '#000',
+									shadowOffset: {
+										width: 0,
+										height: 2,
+									},
+									shadowOpacity: 0.25,
+									shadowRadius: 3.84,
+									elevation: 5,
+								}}
+							>
+								<MaterialCommunityIcons name='account-plus' size={28} color={colors.primary} />
+							</Pressable>
+							<Text
+								style={{
+									marginTop: 8,
+									fontSize: 12,
+									color: colors.variants.grey[4],
+									textAlign: 'center',
+								}}
+							>
+								Agregar Estudiante
+							</Text>
+						</View>
+					)}
 				</ScrollView>
 			</View>
+
+
+			{/* Student Notes Modal */}
+			
+			<StudentNotesModal
+				visible={openNotesModal}
+				onClose={() => {
+					setOpenNotesModal(false)
+					setSelectedStudentForNotes(null)
+				}}
+				student={selectedStudentForNotes}
+				onSave={handleSaveNotes}
+			/>
+
+			{/* Add Student Modal */}
+			<AddStudentModal
+				visible={openAddStudentModal}
+				onClose={() => setOpenAddStudentModal(false)}
+				attendanceId={attendanceData?._id}
+				currentStudents={attendance.map((item) => item.student)}
+				classId={attendanceData?.karateClass?._id}
+				date={attendanceData?.date}
+				onStudentAdded={() => {
+					// Refresh attendance data when student is added
+					// This would trigger a re-fetch of the attendance data
+				}}
+			/>
 		</Modal>
+
 	)
 }
 

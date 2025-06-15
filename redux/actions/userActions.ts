@@ -5,9 +5,7 @@ import { AppStore } from '../store'
 import customAxios from '@/config/axios'
 
 interface IDataLogin {
-	name: string
-	lastName: string
-	dateOfBirth: Date
+	userId: string
 }
 
 export const login = (dataLogin: IDataLogin) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
@@ -141,7 +139,7 @@ export const updateStudentUserById =
 	}
 
 export const deleteStudentUserById =
-	(studentId: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	(studentId: string, scheduledDate?: Date) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
 		try {
 			dispatch({ type: types.DELETE_STUDENT_USER_BY_ID_REQUEST })
 
@@ -151,11 +149,14 @@ export const deleteStudentUserById =
 
 			const config = {
 				headers: {
+					'Content-Type': 'application/json',
 					Authorization: `Bearer ${userInfo?.token}`,
 				},
 			}
 
-			const { data } = await customAxios.delete('/api/users/' + studentId, config)
+			const body = scheduledDate ? { scheduledDeletionDate: scheduledDate.toISOString() } : {}
+
+			const { data } = await customAxios.post('/api/users/' + studentId, body, config)
 
 			dispatch({ type: types.DELETE_STUDENT_USER_BY_ID_SUCCESS, payload: data })
 		} catch (error: any) {
@@ -165,3 +166,28 @@ export const deleteStudentUserById =
 			})
 		}
 	}
+
+export const registerTrialStudent = (dataToSend: any) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.REGISTER_TRIAL_STUDENT_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.post('/api/users/trial-student', dataToSend, config)
+
+		dispatch({ type: types.REGISTER_TRIAL_STUDENT_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.REGISTER_TRIAL_STUDENT_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}

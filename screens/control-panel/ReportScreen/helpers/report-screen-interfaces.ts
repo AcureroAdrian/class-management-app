@@ -4,6 +4,7 @@ export interface IStudent {
 	_id: string
 	name: string
 	lastName: string
+	isTrial?: boolean
 }
 
 export interface IDailyReport {
@@ -21,6 +22,8 @@ export interface IDailyReport {
 		attendance: {
 			student: IStudent
 			attendanceStatus: TAttendanceStatus
+			observations?: string
+			isDayOnly?: boolean
 		}[]
 	}[]
 }
@@ -39,6 +42,8 @@ export interface IClassReport {
 		attendance: {
 			student: IStudent
 			attendanceStatus: TAttendanceStatus
+			observations?: string
+			isDayOnly?: boolean
 		}[]
 	}[]
 }
@@ -55,4 +60,6 @@ export interface IStudentReport {
 	}
 	student: IStudent
 	attendanceStatus: TAttendanceStatus
+	observations?: string
+	isDayOnly?: boolean
 }

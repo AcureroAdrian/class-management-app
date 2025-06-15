@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { format } from 'date-fns'
 import { ActivityIndicator, ScrollView, Text } from 'react-native'
 import { Link } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import TextInputForm from '@/components/TextInputForm/TextInputForm'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { login } from '@/redux/actions/userActions'
@@ -29,12 +27,9 @@ const { darkLight, primary } = colors
 const Login = () => {
 	const dispatch = useAppDispatch()
 
-	const [name, setName] = useState<string>('')
-	const [lastName, setLastName] = useState<string>('')
-	const [dob, setDob] = useState<Date>(new Date(2000, 0, 1))
+	const [userId, setUserId] = useState<string>('')
 	const [message, setMessage] = useState<string | null>(null)
 	const [messageType, setMessageType] = useState<string | null>(null)
-	const [showDatePicker, setShowDatePicker] = useState(false)
 
 	const { loadingUserLogin, errorUserLogin } = useAppSelector((state: RootState) => state.userLogin)
 
@@ -50,18 +45,21 @@ const Login = () => {
 	}
 	const handleLogin = () => {
 		//VALIDATIONS
-		if (!name.length || !lastName.length || !dob) {
-			handleMessage('Please fill all the fields')
+		if (!userId.length) {
+			handleMessage('Please enter your User ID')
+			return
+		}
+		if (userId.length < 6) {
+			handleMessage('User ID must be at least 6 characters long')
+			return
+		}
+		if (!/^[A-Za-z0-9]+$/.test(userId)) {
+			handleMessage(`User ID ${userId} must contain only letters and numbers`)
 			return
 		}
 		handleMessage(null)
 
-		dispatch(login({ name: name, lastName: lastName, dateOfBirth: dob }))
-	}
-	const handleConfirm = (date: Date) => {
-		const currentDate = date || dob
-		setDob(currentDate)
-		setShowDatePicker(false)
+		dispatch(login({ userId: userId.toUpperCase() }))
 	}
 
 	return (
@@ -78,21 +76,14 @@ const Login = () => {
 							</Text>
 							<LoginSubTitle>Account Login</LoginSubTitle>
 							<LoginInputArea>
-								<CustomInputForm label='Name' icon='account' placeholder='George' onChangeText={setName} value={name} />
-								<CustomInputForm
-									label='Last Name'
-									icon='account'
-									placeholder='Smith'
-									onChangeText={setLastName}
-									value={lastName}
-								/>
-								<CustomInputForm
-									label='Date of Birth'
-									icon='calendar'
-									placeholder='YYY - MM - DD'
-									value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-									editable={false}
-									onPress={() => setShowDatePicker(true)}
+								<CustomInputForm 
+									label='User ID' 
+									icon='account-key' 
+									placeholder='Enter your User ID' 
+									onChangeText={(value) => setUserId(value.trim().toUpperCase())} 
+									value={userId}
+									autoCapitalize='characters'
+									maxLength={20}
 								/>
 							</LoginInputArea>
 							<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
@@ -114,16 +105,6 @@ const Login = () => {
 					</ScrollView>
 				</SafeAreaViewStyled>
 			</ContainerWithoutHeader>
-			{showDatePicker && (
-				<DateTimePickerModal
-					isVisible={showDatePicker}
-					mode='date'
-					onConfirm={handleConfirm}
-					onCancel={() => setShowDatePicker(false)}
-					display='spinner'
-					date={dob}
-				/>
-			)}
 		</>
 	)
 }

@@ -255,7 +255,10 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 										scrollEnabled={false}
 										renderItem={({ item, index }) => (
 											<>
-												<View
+												<Pressable
+													key={item._id}
+													onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
+													onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
 													style={{
 														width: '100%',
 														flexDirection: 'row',
@@ -264,25 +267,18 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 														padding: 20,
 													}}
 												>
-													<Pressable
-														key={item._id}
-														onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
-														onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
-														style={{ width: '60%' }}
-													>
-														<View style={{ width: '100%', alignItems: 'flex-start', gap: 10 }}>
-															<Text style={{ fontSize: 18, color: colors.view.black }}>
-																{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
-															</Text>
-															<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
-																{item.description
-																	? item?.description?.length > 20
-																		? item.description.substring(0, 20) + '...'
-																		: item.description
-																	: 'No description'}
-															</Text>
-														</View>
-													</Pressable>
+													<View style={{ width: '60%', alignItems: 'flex-start', gap: 10 }}>
+														<Text style={{ fontSize: 18, color: colors.view.black }}>
+															{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
+														</Text>
+														<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+															{item.description
+																? item?.description?.length > 20
+																	? item.description.substring(0, 20) + '...'
+																	: item.description
+																: 'No description'}
+														</Text>
+													</View>
 													<View
 														style={{
 															flexDirection: 'row',
@@ -293,19 +289,46 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 													>
 														<View
 															style={{
-																alignItems: 'flex-start',
+																alignItems: 'flex-end',
 																paddingVertical: 10,
 															}}
 														>
 															<Text style={{ color: item.students.length ? '' : colors.view.secondary }}>
 																{item.students.length} student{item.students.length ? 's' : ''}
 															</Text>
+															{item.location && (
+																<Text
+																	style={{
+																		fontSize: 12,
+																		marginTop: 2,
+																		color:
+																			item.location === 'spring'
+																				? colors.variants.primary[4]
+																				: item.location === 'katy'
+																				? colors.variants.secondary[2]
+																				: colors.variants.grey[5],
+																		fontWeight: '500',
+																	}}
+																>
+																	{item.location === 'spring' ? 'Spring' : item.location === 'katy' ? 'Katy' : item.location}
+																</Text>
+															)}
+															{item.startTime && (
+																<Text style={{ fontSize: 12, marginTop: 2, color: colors.view.grey[5] }}>
+																	{item.startTime.hour > 12 
+																		? item.startTime.hour - 12 
+																		: item.startTime.hour}:{item.startTime.minute < 10 
+																		? '0' + item.startTime.minute 
+																		: item.startTime.minute} {item.startTime.hour >= 12 ? 'PM' : 'AM'}
+																</Text>
+															)}
 														</View>
 														{item._id === deleteId && (
 															<Pressable onPress={handleShowConfirmationModal}>
 																<View
 																	style={{
 																		width: 40,
+																		height: 50,
 																		justifyContent: 'center',
 																		alignItems: 'center',
 																	}}
@@ -326,7 +349,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 															</View>
 														)}
 													</View>
-												</View>
+												</Pressable>
 												{karateClasses?.length !== index + 1 && (
 													<View
 														style={{

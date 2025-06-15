@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useSegments } from 'expo-router'
-import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import Loader from '@/components/Loader/Loader'
 import StudentsRegisterModal from './components/StudentsRegisterModal'
 import StudentEditModal from './components/StudentEditModal'
+import StudentDeleteModal from './components/StudentDeleteModal'
 import { IStudent } from './helpers/students-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { TUserRole } from '@/shared/common-types'
@@ -27,7 +27,8 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const [openStudentEditModal, setOpenStudentEditModal] = useState<boolean>(false)
 	const [studentIdSelected, setStudentIdSelected] = useState<string>('')
 	const [deleteId, setDeleteId] = useState<string>('')
-	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
+	const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null)
+	const [openStudentDeleteModal, setOpenStudentDeleteModal] = useState<boolean>(false)
 
 	const { loadingGetStudentUsers, studentUsersList, successGetStudentUsers, errorGetStudentUsers } = useAppSelector(
 		(state: RootState) => state.getStudentUsers,
@@ -99,8 +100,10 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (successDeleteStudentUserById) {
 			setDeleteId('')
-			setStudents((prev) => prev.filter((student) => student._id !== studentUserDeleted?.studentId))
-			setOpenConfirmationDeleteModal(false)
+			if (!studentUserDeleted?.scheduledDeletionDate) {
+				setStudents((prev) => prev.filter((student) => student._id !== studentUserDeleted?.studentId))
+			}
+			setOpenStudentDeleteModal(false)
 		}
 	}, [successDeleteStudentUserById])
 
@@ -109,13 +112,15 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 		setOpenStudentEditModal(true)
 	}
 	const handleSelectDeleteStudent = (studentId: string) => {
+		const student = students.find(s => s._id === studentId)
+		setSelectedStudent(student || null)
 		setDeleteId(deleteId === studentId ? '' : studentId)
 	}
 	const handleShowConfirmationModal = () => {
-		setOpenConfirmationDeleteModal(true)
+		setOpenStudentDeleteModal(true)
 	}
-	const handleConfirmDeleteStudent = () => {
-		dispatch(deleteStudentUserById(deleteId))
+	const handleConfirmDeleteStudent = (scheduledDate?: Date) => {
+		dispatch(deleteStudentUserById(deleteId, scheduledDate))
 	}
 
 	return (
@@ -206,6 +211,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 													<View
 														style={{
 															justifyContent: 'center',
+															position: 'relative',
 														}}
 													>
 														<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
@@ -214,6 +220,19 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 														<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 															{capitalizeWords(item?.lastName)}
 														</Text>
+														{item.scheduledDeletionDate && (
+															<View
+																style={{
+																	position: 'absolute',
+																	top: -2,
+																	right: -8,
+																	width: 8,
+																	height: 8,
+																	borderRadius: 4,
+																	backgroundColor: '#ff4444',
+																}}
+															/>
+														)}
 													</View>
 												</View>
 											</Pressable>
@@ -254,11 +273,12 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 					role={role}
 				/>
 			)}
-			{openConfirmationDeleteModal && (
-				<ConfirmationDeleteModal
-					openModal={openConfirmationDeleteModal}
+			{openStudentDeleteModal && (
+				<StudentDeleteModal
+					openModal={openStudentDeleteModal}
 					closeModal={() => [
-						setOpenConfirmationDeleteModal(false),
+						setOpenStudentDeleteModal(false),
+						setSelectedStudent(null),
 						dispatch({ type: DELETE_STUDENT_USER_BY_ID_RESET }),
 					]}
 					title={
@@ -269,6 +289,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 					handleConfirm={handleConfirmDeleteStudent}
 					loadingDelete={loadingDeleteStudentUserById}
 					errorDelete={errorDeleteStudentUserById}
+					existingScheduledDate={selectedStudent?.scheduledDeletionDate}
 				/>
 			)}
 		</>

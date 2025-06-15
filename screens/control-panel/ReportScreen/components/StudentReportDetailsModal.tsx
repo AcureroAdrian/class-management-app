@@ -101,6 +101,20 @@ const StudentReportDetailsModal = ({
 							<Text style={{ fontSize: 14, color: colors.variants.grey[4] }}>
 								{capitalizeWords(studentReports?.[0]?.student?.lastName)}
 							</Text>
+							
+							{/* Student Badges */}
+							<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
+								{studentReports?.[0]?.student?.isTrial && (
+									<View style={{ 
+										backgroundColor: '#FFF3CD', 
+										paddingHorizontal: 6, 
+										paddingVertical: 2, 
+										borderRadius: 6 
+									}}>
+										<Text style={{ color: '#856404', fontSize: 10, fontWeight: '600' }}>ESTUDIANTE TRIAL</Text>
+									</View>
+								)}
+							</View>
 						</View>
 					</View>
 					<View style={{ width: '100%', paddingHorizontal: 20, alignItems: 'center' }}>
@@ -235,51 +249,93 @@ const StudentReportDetailsModal = ({
 								style={{ width: '100%', paddingHorizontal: 20 }}
 								data={reportsFiltered}
 								renderItem={({ item }) => (
-									<View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-										<View
-											style={{
-												width: 80,
-												alignItems: 'center',
-												justifyContent: 'center',
-												backgroundColor: colors.variants.secondary[1],
-												height: 30,
-												marginTop: 5,
-											}}
-										>
-											<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
-												{format(new Date(item.date.year, item.date.month - 1, item.date.day), 'MM.dd.yy')}
-											</Text>
-										</View>
-										<View
-											style={{
-												width: 50,
-												alignItems: 'center',
-												justifyContent: 'center',
-												backgroundColor: colors.variants.secondary[1],
-												height: 30,
-												marginTop: 5,
-											}}
-										>
-											{item.attendanceStatus === 'present' ? (
-												<AntDesign name='check' size={20} color='green' />
-											) : (
-												<AntDesign name='close' size={20} color='red' />
-											)}
-										</View>
-										<View
-											style={{
-												alignItems: 'center',
-												flexDirection: 'row',
-												flex: 1,
-												backgroundColor: colors.variants.secondary[1],
-												height: 30,
-												marginTop: 5,
-												paddingLeft: 5,
-											}}
-										>
-											<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
-												{item.karateClassName}
-											</Text>
+									<View style={{ width: '100%', marginTop: 8 }}>
+										<View style={{ width: '100%', flexDirection: 'row', alignItems: 'flex-start', gap: 5 }}>
+											<View
+												style={{
+													width: 80,
+													alignItems: 'center',
+													justifyContent: 'center',
+													backgroundColor: colors.variants.secondary[1],
+													minHeight: 30,
+													paddingVertical: 5,
+												}}
+											>
+												<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
+													{format(new Date(item.date.year, item.date.month - 1, item.date.day), 'MM.dd.yy')}
+												</Text>
+											</View>
+											<View
+												style={{
+													width: 50,
+													alignItems: 'center',
+													justifyContent: 'center',
+													backgroundColor: colors.variants.secondary[1],
+													minHeight: 30,
+													paddingVertical: 5,
+												}}
+											>
+												{item.attendanceStatus === 'present' ? (
+													<AntDesign name='check' size={20} color='green' />
+												) : (
+													<AntDesign name='close' size={20} color='red' />
+												)}
+											</View>
+											<View
+												style={{
+													alignItems: 'flex-start',
+													flexDirection: 'column',
+													flex: 1,
+													backgroundColor: colors.variants.secondary[1],
+													minHeight: 30,
+													paddingVertical: 5,
+													paddingHorizontal: 8,
+												}}
+											>
+												<Text style={{ fontSize: 12, color: colors.variants.secondary[5], fontWeight: 500 }}>
+													{item.karateClassName}
+												</Text>
+												
+												{/* Badges */}
+												<View style={{ flexDirection: 'row', marginTop: 2, gap: 3 }}>
+													{item.student.isTrial && (
+														<View style={{ 
+															backgroundColor: '#FFF3CD', 
+															paddingHorizontal: 4, 
+															paddingVertical: 1, 
+															borderRadius: 4 
+														}}>
+															<Text style={{ color: '#856404', fontSize: 8, fontWeight: '600' }}>TRIAL</Text>
+														</View>
+													)}
+													{item.isDayOnly && (
+														<View style={{ 
+															backgroundColor: '#E1F5FE', 
+															paddingHorizontal: 4, 
+															paddingVertical: 1, 
+															borderRadius: 4 
+														}}>
+															<Text style={{ color: '#01579B', fontSize: 8, fontWeight: '600' }}>DAY</Text>
+														</View>
+													)}
+												</View>
+												
+												{/* Observations */}
+												{item.observations && (
+													<View style={{ 
+														marginTop: 4, 
+														padding: 4, 
+														backgroundColor: colors.variants.secondary[0], 
+														borderRadius: 4,
+														borderLeftWidth: 2,
+														borderLeftColor: colors.variants.primary[4]
+													}}>
+														<Text style={{ fontSize: 10, color: colors.variants.secondary[4], fontStyle: 'italic' }}>
+															"Nota: {item.observations}"
+														</Text>
+													</View>
+												)}
+											</View>
 										</View>
 									</View>
 								)}
