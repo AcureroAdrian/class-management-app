@@ -34,9 +34,13 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 		// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 		ExpandableCalendar.defaultProps = undefined
 
+		// Estrategia 1: Key dinámica basada en el estado de los datos
+		const calendarKey = `calendar-${Date.now()}`
+
 		return (
 			<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 				<ExpandableCalendar
+					key={calendarKey} // Fuerza re-renderizado completo cuando cambia
 					initialPosition={'open' as Positions}
 					markedDates={markedDates}
 					allowShadow={false}

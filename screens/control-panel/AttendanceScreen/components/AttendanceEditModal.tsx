@@ -3,7 +3,7 @@ import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
-import { registerStudentAttendance, updateStudentAttendanceById } from '@/redux/actions/studentAttendanceActions'
+import { getStudentAttendanceByDay, registerStudentAttendance, updateStudentAttendanceById } from '@/redux/actions/studentAttendanceActions'
 import {
 	REGISTER_STUDENT_ATTENDANCE_RESET,
 	UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET,
@@ -75,9 +75,6 @@ const AttendanceEditModal = ({
 			
 			// Check for existing attendance
 			if (attendanceData.attendance && attendanceData.attendance.length > 0) {
-
-			console.log(attendanceData)
-
 
 				// Real attendance exists
 				attendanceData.attendance.forEach((studentAttendance: any) => {
@@ -510,7 +507,7 @@ const AttendanceEditModal = ({
 									textAlign: 'center',
 								}}
 							>
-								Agregar Estudiante
+								Add Student
 							</Text>
 						</View>
 					)}
@@ -541,6 +538,7 @@ const AttendanceEditModal = ({
 				onStudentAdded={() => {
 					// Refresh attendance data when student is added
 					// This would trigger a re-fetch of the attendance data
+					dispatch(getStudentAttendanceByDay(attendanceData?.date?.year, attendanceData?.date?.month, attendanceData?.date?.day))
 				}}
 			/>
 
