@@ -100,7 +100,7 @@ const AddStudentModal = ({
 	}
 
 	const handleCreateTrialStudent = () => {
-		if (!newTrialStudent.name || !newTrialStudent.lastName) {
+		if (!newTrialStudent.name || !newTrialStudent.lastName || !newTrialStudent.userId || !newTrialStudent.level) {
 			return
 		}
 		dispatch(registerTrialStudent(newTrialStudent))
@@ -338,6 +338,38 @@ const AddStudentModal = ({
 						<View style={{ gap: 15 }}>
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
+									User ID *
+								</Text>
+								<TextInput
+									style={{
+										backgroundColor: colors.variants.secondary[1],
+										borderRadius: 10,
+										paddingHorizontal: 15,
+										paddingVertical: 12,
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: colors.variants.grey[1],
+										textTransform: 'uppercase'
+									}}
+									placeholder="E.g: STUD001, ABC123 (min. 6 characters)"
+									value={newTrialStudent.userId}
+									onChangeText={(text) => {
+										// Only allow letters and numbers, convert to uppercase
+										const cleanText = text.replace(/[^A-Z0-9]/g, '').toUpperCase()
+										setNewTrialStudent(prev => ({ ...prev, userId: cleanText }))
+									}}
+									maxLength={20}
+									autoCapitalize="characters"
+								/>
+								{newTrialStudent.userId && newTrialStudent.userId.length < 6 && (
+									<Text style={{ color: '#C62828', fontSize: 12, marginTop: 2 }}>
+										The ID must be at least 6 characters
+									</Text>
+								)}
+							</View>
+
+							<View>
+								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
 									First Name *
 								</Text>
 								<TextInput
@@ -378,27 +410,7 @@ const AddStudentModal = ({
 
 							<View>
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									User ID (optional)
-								</Text>
-								<TextInput
-									style={{
-										backgroundColor: colors.variants.secondary[1],
-										borderRadius: 10,
-										paddingHorizontal: 15,
-										paddingVertical: 12,
-										fontSize: 16,
-										borderWidth: 1,
-										borderColor: colors.variants.grey[1]
-									}}
-									placeholder="Unique student ID"
-									value={newTrialStudent.userId}
-									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, userId: text }))}
-								/>
-							</View>
-
-							<View>
-								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
-									Level (optional)
+									Level *
 								</Text>
 								<TextInput
 									style={{
@@ -511,14 +523,14 @@ const AddStudentModal = ({
 							</Pressable>
 							<Pressable
 								onPress={handleCreateTrialStudent}
-								disabled={!newTrialStudent.name || !newTrialStudent.lastName || loadingRegisterTrialStudent}
+								disabled={!newTrialStudent.name || !newTrialStudent.lastName || !newTrialStudent.userId || !newTrialStudent.level || newTrialStudent.userId.length < 6 || loadingRegisterTrialStudent}
 								style={{
 									flex: 1,
 									backgroundColor: colors.variants.primary[4],
 									paddingVertical: 15,
 									borderRadius: 10,
 									alignItems: 'center',
-									opacity: (!newTrialStudent.name || !newTrialStudent.lastName || loadingRegisterTrialStudent) ? 0.7 : 1
+									opacity: (!newTrialStudent.name || !newTrialStudent.lastName || !newTrialStudent.userId || !newTrialStudent.level || newTrialStudent.userId.length < 6 || loadingRegisterTrialStudent) ? 0.7 : 1
 								}}
 							>
 								<Text style={{

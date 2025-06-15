@@ -35,7 +35,7 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 		ExpandableCalendar.defaultProps = undefined
 
 		// Estrategia 1: Key dinámica basada en el estado de los datos
-		const calendarKey = `calendar-${Date.now()}`
+		const calendarKey = `calendar}-${Date.now()}`
 
 		return (
 			<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
