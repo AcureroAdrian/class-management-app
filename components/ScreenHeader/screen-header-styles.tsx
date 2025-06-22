@@ -11,6 +11,11 @@ export const HeaderContainer = styled.View<IHeaderContainer>`
 	align-items: flex-start;
 	gap: 10px;
 	height: ${(props: IHeaderContainer) => (props?.statusbarHeigth || 0) + 130}px;
+	shadow-color: #000000;
+	shadow-offset: 0px 5px;
+	shadow-opacity: 0.25;
+	shadow-radius: 5px;
+	elevation: 15;
 `
 
 export const HeaderTitle = styled.Text`

@@ -4,5 +4,13 @@ export interface ICustomOptionsModalProps {
 	title: string
 	options: string[]
 	selected: string[]
-	handleSaveOptions: (selected: any) => void
+	handleSaveOptions: (selected: string[]) => void
+}
+
+export interface ConfirmationButtonProps {
+	disabled?: boolean
+}
+
+export interface ModalContainerProps {
+	height?: number | string
 }

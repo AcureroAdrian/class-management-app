@@ -10,6 +10,7 @@ import {
 } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { format } from 'date-fns'
+import { enUS } from 'date-fns/locale'
 import colors from '@/theme/colors'
 import StudentNotesModal from './StudentNotesModal'
 import AddStudentModal from './AddStudentModal'
@@ -60,6 +61,16 @@ const AttendanceEditModal = ({
 	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById } = useAppSelector(
 		(state) => state.updateStudentAttendanceById,
 	)
+
+	const dayAndWeekDay = useMemo(() => {
+		if (!attendanceData?.date) return ''
+		const attendanceDate = new Date(
+			attendanceData?.date?.year,
+			attendanceData?.date?.month - 1,
+			attendanceData?.date?.day,
+		)
+		return format(attendanceDate, 'EEEE MMMM d', { locale: enUS })
+	}, [attendanceData?.date])
 
 	useEffect(() => {
 		return () => {
@@ -280,8 +291,19 @@ const AttendanceEditModal = ({
 					handleBack={closeModal}
 				/>
 				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
-					<Text style={{ fontSize: 18, fontWeight: 600, color: colors.variants.secondary[5] }}>
+					<Text
+						style={{ fontSize: 18, fontWeight: '600', color: colors.variants.secondary[5], textAlign: 'center' }}
+					>
 						{attendanceData?.karateClass?.name}
+					</Text>
+					<Text
+						style={{
+							fontSize: 16,
+							color: colors.variants.grey[4],
+							textTransform: 'capitalize',
+						}}
+					>
+						{dayAndWeekDay}
 					</Text>
 				</View>
 				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10 }}>
@@ -406,7 +428,7 @@ const AttendanceEditModal = ({
 													{/* Badges Container */}
 													<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
 														{item.isTrial && (
-															<Badge  {...BADGE_CONFIG.trial}/>
+															<Badge {...BADGE_CONFIG.trial} />
 														)}
 														{item.isDayOnly && (
 															<Badge {...BADGE_CONFIG.dayOnly}/>

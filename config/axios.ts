@@ -5,4 +5,9 @@ const customAxios = axios.create({
 	timeout: 10000,
 })
 
+customAxios.interceptors.request.use(config => {
+	config.headers['x-api-key'] = process.env.EXPO_PUBLIC_API_KEY
+	return config
+})
+
 export default customAxios

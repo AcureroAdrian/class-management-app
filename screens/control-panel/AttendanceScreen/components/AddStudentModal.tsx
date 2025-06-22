@@ -9,6 +9,10 @@ import capitalizeWords from '@/shared/capitalize-words'
 import { REGISTER_TRIAL_STUDENT_RESET } from '@/redux/constants/userConstants'
 import { ADD_STUDENT_TO_ATTENDANCE_RESET } from '@/redux/constants/studentAttendanceConstants'
 import { Badge, BADGE_CONFIG } from '@/shared/Badge'
+import { levelsInitialValues } from '../../ClassesScreen/helpers/karate-classes-initial-values'
+import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
+import { TUserLevel } from '@/shared/common-types'
+import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
 
 interface AddStudentModalProps {
 	visible: boolean
@@ -42,7 +46,7 @@ const AddStudentModal = ({
 		email: '',
 		notes: '',
 	})
-
+	const [openLevelModal, setOpenLevelModal] = useState(false)
 	const { studentUsersList } = useAppSelector(state => state.getStudentUsers)
 	const { loadingRegisterTrialStudent, successRegisterTrialStudent, trialStudentRegistered } = 
 		useAppSelector(state => state.registerTrialStudent)
@@ -118,6 +122,7 @@ const AddStudentModal = ({
 	}
 
 	return (
+		<>
 		<Modal
 			visible={visible}
 			animationType="slide"
@@ -412,7 +417,8 @@ const AddStudentModal = ({
 								<Text style={{ fontSize: 14, fontWeight: '600', color: colors.variants.secondary[4], marginBottom: 5 }}>
 									Level *
 								</Text>
-								<TextInput
+								<Pressable onPress={() => setOpenLevelModal(true)}>
+									<TextInput
 									style={{
 										backgroundColor: colors.variants.secondary[1],
 										borderRadius: 10,
@@ -424,8 +430,9 @@ const AddStudentModal = ({
 									}}
 									placeholder="Student's level"
 									value={newTrialStudent.level}
-									onChangeText={(text) => setNewTrialStudent(prev => ({ ...prev, level: text }))}
-								/>
+									editable={false}
+									/>
+								</Pressable>
 							</View>
 
 							<View>
@@ -546,6 +553,17 @@ const AddStudentModal = ({
 				)}
 			</View>
 		</Modal>
+		{openLevelModal && (
+				<CustomSelectModal
+					openModal={openLevelModal}
+					closeModal={() => setOpenLevelModal(false)}
+					title='Student Levels'
+					options={levelsInitialValues}
+					selected={newTrialStudent.level || ''}
+					handleSaveOption={(selected: string) => setNewTrialStudent(prev => ({ ...prev, level: selected }))}
+				/>
+			)}
+	</>
 	)
 }
 

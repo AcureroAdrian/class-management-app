@@ -154,6 +154,7 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 			</View>
 			{showStartDate && (
 				<DateTimePickerModal
+					key='start-date-picker'
 					isVisible={showStartDate}
 					mode='date'
 					onConfirm={onChangeStartDate}
@@ -165,6 +166,7 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 			)}
 			{showEndDate && (
 				<DateTimePickerModal
+					key='end-date-picker'
 					isVisible={showEndDate}
 					mode='date'
 					onConfirm={onChangeEndDate}
@@ -184,7 +186,10 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 			{openClassReportByClassIdModal && (
 				<ClassReportByClassIdDetailsModal
 					openModal={openClassReportByClassIdModal}
-					closeModal={() => [setOpenClassReportByClassIdModal(false), setClassReportByClassId([])]}
+					closeModal={() => {
+						setOpenClassReportByClassIdModal(false)
+						setClassReportByClassId([])
+					}}
 					classReports={classReportByClassId}
 				/>
 			)}

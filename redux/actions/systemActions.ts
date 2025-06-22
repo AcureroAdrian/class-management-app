@@ -5,6 +5,7 @@ import {
 	RESET_ATTENDANCE_SYSTEM_FAIL,
 	RESET_ATTENDANCE_SYSTEM_RESET,
 } from '../constants/systemConstants'
+import customAxios from '@/config/axios'
 
 export const resetAttendanceSystem = (confirmationText: string) => async (dispatch: any, getState: any) => {
 	try {
@@ -21,7 +22,7 @@ export const resetAttendanceSystem = (confirmationText: string) => async (dispat
 			},
 		}
 
-		const { data } = await axios.post(
+		const { data } = await customAxios.post(
 			`${process.env.EXPO_PUBLIC_API_URL}/api/system/reset-attendance-system`,
 			{ confirmationText },
 			config

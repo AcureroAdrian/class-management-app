@@ -254,7 +254,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 									</View>
 								</View>
 							)}
-							<View style={{ width: '100%', flex: 1, alignItems: 'center', paddingVertical: 20 }}>
+							<View style={{ width: '100%', flex: 1, alignItems: 'center', paddingVertical: 1 }}>
 								<ScrollView>
 									<FlatList
 										data={karateClasses}

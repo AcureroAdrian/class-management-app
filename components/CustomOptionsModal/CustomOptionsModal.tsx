@@ -1,7 +1,22 @@
-import { View, Text, Modal, Button, Pressable, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import { Modal, Text } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { ICustomOptionsModalProps } from './helpers/custom-options-modal-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
+import {
+	ActionsContainer,
+	ButtonText,
+	CancelButton,
+	ConfirmationButton,
+	EmptyListText,
+	ModalBackdrop,
+	ModalContainer,
+	ModalTitle,
+	OptionItem,
+	OptionsContainer,
+	OptionText,
+} from './custom-options-modal-styles'
+import { MaterialIcons } from '@expo/vector-icons'
+import colors from '@/theme/colors'
 
 const CustomOptionsModal = ({
 	openModal,
@@ -12,6 +27,10 @@ const CustomOptionsModal = ({
 	handleSaveOptions,
 }: ICustomOptionsModalProps) => {
 	const [optionsModal, setOptionsModal] = useState<string[]>(selected)
+
+	useEffect(() => {
+		setOptionsModal(selected)
+	}, [selected, openModal])
 
 	const handleSave = () => {
 		handleSaveOptions(optionsModal)
@@ -29,54 +48,33 @@ const CustomOptionsModal = ({
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} transparent statusBarTranslucent={true}>
-			<View
-				style={{
-					flex: 1,
-					backgroundColor: 'rgba(0, 0, 0, 0.5)',
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<View
-					style={{
-						backgroundColor: '#fff',
-						width: '80%',
-						maxHeight: 600,
-						height: 'auto',
-						padding: 20,
-						borderRadius: 3,
-					}}
-				>
-					<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>{title}</Text>
-					<View style={{ paddingTop: 10, paddingBottom: 10, maxHeight: 400 }}>
-						<ScrollView>
-							{options?.map((option, index) => (
-								<Pressable key={'option-' + index} onPress={() => handleOptionPress(option)}>
-									<View
-										style={{
-											flexDirection: 'row',
-											alignItems: 'center',
-											justifyContent: 'space-between',
-											marginBottom: 10,
-										}}
-									>
-										<Text style={{ fontSize: 16, padding: 10 }}>{capitalizeWords(option)}</Text>
-										{optionsModal.includes(option) && <Text style={{ color: 'green' }}>✓</Text>}
-									</View>
-								</Pressable>
-							))}
-						</ScrollView>
-					</View>
-					<View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 10, gap: 20, marginTop: 10 }}>
-						<Pressable onPress={closeModal}>
-							<Text style={{ color: 'blue', paddingLeft: 5, paddingRight: 5 }}>CANCEL</Text>
-						</Pressable>
-						<Pressable onPress={handleSave}>
-							<Text style={{ color: 'blue', paddingLeft: 5, paddingRight: 5 }}>OK</Text>
-						</Pressable>
-					</View>
-				</View>
-			</View>
+			<ModalBackdrop>
+				<ModalContainer height={options.length === 0 ? 250 : 'auto'}>
+					<ModalTitle>{title}</ModalTitle>
+					<OptionsContainer>
+						{options?.length > 0 ? (
+							options.map((option, index) => (
+								<OptionItem key={'option-' + index} onPress={() => handleOptionPress(option)}>
+									<OptionText>{capitalizeWords(option)}</OptionText>
+									{optionsModal.includes(option) && (
+										<MaterialIcons name='check' size={24} color={colors.green} />
+									)}
+								</OptionItem>
+							))
+						) : (
+							<EmptyListText>No options available</EmptyListText>
+						)}
+					</OptionsContainer>
+					<ActionsContainer>
+						<CancelButton onPress={closeModal}>
+							<Text style={{ color: colors.view.tertiary, fontWeight: 'bold' }}>CANCEL</Text>
+						</CancelButton>
+						<ConfirmationButton onPress={handleSave}>
+							<ButtonText>CONFIRM</ButtonText>
+						</ConfirmationButton>
+					</ActionsContainer>
+				</ModalContainer>
+			</ModalBackdrop>
 		</Modal>
 	)
 }

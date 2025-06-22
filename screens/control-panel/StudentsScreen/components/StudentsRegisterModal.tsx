@@ -78,6 +78,7 @@ const StudentsRegisterModal = ({
 			level,
 			isTeacher,
 			isAdmin,
+			isTrial: false,
 		}
 
 		if (dob) {

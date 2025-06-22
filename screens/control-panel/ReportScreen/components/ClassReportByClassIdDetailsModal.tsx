@@ -49,7 +49,9 @@ const ClassReportByClassIdDetailsModal = ({
 									</View>
 									<FlatList
 										data={item.attendances}
-										keyExtractor={(item) => 'id' + item.date.year + '' + item.date.month + '' + item.date.day}
+										keyExtractor={(item, index) =>
+											'id' + item.date.year + '' + item.date.month + '' + item.date.day + '-' + index
+										}
 										style={{ width: '100%' }}
 										renderItem={({ item }) => {
 											const attendanceDate = new Date(item.date.year, item.date.month - 1, item.date.day)

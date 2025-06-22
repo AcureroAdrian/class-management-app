@@ -21,6 +21,7 @@ import {
 import colors from '@/theme/colors'
 import { LoginButton, LoginButtonText, LoginInputArea } from './login-styles'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
+import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 
 const { darkLight, primary } = colors
 
@@ -68,40 +69,44 @@ const Login = () => {
 				<SafeAreaViewStyled>
 					<StatusBar style='auto' />
 					<ScrollView showsVerticalScrollIndicator={false}>
+					<KeyboardAvoidingWrapper>
+
 						<CenterAlignContainer>
-							<LoginLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
-							<LoginTitle>MIYAGI KEN</LoginTitle>
-							<Text style={{ color: colors.variants.primary[5], marginTop: 5, fontWeight: 500, fontSize: 18 }}>
-								International Academy
-							</Text>
-							<LoginSubTitle>Account Login</LoginSubTitle>
-							<LoginInputArea>
-								<CustomInputForm 
-									label='User ID' 
-									icon='account-key' 
-									placeholder='Enter your User ID' 
-									onChangeText={(value) => setUserId(value.trim().toUpperCase())} 
-									value={userId}
-									autoCapitalize='characters'
-									maxLength={20}
-								/>
-							</LoginInputArea>
-							<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
-							<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
-								{loadingUserLogin ? (
-									<ActivityIndicator size='large' color={primary} />
-								) : (
-									<LoginButtonText>Login</LoginButtonText>
-								)}
-							</LoginButton>
-							<Line />
-							<ConcatTextContainer>
-								<CenterTextConcated>Don't have and account already? </CenterTextConcated>
-								<Link href='/info' replace>
-									<TextLinkContent>Singup</TextLinkContent>
-								</Link>
-							</ConcatTextContainer>
-						</CenterAlignContainer>
+								<LoginLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
+								<LoginTitle>MIYAGI KEN</LoginTitle>
+								<Text style={{ color: colors.variants.primary[5], marginTop: 5, fontWeight: 500, fontSize: 18 }}>
+									International Academy
+								</Text>
+
+								<LoginSubTitle>Account Login</LoginSubTitle>
+								<LoginInputArea>
+									<CustomInputForm
+										label='User ID'
+										icon='account-key'
+										placeholder='Enter your User ID'
+										onChangeText={(value) => setUserId(value.trim().toUpperCase())}
+										value={userId}
+										autoCapitalize='characters'
+										maxLength={20}
+									/>
+								</LoginInputArea>
+								<ErrorMsgBox type={messageType}>{message}</ErrorMsgBox>
+								<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
+									{loadingUserLogin ? (
+										<ActivityIndicator size='large' color={primary} />
+									) : (
+										<LoginButtonText>Login</LoginButtonText>
+									)}
+								</LoginButton>
+								<Line />
+								<ConcatTextContainer>
+									<CenterTextConcated>Don't have and account already? </CenterTextConcated>
+									<Link href='/info' replace>
+										<TextLinkContent>Singup</TextLinkContent>
+									</Link>
+								</ConcatTextContainer>
+							</CenterAlignContainer>
+						</KeyboardAvoidingWrapper>
 					</ScrollView>
 				</SafeAreaViewStyled>
 			</ContainerWithoutHeader>
