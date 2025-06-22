@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useSegments } from 'expo-router'
 import { format } from 'date-fns'
@@ -22,7 +22,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const segments: string[] = useSegments()
 	const today = new Date()
 
-	const [currentDate, setCurrentDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+	const [currentDate, setCurrentDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
 	const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>([])
 	const [month, setMonth] = useState<number>(today.getMonth() + 1)
 	const [year, setYear] = useState<number>(today.getFullYear())
@@ -85,32 +85,25 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		}
 	}, [successGetKarateClassesToAdminAttendance])
 
-	const generateMarkedDates = useCallback(async () => {
-		if (month && year && weekDays.length > 0) {
+	useEffect(() => {
+		if (month && year) {
 			setGeneratingMarkDates(true)
-			setTimeout(() => {
-				const markedDates = generateMarkDatesByMonth(month, year, weekDays)
-				setMarkedDates(markedDates)
-				setGeneratingMarkDates(false)
-			}, 0)
+			const markedDates = generateMarkDatesByMonth(month, year, weekDays)
+			setMarkedDates(markedDates)
+			setGeneratingMarkDates(false)
 		}
 	}, [month, year, weekDays])
 
 	useEffect(() => {
-		generateMarkedDates()
-	}, [generateMarkedDates])
-
-	useEffect(() => {
-		if (successGetKarateClassesToAdminAttendance && currentDate) {
+		if (successGetKarateClassesToAdminAttendance) {
 			setItems([])
-			setTimeout(() => {
-				dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
-				dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
-				dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
-				
-				const [year, month, day] = currentDate.split('-').map(Number)
-				dispatch(getStudentAttendanceByDay(year, month, day))
-			}, 0)
+
+			dispatch({ type: GET_STUDENT_ATTENDANCE_BY_DAY_RESET })
+			dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
+			dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
+
+			const [year, month, day] = currentDate.split('-').map(Number)
+			dispatch(getStudentAttendanceByDay(year, month, day))
 		}
 	}, [currentDate, successGetKarateClassesToAdminAttendance])
 
@@ -210,18 +203,16 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	useEffect(() => {
 		if (successRegisterHolidayByDate) {
 			setHolidayId(holidayByDateRegistered?._id)
-			setTimeout(() => {
-				dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
-			}, 0)
+
+			dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
 		}
 	}, [successRegisterHolidayByDate])
 
 	useEffect(() => {
 		if (successDeleteHolidayById) {
 			setHolidayId('')
-			setTimeout(() => {
-				dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
-			}, 0)
+
+			dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
 		}
 	}, [successDeleteHolidayById])
 

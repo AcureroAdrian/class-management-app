@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { View, Text, FlatList, Pressable, ActivityIndicator, ScrollView } from 'react-native'
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { format, addHours } from 'date-fns'
 import Loader from '@/components/Loader/Loader'
 import AgendaItem from './AgendaItem'
@@ -30,17 +30,11 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 			errorHoliday,
 			disableHoliday,
 		} = this.props
-		// console.log('render fix')
 		// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 		ExpandableCalendar.defaultProps = undefined
-
-		// Estrategia 1: Key dinámica basada en el estado de los datos
-		const calendarKey = `calendar}-${Date.now()}`
-
 		return (
 			<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 				<ExpandableCalendar
-					key={calendarKey} // Fuerza re-renderizado completo cuando cambia
 					initialPosition={'open' as Positions}
 					markedDates={markedDates}
 					allowShadow={false}

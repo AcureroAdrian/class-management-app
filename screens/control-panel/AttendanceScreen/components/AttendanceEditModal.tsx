@@ -3,7 +3,11 @@ import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
-import { getStudentAttendanceByDay, registerStudentAttendance, updateStudentAttendanceById } from '@/redux/actions/studentAttendanceActions'
+import {
+	getStudentAttendanceByDay,
+	registerStudentAttendance,
+	updateStudentAttendanceById,
+} from '@/redux/actions/studentAttendanceActions'
 import {
 	REGISTER_STUDENT_ATTENDANCE_RESET,
 	UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET,
@@ -34,7 +38,6 @@ interface IAttendanceItem {
 	isRecovery: boolean
 	recoveryClassId?: string
 }
-
 
 const AttendanceEditModal = ({
 	openModal,
@@ -83,16 +86,14 @@ const AttendanceEditModal = ({
 		if (attendanceData && attendanceData.karateClass) {
 			const attendanceItem: IAttendanceItem[] = []
 
-			
 			// Check for existing attendance
 			if (attendanceData.attendance && attendanceData.attendance.length > 0) {
-
 				// Real attendance exists
 				attendanceData.attendance.forEach((studentAttendance: any) => {
 					const studentInfo = attendanceData.karateClass.students.find(
-						(student: any) => student._id === studentAttendance.student
+						(student: any) => student._id === studentAttendance.student,
 					)
-					
+
 					attendanceItem.push({
 						student: studentAttendance.student,
 						name: studentInfo?.name || 'Unknown',
@@ -107,7 +108,6 @@ const AttendanceEditModal = ({
 					})
 				})
 			} else {
-
 				// Virtual attendance - create from class students
 				const classStudents = attendanceData.karateClass.students || []
 				const recoveryStudents = attendanceData.karateClass.recoveryClasses || []
@@ -130,7 +130,7 @@ const AttendanceEditModal = ({
 
 				// Add recovery students
 				recoveryStudents.forEach((recoveryClass: any) => {
-					if (recoveryClass.student && !attendanceItem.some(item => item.student === recoveryClass.student._id)) {
+					if (recoveryClass.student && !attendanceItem.some((item) => item.student === recoveryClass.student._id)) {
 						attendanceItem.push({
 							student: recoveryClass.student._id,
 							name: recoveryClass.student.name,
@@ -150,11 +150,13 @@ const AttendanceEditModal = ({
 			setAttendance(attendanceItem)
 		}
 	}, [attendanceData])
+
 	useEffect(() => {
 		if (errorRegisterStudentAttendance) {
 			setErrorMessage(errorRegisterStudentAttendance)
 		}
 	}, [errorRegisterStudentAttendance])
+
 	useEffect(() => {
 		if (errorUpdateStudentAttendanceById) {
 			setErrorMessage(errorUpdateStudentAttendanceById)
@@ -291,9 +293,7 @@ const AttendanceEditModal = ({
 					handleBack={closeModal}
 				/>
 				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
-					<Text
-						style={{ fontSize: 18, fontWeight: '600', color: colors.variants.secondary[5], textAlign: 'center' }}
-					>
+					<Text style={{ fontSize: 18, fontWeight: '600', color: colors.variants.secondary[5], textAlign: 'center' }}>
 						{attendanceData?.karateClass?.name}
 					</Text>
 					<Text
@@ -427,18 +427,10 @@ const AttendanceEditModal = ({
 
 													{/* Badges Container */}
 													<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
-														{item.isTrial && (
-															<Badge {...BADGE_CONFIG.trial} />
-														)}
-														{item.isDayOnly && (
-															<Badge {...BADGE_CONFIG.dayOnly}/>
-														)}
-														{item.scheduledDeletionDate && (
-															<Badge {...BADGE_CONFIG.scheduledDeletion}/>
-														)}
-														{item.isRecovery  && (
-															<Badge {...BADGE_CONFIG.recovery}/>
-														)}
+														{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
+														{item.isDayOnly && <Badge {...BADGE_CONFIG.dayOnly} />}
+														{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
+														{item.isRecovery && <Badge {...BADGE_CONFIG.recovery} />}
 													</View>
 												</View>
 											</View>
@@ -452,19 +444,12 @@ const AttendanceEditModal = ({
 															backgroundColor: colors.variants.secondary[1],
 														}}
 													>
-														<MaterialCommunityIcons
-															name='pencil'
-															size={16}
-															color={colors.variants.primary[5]}
-														/>
+														<MaterialCommunityIcons name='pencil' size={16} color={colors.variants.primary[5]} />
 													</View>
 												)}
 
 												{/* Attendance Status Icon */}
-												<StatusIcon
-													status={item.attendanceStatus} 
-													size={24} 
-												/>
+												<StatusIcon status={item.attendanceStatus} size={24} />
 
 												{/* Three Dots Menu */}
 												<Pressable
@@ -477,11 +462,7 @@ const AttendanceEditModal = ({
 														opacity: canEdit ? 1 : 0.5,
 													}}
 												>
-													<MaterialCommunityIcons
-														name='dots-horizontal'
-														size={18}
-														color={colors.variants.grey[4]}
-													/>
+													<MaterialCommunityIcons name='dots-horizontal' size={18} color={colors.variants.grey[4]} />
 												</Pressable>
 											</View>
 										</View>
@@ -536,9 +517,8 @@ const AttendanceEditModal = ({
 				</ScrollView>
 			</View>
 
-
 			{/* Student Notes Modal */}
-			
+
 			<StudentNotesModal
 				visible={openNotesModal}
 				onClose={() => {
@@ -560,7 +540,13 @@ const AttendanceEditModal = ({
 				onStudentAdded={() => {
 					// Refresh attendance data when student is added
 					// This would trigger a re-fetch of the attendance data
-					dispatch(getStudentAttendanceByDay(attendanceData?.date?.year, attendanceData?.date?.month, attendanceData?.date?.day))
+					dispatch(
+						getStudentAttendanceByDay(
+							attendanceData?.date?.year,
+							attendanceData?.date?.month,
+							attendanceData?.date?.day,
+						),
+					)
 				}}
 			/>
 
@@ -578,10 +564,13 @@ const AttendanceEditModal = ({
 					}
 				}}
 				currentStatus={selectedStudentForStatus?.attendanceStatus || 'present'}
-				studentName={selectedStudentForStatus ? `${capitalizeWords(selectedStudentForStatus.name)} ${capitalizeWords(selectedStudentForStatus.lastName)}` : ''}
+				studentName={
+					selectedStudentForStatus
+						? `${capitalizeWords(selectedStudentForStatus.name)} ${capitalizeWords(selectedStudentForStatus.lastName)}`
+						: ''
+				}
 			/>
 		</Modal>
-
 	)
 }
 
