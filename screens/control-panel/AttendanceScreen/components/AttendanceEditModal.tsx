@@ -64,6 +64,9 @@ const AttendanceEditModal = ({
 	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById } = useAppSelector(
 		(state) => state.updateStudentAttendanceById,
 	)
+	const { successStudentAttendanceByDay, studentAttendanceByDayList } = useAppSelector(
+		(state) => state.getStudentAttendanceByDay,
+	)
 
 	const dayAndWeekDay = useMemo(() => {
 		if (!attendanceData?.date) return ''
@@ -82,74 +85,19 @@ const AttendanceEditModal = ({
 			closeModal()
 		}
 	}, [])
+
 	useEffect(() => {
-		if (attendanceData && attendanceData.karateClass) {
-			const attendanceItem: IAttendanceItem[] = []
-
-			// Check for existing attendance
-			if (attendanceData.attendance && attendanceData.attendance.length > 0) {
-				// Real attendance exists
-				attendanceData.attendance.forEach((studentAttendance: any) => {
-					const studentInfo = attendanceData.karateClass.students.find(
-						(student: any) => student._id === studentAttendance.student,
-					)
-
-					attendanceItem.push({
-						student: studentAttendance.student,
-						name: studentInfo?.name || 'Unknown',
-						lastName: studentInfo?.lastName || '',
-						attendanceStatus: studentAttendance.attendanceStatus,
-						observations: studentAttendance.observations || '',
-						isDayOnly: studentAttendance.isDayOnly || false,
-						isTrial: studentInfo?.isTrial || false,
-						scheduledDeletionDate: studentInfo?.scheduledDeletionDate,
-						isRecovery: studentAttendance.isRecovery || false,
-						recoveryClassId: studentAttendance.recoveryClassId,
-					})
-				})
-			} else {
-				// Virtual attendance - create from class students
-				const classStudents = attendanceData.karateClass.students || []
-				const recoveryStudents = attendanceData.karateClass.recoveryClasses || []
-
-				// Add regular class students
-				classStudents.forEach((student: any) => {
-					attendanceItem.push({
-						student: student._id,
-						name: student.name,
-						lastName: student.lastName,
-						attendanceStatus: 'absent',
-						observations: '',
-						isDayOnly: student.isDayOnly || false,
-						isTrial: student.isTrial || false,
-						scheduledDeletionDate: student.scheduledDeletionDate,
-						isRecovery: student.isRecovery || false,
-						recoveryClassId: undefined,
-					})
-				})
-
-				// Add recovery students
-				recoveryStudents.forEach((recoveryClass: any) => {
-					if (recoveryClass.student && !attendanceItem.some((item) => item.student === recoveryClass.student._id)) {
-						attendanceItem.push({
-							student: recoveryClass.student._id,
-							name: recoveryClass.student.name,
-							lastName: recoveryClass.student.lastName,
-							attendanceStatus: 'absent',
-							observations: '',
-							isDayOnly: recoveryClass.student.isDayOnly || false,
-							isTrial: recoveryClass.student.isTrial || false,
-							scheduledDeletionDate: recoveryClass.student.scheduledDeletionDate,
-							isRecovery: true,
-							recoveryClassId: recoveryClass._id,
-						})
-					}
-				})
+		if (studentAttendanceByDayList) {
+			const updatedAttendance = studentAttendanceByDayList?.attendances.find(
+				(item: any) => item.karateClass._id === attendanceData.karateClass._id,
+			)
+			if (updatedAttendance) {
+				handleSetAttendance(updatedAttendance)
 			}
-
-			setAttendance(attendanceItem)
+		} else if (attendanceData && attendanceData.karateClass) {
+			handleSetAttendance(attendanceData)
 		}
-	}, [attendanceData])
+	}, [studentAttendanceByDayList, attendanceData])
 
 	useEffect(() => {
 		if (errorRegisterStudentAttendance) {
@@ -162,6 +110,72 @@ const AttendanceEditModal = ({
 			setErrorMessage(errorUpdateStudentAttendanceById)
 		}
 	}, [errorUpdateStudentAttendanceById])
+
+	const handleSetAttendance = (data: any) => {
+		const attendanceItem: IAttendanceItem[] = []
+		// Check for existing attendance
+		if (data.attendance && data.attendance.length > 0) {
+			// Real attendance exists
+			data.attendance.forEach((studentAttendance: any) => {
+				const studentInfo = data.karateClass.students.find(
+					(student: any) => student._id === studentAttendance.student,
+				)
+
+				attendanceItem.push({
+					student: studentAttendance.student,
+					name: studentInfo?.name || 'Unknown',
+					lastName: studentInfo?.lastName || '',
+					attendanceStatus: studentAttendance.attendanceStatus,
+					observations: studentAttendance.observations || '',
+					isDayOnly: studentAttendance.isDayOnly || false,
+					isTrial: studentInfo?.isTrial || false,
+					scheduledDeletionDate: studentInfo?.scheduledDeletionDate,
+					isRecovery: studentAttendance.isRecovery || false,
+					recoveryClassId: studentAttendance.recoveryClassId,
+				})
+			})
+		} else {
+			// Virtual attendance - create from class students
+			const classStudents = data.karateClass.students || []
+			const recoveryStudents = data.karateClass.recoveryClasses || []
+
+			// Add regular class students
+			classStudents.forEach((student: any) => {
+				attendanceItem.push({
+					student: student._id,
+					name: student.name,
+					lastName: student.lastName,
+					attendanceStatus: 'absent',
+					observations: '',
+					isDayOnly: student.isDayOnly || false,
+					isTrial: student.isTrial || false,
+					scheduledDeletionDate: student.scheduledDeletionDate,
+					isRecovery: student.isRecovery || false,
+					recoveryClassId: undefined,
+				})
+			})
+
+			// Add recovery students
+			recoveryStudents.forEach((recoveryClass: any) => {
+				if (recoveryClass.student && !attendanceItem.some((item) => item.student === recoveryClass.student._id)) {
+					attendanceItem.push({
+						student: recoveryClass.student._id,
+						name: recoveryClass.student.name,
+						lastName: recoveryClass.student.lastName,
+						attendanceStatus: 'absent',
+						observations: '',
+						isDayOnly: recoveryClass.student.isDayOnly || false,
+						isTrial: recoveryClass.student.isTrial || false,
+						scheduledDeletionDate: recoveryClass.student.scheduledDeletionDate,
+						isRecovery: true,
+						recoveryClassId: recoveryClass._id,
+					})
+				}
+			})
+		}
+
+		setAttendance(attendanceItem)
+	}
 
 	const handleSaveAtendance = () => {
 		setErrorMessage(null)
@@ -547,6 +561,7 @@ const AttendanceEditModal = ({
 							attendanceData?.date?.day,
 						),
 					)
+					setOpenAddStudentModal(false)
 				}}
 			/>
 
