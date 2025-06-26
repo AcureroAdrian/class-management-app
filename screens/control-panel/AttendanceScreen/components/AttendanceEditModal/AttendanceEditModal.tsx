@@ -27,14 +27,19 @@ import { Badge, BADGE_CONFIG } from '@/shared/Badge'
 import {
 	ClassName,
 	DayWeekText,
-	HeaderInfoContainer,
 	ModalContainer,
-	SummaryBadge,
-	SummaryBadges,
-	SummaryBadgeText,
-	SummaryBar,
-	SummaryContainer,
-	TotalText,
+	CompactHeaderContainer,
+	ClassInfoRow,
+	ClassDetails,
+	AttendanceSummary,
+	SummaryMini,
+	SummaryBadgeMini,
+	SummaryBadgeTextMini,
+	TotalTextMini,
+	SearchContainer,
+	SearchInputContainer,
+	SearchInput,
+	ClearSearchButton,
 	ErrorMessage,
 	StudentListItem,
 	StudentListItemContainer,
@@ -53,7 +58,7 @@ import {
 	FloatingButtonContainer,
 	FloatingButton,
 	FloatingButtonText,
-} from './AttendanceEditModal.styles'
+} from './styles'
 
 // Interface para el attendance item
 interface IAttendanceItem {
@@ -81,6 +86,7 @@ const AttendanceEditModal = ({
 	const dispatch = useAppDispatch()
 
 	const [attendance, setAttendance] = useState<IAttendanceItem[]>([])
+	const [searchQuery, setSearchQuery] = useState<string>('')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 	const [openNotesModal, setOpenNotesModal] = useState<boolean>(false)
 	const [selectedStudentForNotes, setSelectedStudentForNotes] = useState<any>(null)
@@ -88,10 +94,10 @@ const AttendanceEditModal = ({
 	const [openStatusModal, setOpenStatusModal] = useState<boolean>(false)
 	const [selectedStudentForStatus, setSelectedStudentForStatus] = useState<IAttendanceItem | null>(null)
 
-	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance } = useAppSelector(
+	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance, successRegisterStudentAttendance } = useAppSelector(
 		(state) => state.registerStudentAttendance,
 	)
-	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById } = useAppSelector(
+	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById, successUpdateStudentAttendanceById } = useAppSelector(
 		(state) => state.updateStudentAttendanceById,
 	)
 	const { successStudentAttendanceByDay, studentAttendanceByDayList } = useAppSelector(
@@ -207,6 +213,32 @@ const AttendanceEditModal = ({
 		}
 	}, [errorUpdateStudentAttendanceById])
 
+	useEffect(() => {
+		if (successRegisterStudentAttendance) {
+			// Refresh attendance data after successful registration
+			dispatch(
+				getStudentAttendanceByDay(
+					attendanceData?.date?.year,
+					attendanceData?.date?.month,
+					attendanceData?.date?.day,
+				),
+			)
+		}
+	}, [successRegisterStudentAttendance])
+
+	useEffect(() => {
+		if (successUpdateStudentAttendanceById) {
+			// Refresh attendance data after successful update
+			dispatch(
+				getStudentAttendanceByDay(
+					attendanceData?.date?.year,
+					attendanceData?.date?.month,
+					attendanceData?.date?.day,
+				),
+			)
+		}
+	}, [successUpdateStudentAttendanceById])
+
 	const handleSaveAtendance = () => {
 		setErrorMessage(null)
 		if (!attendance?.length) {
@@ -296,6 +328,17 @@ const AttendanceEditModal = ({
 
 		return { presents, absents, late }
 	}, [attendance])
+	const filteredAttendance = useMemo(() => {
+		if (!searchQuery.trim()) return attendance.sort((a, b) => a?.name?.localeCompare(b?.name))
+		
+		return attendance
+			.filter(item => 
+				item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+			)
+			.sort((a, b) => a?.name?.localeCompare(b?.name))
+	}, [attendance, searchQuery])
+
 	const canEdit = useMemo(() => {
 		const today = new Date()
 		const attendanceDate = new Date(
@@ -336,38 +379,56 @@ const AttendanceEditModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<HeaderInfoContainer>
-					<ClassName>{attendanceData?.karateClass?.name}</ClassName>
-					<DayWeekText>{dayAndWeekDay}</DayWeekText>
-				</HeaderInfoContainer>
-				<SummaryContainer>
-					<SummaryBar>
-						<SummaryBadges>
-							{Boolean(presents) && (
-								<SummaryBadge type='present'>
-									<SummaryBadgeText>{presents}</SummaryBadgeText>
-								</SummaryBadge>
+				<CompactHeaderContainer>
+					<ClassInfoRow>
+						<ClassDetails>
+							<ClassName>{attendanceData?.karateClass?.name}</ClassName>
+							<DayWeekText>{dayAndWeekDay}</DayWeekText>
+						</ClassDetails>
+						<AttendanceSummary>
+							<SummaryMini>
+								{Boolean(presents) && (
+									<SummaryBadgeMini type='present'>
+										<SummaryBadgeTextMini>{presents}</SummaryBadgeTextMini>
+									</SummaryBadgeMini>
+								)}
+								{Boolean(absents) && (
+									<SummaryBadgeMini type='absent'>
+										<SummaryBadgeTextMini>{absents}</SummaryBadgeTextMini>
+									</SummaryBadgeMini>
+								)}
+								{Boolean(late) && (
+									<SummaryBadgeMini type='late'>
+										<SummaryBadgeTextMini>{late}</SummaryBadgeTextMini>
+									</SummaryBadgeMini>
+								)}
+							</SummaryMini>
+							<TotalTextMini>Total: {attendance?.length}</TotalTextMini>
+						</AttendanceSummary>
+					</ClassInfoRow>
+					<SearchContainer>
+						<SearchInputContainer>
+							<MaterialCommunityIcons name='magnify' size={20} color={colors.variants.grey[3]} />
+							<SearchInput
+								placeholder="Buscar estudiante..."
+								placeholderTextColor={colors.variants.grey[3]}
+								value={searchQuery}
+								onChangeText={setSearchQuery}
+							/>
+							{searchQuery.length > 0 && (
+								<ClearSearchButton onPress={() => setSearchQuery('')}>
+									<MaterialCommunityIcons name='close-circle' size={20} color={colors.variants.grey[3]} />
+								</ClearSearchButton>
 							)}
-							{Boolean(absents) && (
-								<SummaryBadge type='absent'>
-									<SummaryBadgeText>{absents}</SummaryBadgeText>
-								</SummaryBadge>
-							)}
-							{Boolean(late) && (
-								<SummaryBadge type='late'>
-									<SummaryBadgeText>{late}</SummaryBadgeText>
-								</SummaryBadge>
-							)}
-						</SummaryBadges>
-						<TotalText>Total: {attendance?.length}</TotalText>
-					</SummaryBar>
-				</SummaryContainer>
+						</SearchInputContainer>
+					</SearchContainer>
+				</CompactHeaderContainer>
 				{errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-				<ScrollView>
+				<ScrollView contentContainerStyle={{ paddingBottom: canEdit ? 120 : 24 }}>
 					<FlatList
 						nestedScrollEnabled={true}
 						scrollEnabled={false}
-						data={attendance.sort((a, b) => a?.name?.localeCompare(b?.name))}
+						data={filteredAttendance}
 						renderItem={({ item, index }) => (
 						<>
 							<StudentListItem
@@ -417,7 +478,7 @@ const AttendanceEditModal = ({
 									</StudentListItemContent>
 								</StudentListItemContainer>
 							</StudentListItem>
-							{index + 1 !== attendance.length && (
+							{index + 1 !== filteredAttendance.length && (
 								<Separator>
 									<SeparatorLine />
 								</Separator>
@@ -426,17 +487,17 @@ const AttendanceEditModal = ({
 					)}
 					keyExtractor={(item) => item.student}
 				/>
+				</ScrollView>
 
 				{/* Floating Add Student Button */}
 				{canEdit && (
 					<FloatingButtonContainer>
-											<FloatingButton onPress={() => setOpenAddStudentModal(true)}>
-						<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
-					</FloatingButton>
+						<FloatingButton onPress={() => setOpenAddStudentModal(true)}>
+							<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
+						</FloatingButton>
 						<FloatingButtonText>Add Student</FloatingButtonText>
 					</FloatingButtonContainer>
 				)}
-				</ScrollView>
 			</ModalContainer>
 
 			{/* Student Notes Modal */}

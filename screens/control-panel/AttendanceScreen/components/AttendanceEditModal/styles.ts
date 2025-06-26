@@ -7,58 +7,52 @@ export const ModalContainer = styled.View`
 	background-color: ${colors.primary};
 `
 
-export const HeaderInfoContainer = styled.View`
+export const CompactHeaderContainer = styled.View`
 	width: 100%;
-	padding: 16px 24px;
-	align-items: center;
+	padding: 16px 24px 24px 24px;
 	background-color: ${colors.primary};
+	gap: 16px;
+`
+
+export const ClassInfoRow = styled.View`
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+`
+
+export const ClassDetails = styled.View`
+	flex: 1;
+	align-items: flex-start;
 `
 
 export const ClassName = styled.Text`
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 700;
 	color: ${colors.variants.secondary[5]};
-	text-align: center;
 	letter-spacing: -0.3px;
-	margin-bottom: 4px;
+	margin-bottom: 2px;
 `
 
 export const DayWeekText = styled.Text`
-	font-size: 16px;
+	font-size: 14px;
 	color: ${colors.variants.grey[3]};
 	text-transform: capitalize;
 	font-weight: 500;
-	letter-spacing: -0.2px;
+	letter-spacing: -0.1px;
 `
 
-export const SummaryContainer = styled.View`
-	width: 100%;
-	padding: 0 24px 20px 24px;
+export const AttendanceSummary = styled.View`
+	align-items: flex-end;
+	gap: 8px;
 `
 
-export const SummaryBar = styled.View`
-	width: 100%;
-	background-color: ${colors.variants.secondary[0]};
-	padding: 20px;
-	border-radius: 20px;
+export const SummaryMini = styled.View`
 	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	border-width: 1px;
-	border-color: ${colors.variants.secondary[1]};
-	shadow-color: #000;
-	shadow-offset: 0px 4px;
-	shadow-opacity: 0.08;
-	shadow-radius: 12px;
-	elevation: 3;
+	gap: 6px;
 `
 
-export const SummaryBadges = styled.View`
-	flex-direction: row;
-	gap: 12px;
-`
-
-export const SummaryBadge = styled.View<{ type: 'present' | 'absent' | 'late' }>`
+export const SummaryBadgeMini = styled.View<{ type: 'present' | 'absent' | 'late' }>`
 	background-color: ${(props: { type: 'present' | 'absent' | 'late' }) => {
 		switch (props.type) {
 			case 'present':
@@ -71,25 +65,52 @@ export const SummaryBadge = styled.View<{ type: 'present' | 'absent' | 'late' }>
 				return colors.variants.grey[3]
 		}
 	}};
-	padding: 8px;
-	min-width: 36px;
-	height: 36px;
+	padding: 6px;
+	min-width: 28px;
+	height: 28px;
 	justify-content: center;
 	align-items: center;
-	border-radius: 18px;
+	border-radius: 14px;
 `
 
-export const SummaryBadgeText = styled.Text`
+export const SummaryBadgeTextMini = styled.Text`
 	color: ${colors.primary};
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: 700;
 `
 
-export const TotalText = styled.Text`
+export const TotalTextMini = styled.Text`
 	color: ${colors.variants.secondary[5]};
-	font-size: 18px;
+	font-size: 14px;
 	font-weight: 600;
-	letter-spacing: -0.2px;
+	letter-spacing: -0.1px;
+`
+
+export const SearchContainer = styled.View`
+	width: 100%;
+`
+
+export const SearchInputContainer = styled.View`
+	flex-direction: row;
+	align-items: center;
+	background-color: ${colors.variants.grey[0]};
+	border-radius: 12px;
+	padding: 1px 16px;
+	gap: 12px;
+	border-width: 1px;
+	border-color: ${colors.variants.grey[1]};
+`
+
+export const SearchInput = styled.TextInput`
+	flex: 1;
+	font-size: 16px;
+	color: ${colors.variants.secondary[5]};
+	font-weight: 500;
+	letter-spacing: -0.1px;
+`
+
+export const ClearSearchButton = styled.Pressable`
+	padding: 4px;
 `
 
 export const ErrorMessage = styled.Text`
@@ -200,8 +221,12 @@ export const SeparatorLine = styled.View`
 `
 
 export const FloatingButtonContainer = styled.View`
+	position: absolute;
+	bottom: 24px;
+	align-self: center;
 	align-items: center;
-	padding: 32px 0;
+	z-index: 1000;
+	pointer-events: box-none;
 `
 
 export const FloatingButton = styled.Pressable`

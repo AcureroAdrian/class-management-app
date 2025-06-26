@@ -137,15 +137,22 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 				}
 			})
 
-			setItems(newItems || [])
+			// Ordenar las clases por hora
+			const sortedItems = newItems?.sort((a, b) => {
+				const timeA = a.startTime.hour * 60 + a.startTime.minute
+				const timeB = b.startTime.hour * 60 + b.startTime.minute
+				return timeA - timeB
+			})
+
+			setItems(sortedItems || [])
 			setHolidayId(studentAttendanceByDayList?.holiday?._id)
 		}
 	}, [successStudentAttendanceByDay])
 
 	useEffect(() => {
 		if (successRegisterStudentAttendance) {
-			setItems((prev) =>
-				prev.map((item) => {
+			setItems((prev) => {
+				const updatedItems = prev.map((item) => {
 					if (
 						item.startTime.hour === studentAttendanceRegistered.date.hour &&
 						item.startTime.minute === studentAttendanceRegistered.date.minute &&
@@ -166,16 +173,23 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 						item.absents = absents
 					}
 					return item
-				}),
-			)
+				})
+				
+				// Mantener el orden por hora
+				return updatedItems.sort((a, b) => {
+					const timeA = a.startTime.hour * 60 + a.startTime.minute
+					const timeB = b.startTime.hour * 60 + b.startTime.minute
+					return timeA - timeB
+				})
+			})
 			setOpenAttendanceEditModal(false)
 		}
 	}, [successRegisterStudentAttendance])
 
 	useEffect(() => {
 		if (successUpdateStudentAttendanceById) {
-			setItems((prev) =>
-				prev.map((item) => {
+			setItems((prev) => {
+				const updatedItems = prev.map((item) => {
 					if (
 						item.startTime.hour === studentAttendanceByIdUpdated.date.hour &&
 						item.startTime.minute === studentAttendanceByIdUpdated.date.minute &&
@@ -196,8 +210,15 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 						item.absents = absents
 					}
 					return item
-				}),
-			)
+				})
+				
+				// Mantener el orden por hora
+				return updatedItems.sort((a, b) => {
+					const timeA = a.startTime.hour * 60 + a.startTime.minute
+					const timeB = b.startTime.hour * 60 + b.startTime.minute
+					return timeA - timeB
+				})
+			})
 			setOpenAttendanceEditModal(false)
 		}
 	}, [successUpdateStudentAttendanceById])
