@@ -150,16 +150,16 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 						<S.SearchContainer>
 							<S.SearchInputContainer>
 								<MaterialCommunityIcons
-									style={{ position: 'absolute', left: 15, top: 10, zIndex: 1 }}
+									style={{ position: 'absolute', left: 18, top: 14, zIndex: 1 }}
 									name='account-search'
-									size={30}
-									color={colors.variants.secondary[4]}
+									size={24}
+									color={colors.variants.grey[3]}
 								/>
 								<S.SearchInput
 									value={textSearch}
 									onChangeText={setTextSearch}
 									placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
-									placeholderTextColor={colors.variants.secondary[2]}
+									placeholderTextColor={colors.variants.grey[3]}
 								/>
 							</S.SearchInputContainer>
 						</S.SearchContainer>

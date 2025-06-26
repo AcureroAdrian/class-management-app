@@ -308,7 +308,9 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 													</S.ClassDetails>
 												</S.ClassItem>
 												{karateClasses?.length !== index + 1 && (
-													<S.Separator/>
+													<S.Separator>
+														<S.SeparatorLine />
+													</S.Separator>
 												)}
 											</>
 										)}
