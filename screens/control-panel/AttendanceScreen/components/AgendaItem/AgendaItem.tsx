@@ -4,18 +4,22 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import colors from '@/theme/colors'
 import {
 	ItemContainer,
-	TimeText,
 	CardContainer,
 	PressableArea,
-	InnerContainer,
-	TextContainer,
+	TopRow,
+	TimeContainer,
+	TimeText,
+	StudentsContainer,
+	StudentsIcon,
+	StudentsCountText,
+	ContentContainer,
 	NameText,
 	DescriptionText,
-	BadgesContainer,
-	Badge,
-	BadgeText,
-	StudentsContainer,
-	StudentsCountText,
+	BottomRow,
+	AttendanceButton,
+	AttendanceText,
+	AttendanceCount,
+	ArrowIcon,
 } from './AgendaItem.styles'
 
 interface ItemProps {
@@ -30,41 +34,78 @@ const AgendaItem = (props: ItemProps) => {
 	const date = new Date()
 	date.setHours(item.startTime.hour)
 	date.setMinutes(item.startTime.minute)
-	const startTime = format(date, 'HH:mm aaaa')
+	const startTime = format(date, 'HH:mm')
+
+	// Calcular el color del borde basado en el porcentaje de asistencia
+	const totalStudents = item?.item?.students?.length || 0
+	const presentStudents = disabled ? 0 : (item.presents || 0)
+	const absentStudents = disabled ? totalStudents : (item.absents || 0)
+	
+	const attendancePercentage = totalStudents > 0 ? (presentStudents / totalStudents) : 0
+	const borderColor = attendancePercentage >= 0.5 ? colors.green : colors.variants.primary[3]
 
 	return (
 		<ItemContainer>
-			<TimeText>{startTime}</TimeText>
-			<CardContainer>
+			<CardContainer borderColor={borderColor}>
 				<PressableArea onPress={() => handleOpenAttendance(item.item)} disabled={disabled}>
-					<InnerContainer>
-						<TextContainer>
-							<NameText>{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}</NameText>
-							<DescriptionText>
-								{item.description
-									? item?.description?.length > 20
-										? item.description.substring(0, 20) + '...'
-										: item.description
-									: 'No description'}
-							</DescriptionText>
-							<BadgesContainer>
-								{Boolean(item.presents) && (
-									<Badge type='present'>
-										<BadgeText>{item.presents}</BadgeText>
-									</Badge>
-								)}
-								{(Boolean(item.absents) || disabled) && (
-									<Badge type='absent'>
-										<BadgeText>{disabled ? item?.total : item.absents}</BadgeText>
-									</Badge>
-								)}
-							</BadgesContainer>
-						</TextContainer>
+					<TopRow>
+						<TimeContainer>
+							<TimeText>{startTime}</TimeText>
+						</TimeContainer>
 						<StudentsContainer>
-							<MaterialCommunityIcons name='account' size={30} color={colors.variants.secondary[5]} />
-							<StudentsCountText>{item?.item?.students?.length}</StudentsCountText>
+							<StudentsIcon>
+								<MaterialCommunityIcons 
+									name='account-group' 
+									size={16} 
+									color={colors.variants.grey[4]} 
+								/>
+							</StudentsIcon>
+							<StudentsCountText>{totalStudents}</StudentsCountText>
 						</StudentsContainer>
-					</InnerContainer>
+					</TopRow>
+
+					<ContentContainer>
+						<NameText numberOfLines={1}>
+							{item.name}
+						</NameText>
+						<DescriptionText numberOfLines={2}>
+							{item.description || 'Sin descripción'}
+						</DescriptionText>
+					</ContentContainer>
+
+					<BottomRow>
+						{!disabled && presentStudents > 0 && (
+							<AttendanceButton>
+								<MaterialCommunityIcons 
+									name='circle' 
+									size={8} 
+									color={colors.green} 
+								/>
+								<AttendanceCount>{presentStudents}</AttendanceCount>
+								<AttendanceText>presentes</AttendanceText>
+							</AttendanceButton>
+						)}
+
+						{(absentStudents > 0 || disabled) && (
+							<AttendanceButton>
+								<MaterialCommunityIcons 
+									name='circle' 
+									size={8} 
+									color={colors.red} 
+								/>
+								<AttendanceCount>{absentStudents}</AttendanceCount>
+								<AttendanceText>ausentes</AttendanceText>
+							</AttendanceButton>
+						)}
+						
+						<ArrowIcon>
+							<MaterialCommunityIcons 
+								name='chevron-right' 
+								size={20} 
+								color={colors.variants.grey[3]} 
+							/>
+						</ArrowIcon>
+					</BottomRow>
 				</PressableArea>
 			</CardContainer>
 		</ItemContainer>

@@ -4,21 +4,20 @@ import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { format, addHours } from 'date-fns'
+import { es } from 'date-fns/locale'
 import Loader from '@/components/Loader/Loader'
 import AgendaItem from '../AgendaItem'
+import EmptyState from './EmptyState'
+import DateHeader from './DateHeader'
 import { CalendarComponentProps } from '../../helpers/attendance-screen-interfaces'
 import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
 import colors from '@/theme/colors'
 import {
 	Container,
-	Header,
-	HeaderText,
-	HolidayButton,
-	HolidayButtonText,
 	HolidayInfoText,
 	ErrorText,
 	AgendaContainer,
-} from './CalendarComponent.styles'
+} from './styles'
 
 class CalendarComponent extends PureComponent<CalendarComponentProps> {
 	render() {
@@ -40,8 +39,32 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 			errorHoliday,
 			disableHoliday,
 		} = this.props
+		
 		// @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
 		ExpandableCalendar.defaultProps = undefined
+		
+		const calendarTheme = {
+			backgroundColor: colors.primary,
+			calendarBackground: colors.primary,
+			textSectionTitleColor: colors.variants.grey[4],
+			selectedDayBackgroundColor: colors.variants.primary[5],
+			selectedDayTextColor: colors.primary,
+			todayTextColor: colors.variants.primary[5],
+			dayTextColor: colors.variants.secondary[5],
+			textDisabledColor: colors.variants.grey[2],
+			dotColor: colors.variants.primary[4],
+			selectedDotColor: colors.primary,
+			arrowColor: colors.variants.secondary[4],
+			monthTextColor: colors.variants.secondary[5],
+			indicatorColor: colors.variants.primary[5],
+			textDayFontWeight: '500' as const,
+			textMonthFontWeight: '600' as const,
+			textDayHeaderFontWeight: '600' as const,
+			textDayFontSize: 15,
+			textMonthFontSize: 18,
+			textDayHeaderFontSize: 13,
+		}
+		
 		return (
 			<CalendarProvider date={currentDate} onDateChanged={handleDayChange} onMonthChange={handleChangeMonth}>
 				<ExpandableCalendar
@@ -49,9 +72,11 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 					markedDates={markedDates}
 					allowShadow={false}
 					closeOnDayPress={false}
-					hideArrows={true}
-					animateScroll={false}
+					hideArrows={false}
+					animateScroll={true}
 					monthFormat='MMM, yyyy'
+					firstDay={1}
+					theme={calendarTheme}
 					displayLoadingIndicator={loadingGetKarateClassesToAdminAttendance || generatingMarkDates || loadingHoliday}
 					minDate={
 						loadingStudentAttendanceByDay ||
@@ -72,20 +97,20 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 					allowSelectionOutOfRange={false}
 				/>
 				<Container>
-					<Header>
-						<HeaderText>{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}</HeaderText>
-						{role === 'admin' && !disableHoliday && (
-							<HolidayButton onPress={handleAddHoliday} disabled={loadingHoliday}>
-								<HolidayButtonText>{isHoliday ? 'Remove Holiday' : 'Mark as Holiday'}</HolidayButtonText>
-								{loadingHoliday ? (
-									<ActivityIndicator size={'small'} color={colors.variants.primary[0]} />
-								) : (
-									<MaterialCommunityIcons name='pin' size={24} color={colors.variants.primary[5]} />
-								)}
-							</HolidayButton>
-						)}
-					</Header>
-					{isHoliday && <HolidayInfoText>This day has been marked as a holiday.</HolidayInfoText>}
+					<DateHeader 
+						currentDate={currentDate}
+						role={role}
+						handleAddHoliday={handleAddHoliday}
+						isHoliday={isHoliday}
+						loadingHoliday={loadingHoliday}
+						disableHoliday={disableHoliday}
+					/>
+					
+					{isHoliday && (
+						<HolidayInfoText>
+							This day has been marked as a holiday.
+						</HolidayInfoText>
+					)}
 					{errorHoliday && <ErrorText>{errorHoliday}</ErrorText>}
 					{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
 						<Loader text='Loading attendance...' />
@@ -95,16 +120,25 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 						</CenterContainer>
 					) : (
 						<AgendaContainer>
-							<ScrollView>
-								<FlatList
-									data={items}
-									keyExtractor={(item) => String(item?.id)}
-									nestedScrollEnabled={true}
-									scrollEnabled={false}
-									renderItem={({ item }) => (
-										<AgendaItem item={item} handleOpenAttendance={handleOpenAttendance} disabled={isHoliday} />
-									)}
-								/>
+							<ScrollView showsVerticalScrollIndicator={false}>
+								{items?.length > 0 ? (
+									<FlatList
+										data={items}
+										keyExtractor={(item) => String(item?.id)}
+										nestedScrollEnabled={true}
+										scrollEnabled={false}
+										showsVerticalScrollIndicator={false}
+										renderItem={({ item }) => (
+											<AgendaItem 
+												item={item} 
+												handleOpenAttendance={handleOpenAttendance} 
+												disabled={isHoliday} 
+											/>
+										)}
+									/>
+								) : (
+									<EmptyState />
+								)}
 							</ScrollView>
 						</AgendaContainer>
 					)}
