@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable } from 'react-native'
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
+import { ScrollView, FlatList, Pressable } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useSegments } from 'expo-router'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import Loader from '@/components/Loader/Loader'
@@ -15,6 +15,7 @@ import { DELETE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
 import { Badge, BADGE_CONFIG } from '@/shared/Badge'
+import * as S from './styles'
 
 const StudentsScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -126,7 +127,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 
 	return (
 		<>
-			<View style={{ flex: 1, width: '100%', justifyContent: 'flex-start', alignItems: 'center' }}>
+			<S.ScreenContainer>
 				<ScreenHeader
 					label={mode === 'students' ? 'Students' : 'Teachers'}
 					labelButton='Add'
@@ -137,41 +138,31 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 					handleAdditionalIcon={() => setMode(mode === 'students' ? 'teachers' : 'students')}
 				/>
 				{loadingGetStudentUsers ? (
-					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', padding: 20 }}>
+					<S.LoaderContainer>
 						<Loader text='Loading students' />
-					</View>
+					</S.LoaderContainer>
 				) : errorGetStudentUsers && !students?.length ? (
-					<View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', padding: 20 }}>
-						<Text style={{ fontSize: 16, color: 'red' }}>{errorGetStudentUsers}</Text>
-					</View>
+					<S.ErrorContainer>
+						<S.ErrorText>{errorGetStudentUsers}</S.ErrorText>
+					</S.ErrorContainer>
 				) : (
 					<>
-						<View style={{ width: '100%', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 8 }}>
-							<View style={{ position: 'relative', width: '100%' }}>
+						<S.SearchContainer>
+							<S.SearchInputContainer>
 								<MaterialCommunityIcons
 									style={{ position: 'absolute', left: 15, top: 10, zIndex: 1 }}
 									name='account-search'
 									size={30}
 									color={colors.variants.secondary[4]}
 								/>
-								<TextInput
+								<S.SearchInput
 									value={textSearch}
 									onChangeText={setTextSearch}
 									placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
 									placeholderTextColor={colors.variants.secondary[2]}
-									style={{
-										width: '100%',
-										backgroundColor: colors.variants.secondary[0],
-										paddingLeft: 55,
-										paddingRight: 20,
-										borderRadius: 10,
-										fontSize: 18,
-										height: 50,
-										color: colors.variants.secondary[5],
-									}}
 								/>
-							</View>
-						</View>
+							</S.SearchInputContainer>
+						</S.SearchContainer>
 						<ScrollView>
 							<FlatList
 								nestedScrollEnabled={true}
@@ -179,71 +170,46 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 								data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
 								renderItem={({ item, index }) => (
 									<>
-										<View
-											style={{
-												width: '100%',
-												flexDirection: 'row',
-												alignItems: 'center',
-												gap: 10,
-												justifyContent: 'space-between',
-												paddingHorizontal: 20,
-												paddingVertical: 8,
-											}}
-										>
-											<Pressable
+										<S.StudentItemContainer>
+											<S.StudentInfoPressable
 												onPress={() => [handleSelectStudent(item), setDeleteId('')]}
 												onLongPress={() => handleSelectDeleteStudent(item._id)}
-												style={{ width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
 											>
-												<View
-													style={{
-														flexDirection: 'row',
-														justifyContent: 'flex-start',
-														alignItems: 'center',
-														gap: 10,
-														width: '100%',
-													}}
-												>
-													<Image
+												<S.StudentInfoContainer>
+													<S.StudentAvatar
 														source={require('@/assets/img/default-avatar.png')}
-														style={{ width: 48, height: 48, borderRadius: 50 }}
 														resizeMode='contain'
 													/>
-													<View
-														style={{
-															justifyContent: 'center',
-															position: 'relative',
-														}}
-													>
-														<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
+													<S.StudentNameContainer>
+														<S.StudentName numberOfLines={1} >
 															{capitalizeWords(item.name)}
-														</Text>
-														<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
+														</S.StudentName>
+														<S.StudentLastName numberOfLines={1}>
 															{capitalizeWords(item?.lastName)}
-														</Text>
-													</View>
-												</View>
-												<View style={{ flexDirection: 'column', marginTop: 4, gap: 4 }}>
-												{item.isTrial && (
-													<Badge {...BADGE_CONFIG.trial}/>
-												)}
-												{item.scheduledDeletionDate && (
-													<Badge {...BADGE_CONFIG.scheduledDeletion}/>
-												)}
-												</View>
-											</Pressable>
-											<View style={{ justifyContent: 'center', alignItems: 'center', width: 40 }}>
+														</S.StudentLastName>
+													</S.StudentNameContainer>
+												</S.StudentInfoContainer>
+												<S.BadgesContainer>
+													{item.isTrial && (
+														<Badge {...BADGE_CONFIG.trial}/>
+													)}
+													{item.scheduledDeletionDate && (
+														<Badge {...BADGE_CONFIG.scheduledDeletion}/>
+													)}
+												</S.BadgesContainer>
+											</S.StudentInfoPressable>
+											<S.DeleteIconContainer>
 												<Pressable onPress={handleShowConfirmationModal}>
 													{item._id === deleteId && (
 														<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
 													)}
 												</Pressable>
-											</View>
-										</View>
+											</S.DeleteIconContainer>
+										</S.StudentItemContainer>
 										{index + 1 !== filteredStudents.length && (
-											<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
-												<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
-											</View>
+											<S.SeparatorContainer>
+												<S.Separator />
+											</S.SeparatorContainer>
 										)}
 									</>
 								)}
@@ -252,7 +218,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 						</ScrollView>
 					</>
 				)}
-			</View>
+			</S.ScreenContainer>
 			{openStudentsRegisterModal && (
 				<StudentsRegisterModal
 					openModal={openStudentsRegisterModal}

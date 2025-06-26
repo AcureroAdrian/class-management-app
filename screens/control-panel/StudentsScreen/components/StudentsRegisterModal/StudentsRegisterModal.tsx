@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Modal, Switch, ScrollView } from 'react-native'
+import { Modal, Switch, ScrollView } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
-import { levelsInitialValues } from '../helpers/student-screen-initial-values'
-import { IFullStudent } from '../helpers/students-interfaces'
+import { levelsInitialValues } from '../../helpers/student-screen-initial-values'
+import { IFullStudent } from '../../helpers/students-interfaces'
 import { TUserLevel, TUserRole } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerStudents } from '@/redux/actions/userActions'
 import { REGISTER_STUDENTS_RESET } from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import * as S from './styles'
 
 const StudentsRegisterModal = ({
 	openModal,
@@ -99,7 +100,7 @@ const StudentsRegisterModal = ({
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
+			<S.ModalContainer>
 				<ScreenHeader
 					label='Add Student'
 					labelButton='Save'
@@ -110,19 +111,13 @@ const StudentsRegisterModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ flex: 1, width: '100%' }}>
+				<S.ContentContainer>
 					<KeyboardAvoidingWrapper>
 						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
 							{(errorMessage || errorRegisterStudents) && (
-								<Text
-									style={{
-										textAlign: 'center',
-										fontSize: 13,
-										color: 'red',
-									}}
-								>
+								<S.ErrorText>
 									{errorMessage || errorRegisterStudents}
-								</Text>
+								</S.ErrorText>
 							)}
 							<CustomInputForm
 								label='User ID'
@@ -199,17 +194,9 @@ const StudentsRegisterModal = ({
 								multiline={true}
 								icon='note'
 							/>
-							<View style={{ width: '100%', flexDirection: 'row', gap: 40, justifyContent: 'center' }}>
+							<S.SwitchContainer>
 								{role === 'admin' && (
-									<View
-										style={{
-											flexDirection: 'row',
-											justifyContent: 'flex-start',
-											gap: 5,
-											alignItems: 'center',
-											marginTop: 10,
-										}}
-									>
+									<S.SwitchOption>
 										<Switch
 											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
 											thumbColor={colors.variants.secondary[0]}
@@ -217,19 +204,11 @@ const StudentsRegisterModal = ({
 											onValueChange={() => setIsTeacher(!isTeacher)}
 											value={isTeacher}
 										/>
-										<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Teacher</Text>
-									</View>
+										<S.SwitchLabel>Is Teacher</S.SwitchLabel>
+									</S.SwitchOption>
 								)}
 								{userInfo?.isSuper && (
-									<View
-										style={{
-											flexDirection: 'row',
-											justifyContent: 'flex-start',
-											gap: 5,
-											alignItems: 'center',
-											marginTop: 10,
-										}}
-									>
+									<S.SwitchOption>
 										<Switch
 											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
 											thumbColor={colors.variants.secondary[0]}
@@ -237,14 +216,14 @@ const StudentsRegisterModal = ({
 											onValueChange={() => setIsAdmin(!isAdmin)}
 											value={isAdmin}
 										/>
-										<Text style={{ color: colors.variants.secondary[5], fontWeight: 500 }}>Is Admin</Text>
-									</View>
+										<S.SwitchLabel>Is Admin</S.SwitchLabel>
+									</S.SwitchOption>
 								)}
-							</View>
+							</S.SwitchContainer>
 						</ScrollView>
 					</KeyboardAvoidingWrapper>
-				</View>
-			</View>
+				</S.ContentContainer>
+			</S.ModalContainer>
 			{showDatePicker && (
 				<DateTimePickerModal
 					isVisible={showDatePicker}

@@ -1,14 +1,24 @@
 import React, { PureComponent } from 'react'
-import { View, Text, FlatList, Pressable, ActivityIndicator, ScrollView } from 'react-native'
+import { FlatList, ActivityIndicator, ScrollView } from 'react-native'
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars'
 import { Positions } from 'react-native-calendars/src/expandableCalendar'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { format, addHours } from 'date-fns'
 import Loader from '@/components/Loader/Loader'
-import AgendaItem from './AgendaItem'
-import { CalendarComponentProps } from '../helpers/attendance-screen-interfaces'
+import AgendaItem from '../AgendaItem'
+import { CalendarComponentProps } from '../../helpers/attendance-screen-interfaces'
 import { CenterContainer, ErrorMsgBox } from '@/theme/styles'
 import colors from '@/theme/colors'
+import {
+	Container,
+	Header,
+	HeaderText,
+	HolidayButton,
+	HolidayButtonText,
+	HolidayInfoText,
+	ErrorText,
+	AgendaContainer,
+} from './CalendarComponent.styles'
 
 class CalendarComponent extends PureComponent<CalendarComponentProps> {
 	render() {
@@ -61,75 +71,22 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 					}
 					allowSelectionOutOfRange={false}
 				/>
-				<View style={{ flex: 1 }}>
-					<View
-						style={{
-							backgroundColor: colors.variants.primary[5],
-							paddingHorizontal: 20,
-							paddingVertical: 10,
-							width: '100%',
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-						}}
-					>
-						<Text style={{ fontSize: 18, fontWeight: 500, color: colors.primary }}>
-							{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}
-						</Text>
+				<Container>
+					<Header>
+						<HeaderText>{format(addHours(new Date(currentDate), 12), 'EEEE, dd')}</HeaderText>
 						{role === 'admin' && !disableHoliday && (
-							<Pressable
-								onPress={handleAddHoliday}
-								disabled={loadingHoliday}
-								style={{
-									flexDirection: 'row',
-									alignItems: 'center',
-									gap: 10,
-									height: '100%',
-									paddingVertical: 10,
-									paddingHorizontal: 15,
-									borderRadius: 20,
-									backgroundColor: colors.variants.primary[1],
-								}}
-							>
-								<Text style={{ color: colors.variants.primary[5], fontWeight: 500, fontSize: 16 }}>
-									{isHoliday ? 'Remove Holiday' : 'Mark as Holiday'}
-								</Text>
+							<HolidayButton onPress={handleAddHoliday} disabled={loadingHoliday}>
+								<HolidayButtonText>{isHoliday ? 'Remove Holiday' : 'Mark as Holiday'}</HolidayButtonText>
 								{loadingHoliday ? (
 									<ActivityIndicator size={'small'} color={colors.variants.primary[0]} />
 								) : (
 									<MaterialCommunityIcons name='pin' size={24} color={colors.variants.primary[5]} />
 								)}
-							</Pressable>
+							</HolidayButton>
 						)}
-					</View>
-					{isHoliday && (
-						<Text
-							style={{
-								color: colors.variants.primary[5],
-								fontSize: 16,
-								fontWeight: 'bold',
-								width: '100%',
-								textAlign: 'center',
-								paddingHorizontal: 20,
-								paddingVertical: 10,
-							}}
-						>
-							This day has been marked as a holiday.
-						</Text>
-					)}
-					{errorHoliday && (
-						<Text
-							style={{
-								color: colors.variants.primary[5],
-								width: '100%',
-								textAlign: 'center',
-								paddingVertical: 10,
-								paddingHorizontal: 20,
-							}}
-						>
-							{errorHoliday}
-						</Text>
-					)}
+					</Header>
+					{isHoliday && <HolidayInfoText>This day has been marked as a holiday.</HolidayInfoText>}
+					{errorHoliday && <ErrorText>{errorHoliday}</ErrorText>}
 					{loadingStudentAttendanceByDay || loadingGetKarateClassesToAdminAttendance ? (
 						<Loader text='Loading attendance...' />
 					) : errorStudentAttendanceByDay ? (
@@ -137,7 +94,7 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 							<ErrorMsgBox>{errorStudentAttendanceByDay}</ErrorMsgBox>
 						</CenterContainer>
 					) : (
-						<View style={{ flex: 1, width: '100%' }}>
+						<AgendaContainer>
 							<ScrollView>
 								<FlatList
 									data={items}
@@ -149,9 +106,9 @@ class CalendarComponent extends PureComponent<CalendarComponentProps> {
 									)}
 								/>
 							</ScrollView>
-						</View>
+						</AgendaContainer>
 					)}
-				</View>
+				</Container>
 			</CalendarProvider>
 		)
 	}

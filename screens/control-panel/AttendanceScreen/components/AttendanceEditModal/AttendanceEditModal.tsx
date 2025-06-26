@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react-native'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -16,14 +16,44 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { format } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import colors from '@/theme/colors'
-import StudentNotesModal from './StudentNotesModal'
-import AddStudentModal from './AddStudentModal'
-import AttendanceStatusModal from './AttendanceStatusModal'
+import StudentNotesModal from '../StudentNotesModal'
+import AddStudentModal from '../AddStudentModal'
+import AttendanceStatusModal from '../AttendanceStatusModal'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import { TAttendanceStatus } from '@/shared/common-types'
 import { getMacroStatus, toggleBasicAttendance, isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
 import { Badge, BADGE_CONFIG } from '@/shared/Badge'
+import {
+	ClassName,
+	DayWeekText,
+	HeaderInfoContainer,
+	ModalContainer,
+	SummaryBadge,
+	SummaryBadges,
+	SummaryBadgeText,
+	SummaryBar,
+	SummaryContainer,
+	TotalText,
+	ErrorMessage,
+	StudentListItem,
+	StudentListItemContainer,
+	StudentListItemContent,
+	StudentInfoContainer,
+	StudentAvatar,
+	StudentTextContainer,
+	StudentName,
+	StudentLastName,
+	StudentBadgesContainer,
+	StudentActionsContainer,
+	NotesIndicator,
+	MoreOptionsButton,
+	Separator,
+	SeparatorLine,
+	FloatingButtonContainer,
+	FloatingButton,
+	FloatingButtonText,
+} from './AttendanceEditModal.styles'
 
 // Interface para el attendance item
 interface IAttendanceItem {
@@ -77,39 +107,6 @@ const AttendanceEditModal = ({
 		)
 		return format(attendanceDate, 'EEEE MMMM d', { locale: enUS })
 	}, [attendanceData?.date])
-
-	useEffect(() => {
-		return () => {
-			dispatch({ type: REGISTER_STUDENT_ATTENDANCE_RESET })
-			dispatch({ type: UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET })
-			closeModal()
-		}
-	}, [])
-
-	useEffect(() => {
-		if (studentAttendanceByDayList) {
-			const updatedAttendance = studentAttendanceByDayList?.attendances.find(
-				(item: any) => item.karateClass._id === attendanceData.karateClass._id,
-			)
-			if (updatedAttendance) {
-				handleSetAttendance(updatedAttendance)
-			}
-		} else if (attendanceData && attendanceData.karateClass) {
-			handleSetAttendance(attendanceData)
-		}
-	}, [studentAttendanceByDayList, attendanceData])
-
-	useEffect(() => {
-		if (errorRegisterStudentAttendance) {
-			setErrorMessage(errorRegisterStudentAttendance)
-		}
-	}, [errorRegisterStudentAttendance])
-
-	useEffect(() => {
-		if (errorUpdateStudentAttendanceById) {
-			setErrorMessage(errorUpdateStudentAttendanceById)
-		}
-	}, [errorUpdateStudentAttendanceById])
 
 	const handleSetAttendance = (data: any) => {
 		const attendanceItem: IAttendanceItem[] = []
@@ -177,6 +174,39 @@ const AttendanceEditModal = ({
 		setAttendance(attendanceItem)
 	}
 
+	useEffect(() => {
+		return () => {
+			dispatch({ type: REGISTER_STUDENT_ATTENDANCE_RESET })
+			dispatch({ type: UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET })
+			closeModal()
+		}
+	}, [])
+
+	useEffect(() => {
+		if (studentAttendanceByDayList) {
+			const updatedAttendance = studentAttendanceByDayList?.attendances.find(
+				(item: any) => item.karateClass._id === attendanceData.karateClass._id,
+			)
+			if (updatedAttendance) {
+				handleSetAttendance(updatedAttendance)
+			}
+		} else if (attendanceData && attendanceData.karateClass) {
+			handleSetAttendance(attendanceData)
+		}
+	}, [studentAttendanceByDayList, attendanceData])
+
+	useEffect(() => {
+		if (errorRegisterStudentAttendance) {
+			setErrorMessage(errorRegisterStudentAttendance)
+		}
+	}, [errorRegisterStudentAttendance])
+
+	useEffect(() => {
+		if (errorUpdateStudentAttendanceById) {
+			setErrorMessage(errorUpdateStudentAttendanceById)
+		}
+	}, [errorUpdateStudentAttendanceById])
+
 	const handleSaveAtendance = () => {
 		setErrorMessage(null)
 		if (!attendance?.length) {
@@ -208,6 +238,7 @@ const AttendanceEditModal = ({
 			dispatch(updateStudentAttendanceById(attendanceData?._id, { attendance: validAttendance }))
 		}
 	}
+
 	const handleSelectStudent = (studentId: string) => {
 		setErrorMessage(null)
 		setAttendance((prev) =>
@@ -219,6 +250,7 @@ const AttendanceEditModal = ({
 			}),
 		)
 	}
+
 	const handleOpenNotesModal = (student: any) => {
 		setSelectedStudentForNotes(student)
 		setOpenNotesModal(true)
@@ -255,6 +287,7 @@ const AttendanceEditModal = ({
 		setOpenStatusModal(false)
 		setSelectedStudentForStatus(null)
 	}
+
 	//MEMORIZE CONSTANTS
 	const { presents, absents, late } = useMemo(() => {
 		const presents = attendance?.filter((student) => isStudentPresent(student?.attendanceStatus))?.length
@@ -288,14 +321,11 @@ const AttendanceEditModal = ({
 		return format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
 	}, [attendanceData])
 
+
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View
-				style={{
-					flex: 1,
-					justifyContent: 'flex-start',
-				}}
-			>
+			<ModalContainer>
 				<ScreenHeader
 					label='Attendance Info'
 					labelButton={canEdit ? 'Save' : undefined}
@@ -306,233 +336,110 @@ const AttendanceEditModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
-					<Text style={{ fontSize: 18, fontWeight: '600', color: colors.variants.secondary[5], textAlign: 'center' }}>
-						{attendanceData?.karateClass?.name}
-					</Text>
-					<Text
-						style={{
-							fontSize: 16,
-							color: colors.variants.grey[4],
-							textTransform: 'capitalize',
-						}}
-					>
-						{dayAndWeekDay}
-					</Text>
-				</View>
-				<View style={{ width: '100%', paddingHorizontal: 20, paddingVertical: 10 }}>
-					<View
-						style={{
-							width: '100%',
-							backgroundColor: colors.variants.secondary[1],
-							padding: 10,
-							height: 50,
-							borderRadius: 20,
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-						}}
-					>
-						<View style={{ flexDirection: 'row', gap: 15 }}>
+				<HeaderInfoContainer>
+					<ClassName>{attendanceData?.karateClass?.name}</ClassName>
+					<DayWeekText>{dayAndWeekDay}</DayWeekText>
+				</HeaderInfoContainer>
+				<SummaryContainer>
+					<SummaryBar>
+						<SummaryBadges>
 							{Boolean(presents) && (
-								<View
-									style={{
-										backgroundColor: 'green',
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
-									}}
-								>
-									<Text style={{ color: colors.primary }}>{presents}</Text>
-								</View>
+								<SummaryBadge type='present'>
+									<SummaryBadgeText>{presents}</SummaryBadgeText>
+								</SummaryBadge>
 							)}
 							{Boolean(absents) && (
-								<View
-									style={{
-										backgroundColor: colors.variants.primary[5],
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
-									}}
-								>
-									<Text style={{ color: colors.primary }}>{absents}</Text>
-								</View>
+								<SummaryBadge type='absent'>
+									<SummaryBadgeText>{absents}</SummaryBadgeText>
+								</SummaryBadge>
 							)}
 							{Boolean(late) && (
-								<View
-									style={{
-										backgroundColor: colors.variants.primary[5],
-										padding: 5,
-										width: 30,
-										height: 30,
-										justifyContent: 'center',
-										alignItems: 'center',
-										borderRadius: '50%',
-									}}
-								>
-									<Text style={{ color: colors.primary }}>{late}</Text>
-								</View>
+								<SummaryBadge type='late'>
+									<SummaryBadgeText>{late}</SummaryBadgeText>
+								</SummaryBadge>
 							)}
-						</View>
-						<Text style={{ color: colors.variants.secondary[5], fontSize: 18, fontWeight: 500 }}>
-							Total: {attendance?.length}
-						</Text>
-					</View>
-				</View>
-				{errorMessage && (
-					<Text
-						style={{
-							textAlign: 'center',
-							fontSize: 13,
-							color: colors.variants.primary[5],
-						}}
-					>
-						{errorMessage}
-					</Text>
-				)}
+						</SummaryBadges>
+						<TotalText>Total: {attendance?.length}</TotalText>
+					</SummaryBar>
+				</SummaryContainer>
+				{errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 				<ScrollView>
 					<FlatList
 						nestedScrollEnabled={true}
 						scrollEnabled={false}
 						data={attendance.sort((a, b) => a?.name?.localeCompare(b?.name))}
 						renderItem={({ item, index }) => (
-							<>
-								<Pressable
-									onPress={() => handleSelectStudent(item.student)}
-									disabled={!canEdit || loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
-								>
-									<View
-										style={{
-											flex: 1,
-											paddingHorizontal: 20,
-											paddingVertical: 8,
-											alignItems: 'flex-start',
-										}}
-									>
-										<View
-											style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-										>
-											<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-												<Image
-													source={require('@/assets/img/default-avatar.png')}
-													style={{ width: 50, height: 50, borderRadius: 50 }}
-													resizeMode='contain'
-												/>
-												<View
-													style={{
-														justifyContent: 'center',
-														alignItems: 'flex-start',
-														width: '100%',
-														flexDirection: 'column',
-													}}
-												>
-													<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
-														{capitalizeWords(item.name)}
-													</Text>
-													<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
-														{capitalizeWords(item?.lastName)}
-													</Text>
-
-													{/* Badges Container */}
-													<View style={{ flexDirection: 'row', marginTop: 4, gap: 4 }}>
-														{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
-														{item.isDayOnly && <Badge {...BADGE_CONFIG.dayOnly} />}
-														{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
-														{item.isRecovery && <Badge {...BADGE_CONFIG.recovery} />}
-													</View>
-												</View>
-											</View>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-												{/* Notes Indicator */}
-												{item.observations && (
-													<View
-														style={{
-															padding: 5,
-															borderRadius: 5,
-															backgroundColor: colors.variants.secondary[1],
-														}}
-													>
-														<MaterialCommunityIcons name='pencil' size={16} color={colors.variants.primary[5]} />
-													</View>
-												)}
-
-												{/* Attendance Status Icon */}
-												<StatusIcon status={item.attendanceStatus} size={24} />
-
-												{/* Three Dots Menu */}
-												<Pressable
-													onPress={() => handleOpenStatusModal(item)}
-													disabled={!canEdit}
-													style={{
-														padding: 5,
-														borderRadius: 5,
-														backgroundColor: colors.variants.secondary[1],
-														opacity: canEdit ? 1 : 0.5,
-													}}
-												>
-													<MaterialCommunityIcons name='dots-horizontal' size={18} color={colors.variants.grey[4]} />
-												</Pressable>
-											</View>
-										</View>
-									</View>
-								</Pressable>
-								{index + 1 !== attendance.length && (
-									<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
-										<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
-									</View>
-								)}
-							</>
-						)}
-						keyExtractor={(item) => item.student}
-					/>
-
-					{/* Floating Add Student Button */}
-					{canEdit && (
-						<View style={{ alignItems: 'center', paddingVertical: 20 }}>
-							<Pressable
-								onPress={() => setOpenAddStudentModal(true)}
-								style={{
-									backgroundColor: colors.variants.primary[4],
-									width: 60,
-									height: 60,
-									borderRadius: 30,
-									justifyContent: 'center',
-									alignItems: 'center',
-									shadowColor: '#000',
-									shadowOffset: {
-										width: 0,
-										height: 2,
-									},
-									shadowOpacity: 0.25,
-									shadowRadius: 3.84,
-									elevation: 5,
-								}}
+						<>
+							<StudentListItem
+								onPress={() => handleSelectStudent(item.student)}
+								disabled={!canEdit || loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 							>
-								<MaterialCommunityIcons name='account-plus' size={28} color={colors.primary} />
-							</Pressable>
-							<Text
-								style={{
-									marginTop: 8,
-									fontSize: 12,
-									color: colors.variants.grey[4],
-									textAlign: 'center',
-								}}
-							>
-								Add Student
-							</Text>
-						</View>
+								<StudentListItemContainer>
+									<StudentListItemContent>
+										<StudentInfoContainer>
+											<StudentAvatar
+												source={require('@/assets/img/default-avatar.png')}
+												resizeMode='contain'
+											/>
+											<StudentTextContainer>
+												<StudentName numberOfLines={1}>
+													{capitalizeWords(item.name)}
+												</StudentName>
+												<StudentLastName numberOfLines={1}>
+													{capitalizeWords(item?.lastName)}
+												</StudentLastName>
+
+												{/* Badges Container */}
+												<StudentBadgesContainer>
+													{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
+													{item.isDayOnly && <Badge {...BADGE_CONFIG.dayOnly} />}
+													{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
+													{item.isRecovery && <Badge {...BADGE_CONFIG.recovery} />}
+												</StudentBadgesContainer>
+											</StudentTextContainer>
+										</StudentInfoContainer>
+										<StudentActionsContainer>
+											{/* Notes Indicator */}
+											{item.observations && (
+												<NotesIndicator>
+													<MaterialCommunityIcons name='pencil' size={14} color={colors.variants.primary[5]} />
+												</NotesIndicator>
+											)}
+
+											{/* Attendance Status Icon */}
+											<StatusIcon status={item.attendanceStatus} size={24} />
+
+											{/* Three Dots Menu */}
+											<MoreOptionsButton onPress={() => handleOpenStatusModal(item)} disabled={!canEdit}>
+												<MaterialCommunityIcons name='dots-horizontal' size={16} color={colors.variants.grey[4]} />
+											</MoreOptionsButton>
+										</StudentActionsContainer>
+									</StudentListItemContent>
+								</StudentListItemContainer>
+							</StudentListItem>
+							{index + 1 !== attendance.length && (
+								<Separator>
+									<SeparatorLine />
+								</Separator>
+							)}
+						</>
 					)}
+					keyExtractor={(item) => item.student}
+				/>
+
+				{/* Floating Add Student Button */}
+				{canEdit && (
+					<FloatingButtonContainer>
+											<FloatingButton onPress={() => setOpenAddStudentModal(true)}>
+						<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
+					</FloatingButton>
+						<FloatingButtonText>Add Student</FloatingButtonText>
+					</FloatingButtonContainer>
+				)}
 				</ScrollView>
-			</View>
+			</ModalContainer>
 
 			{/* Student Notes Modal */}
-
 			<StudentNotesModal
 				visible={openNotesModal}
 				onClose={() => {

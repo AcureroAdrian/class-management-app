@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Modal, Pressable, ActivityIndicator, Platform } from 'react-native'
+import { Modal, Pressable, ActivityIndicator, Platform } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format, addDays } from 'date-fns'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import colors from '@/theme/colors'
+import * as S from './styles'
 
 interface IStudentDeleteModalProps {
 	openModal: boolean
@@ -61,8 +62,6 @@ const StudentDeleteModal = ({
 	const buttonText = scheduledDate ? 'Schedule Delete' : 'Delete Now'
 	const minDate = addDays(new Date(), 1) // Mínimo 1 día en el futuro
 
-	// Si el DateTimePicker está abierto, no mostrar el modal principal
-
 	return (
 		<Modal
 			visible={openModal}
@@ -71,37 +70,21 @@ const StudentDeleteModal = ({
 			transparent
 			statusBarTranslucent={true}
 		>
-			<View
-				style={{
-					flex: 1,
-					backgroundColor: 'rgba(0, 0, 0, 0.5)',
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<View
-					style={{
-						backgroundColor: '#fff',
-						width: '85%',
-						maxHeight: 600,
-						height: 'auto',
-						padding: 20,
-						borderRadius: 8,
-					}}
-				>
-					<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+			<S.ModalOverlay>
+				<S.ModalContainer>
+					<S.Title>
 						{existingScheduledDate ? 'Modify Scheduled Deletion' : 'Delete Student'}
-					</Text>
-					<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0], marginVertical: 10 }} />
+					</S.Title>
+					<S.Separator />
 
-					<Text style={{ fontSize: 16, marginBottom: 20, lineHeight: 22 }}>
+					<S.Description>
 						{existingScheduledDate 
 							? `This student is scheduled for deletion on ${format(new Date(existingScheduledDate), 'MMM dd, yyyy')}. You can modify the date or delete immediately.`
 							: title
 						}
-					</Text>
+					</S.Description>
 
-					<View style={{ marginBottom: 20 }}>
+					<S.InputContainer>
 						<CustomInputForm
 							label='Schedule Deletion (Optional)'
 							placeholder='Select date to schedule deletion'
@@ -112,63 +95,44 @@ const StudentDeleteModal = ({
 							icon='calendar'
 						/>
 						{scheduledDate && (
-							<Pressable onPress={() => setScheduledDate(undefined)} style={{ marginTop: 8, alignSelf: 'flex-start' }}>
-								<Text style={{ color: colors.brand, fontSize: 14, textDecorationLine: 'underline' }}>
+							<S.ClearDateButton onPress={() => setScheduledDate(undefined)}>
+								<S.ClearDateText>
 									Clear date (delete immediately)
-								</Text>
-							</Pressable>
+								</S.ClearDateText>
+							</S.ClearDateButton>
 						)}
-					</View>
+					</S.InputContainer>
 
 					{scheduledDate && (
-						<View
-							style={{ backgroundColor: colors.variants.secondary[0], padding: 12, borderRadius: 6, marginBottom: 15 }}
-						>
-							<Text style={{ fontSize: 14, color: colors.variants.secondary[4], textAlign: 'center' }}>
+						<S.ScheduledDateContainer>
+							<S.ScheduledDateText>
 								Scheduled for: {format(scheduledDate, 'MMM dd, yyyy')}
-							</Text>
-						</View>
+							</S.ScheduledDateText>
+						</S.ScheduledDateContainer>
 					)}
 
 					{errorDelete && (
-						<Text style={{ color: colors.variants.primary[5], marginBottom: 15, fontSize: 14 }}>{errorDelete}</Text>
+						<S.ErrorText>{errorDelete}</S.ErrorText>
 					)}
 
-					<View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
+					<S.ButtonsContainer>
 						<Pressable onPress={handleClose} disabled={loadingDelete}>
-							<View
-								style={{
-									paddingVertical: 12,
-									paddingHorizontal: 20,
-									borderColor: colors.brand,
-									borderWidth: 1,
-									borderRadius: 6,
-								}}
-							>
-								<Text style={{ color: colors.brand, fontSize: 16 }}>Cancel</Text>
-							</View>
+							<S.CancelButton>
+								<S.CancelButtonText>Cancel</S.CancelButtonText>
+							</S.CancelButton>
 						</Pressable>
 						<Pressable onPress={handleConfirmDeletion} disabled={loadingDelete}>
-							<View
-								style={{
-									paddingVertical: 12,
-									paddingHorizontal: 20,
-									backgroundColor: scheduledDate ? colors.variants.secondary[4] : colors.brand,
-									borderRadius: 6,
-									minWidth: 120,
-									alignItems: 'center',
-								}}
-							>
+							<S.ConfirmButton scheduled={!!scheduledDate}>
 								{loadingDelete ? (
 									<ActivityIndicator size={'small'} color={'#fff'} />
 								) : (
-									<Text style={{ color: '#fff', fontSize: 16, fontWeight: '500' }}>{buttonText}</Text>
+									<S.ConfirmButtonText>{buttonText}</S.ConfirmButtonText>
 								)}
-							</View>
+							</S.ConfirmButton>
 						</Pressable>
-					</View>
-				</View>
-			</View>
+					</S.ButtonsContainer>
+				</S.ModalContainer>
+			</S.ModalOverlay>
 
 			{showDatePicker && (
 				<DateTimePickerModal

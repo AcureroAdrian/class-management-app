@@ -8,7 +8,7 @@ export interface IStudent {
 	scheduledDeletionDate?: string
 	isAdmin: boolean
 	isTeacher: boolean
-	isTrial: boolean
+	isTrial?: boolean
 }
 
 export interface IFullStudent extends Omit<IStudent, '_id'> {

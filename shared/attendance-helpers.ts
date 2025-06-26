@@ -1,12 +1,12 @@
 import { TAttendanceStatus } from './common-types'
 
-// Determinar macro-estado (presente o ausente)
+// Determine macro status (present or absent)
 export function getMacroStatus(status: TAttendanceStatus): 'present' | 'absent' {
 	const presentStates: TAttendanceStatus[] = ['present', 'good-behavior', 'bad-behavior', 'late']
 	return presentStates.includes(status) ? 'present' : 'absent'
 }
 
-// Obtener color por estado
+// Get color by status
 export function getStatusColor(status: TAttendanceStatus): string {
 	switch (status) {
 		case 'present':
@@ -16,9 +16,9 @@ export function getStatusColor(status: TAttendanceStatus): string {
 		case 'late':
 			return 'blue'
 		case 'good-behavior':
-			return '#FFA500' // naranja/amarillo
+			return '#FFA500' // orange/yellow
 		case 'bad-behavior':
-			return '#8B4513' // marrón
+			return '#8B4513' // brown
 		case 'sick':
 			return 'purple'
 		default:
@@ -26,7 +26,7 @@ export function getStatusColor(status: TAttendanceStatus): string {
 	}
 }
 
-// Obtener icono por estado (para AntDesign)
+// Get icon by status (for AntDesign)
 export function getStatusIcon(status: TAttendanceStatus): string {
 	switch (status) {
 		case 'present':
@@ -46,7 +46,7 @@ export function getStatusIcon(status: TAttendanceStatus): string {
 	}
 }
 
-// Obtener información del icono (librería + nombre)
+// Get icon info (library + name)
 export function getStatusIconInfo(status: TAttendanceStatus): { library: 'AntDesign' | 'FontAwesome'; name: string } {
 	switch (status) {
 		case 'present':
@@ -66,32 +66,32 @@ export function getStatusIconInfo(status: TAttendanceStatus): { library: 'AntDes
 	}
 }
 
-// Obtener texto descriptivo por estado
+// Get descriptive text by status
 export function getStatusText(status: TAttendanceStatus): string {
 	switch (status) {
 		case 'present':
-			return 'Asistió'
+			return 'Attended'
 		case 'absent':
-			return 'No Asistió'
+			return 'Did Not Attend'
 		case 'late':
-			return 'Tardanza'
+			return 'Late'
 		case 'good-behavior':
-			return 'Buen Comportamiento'
+			return 'Good Behavior'
 		case 'bad-behavior':
-			return 'Mal Comportamiento'
+			return 'Bad Behavior'
 		case 'sick':
-			return 'Enfermo'
+			return 'Sick'
 		default:
-			return 'Desconocido'
+			return 'Unknown'
 	}
 }
 
-// Verificar si un estudiante está presente (macro-estado)
+// Check if a student is present (macro status)
 export function isStudentPresent(status: TAttendanceStatus): boolean {
 	return getMacroStatus(status) === 'present'
 }
 
-// Alternar entre los estados básicos (para el toggle principal)
+// Toggle between basic statuses (for main toggle)
 export function toggleBasicAttendance(status: TAttendanceStatus): TAttendanceStatus {
 	return getMacroStatus(status) === 'present' ? 'absent' : 'present'
 } 

@@ -27,12 +27,13 @@ interface IUser {
 }
 interface IStudent {
 	_id: string
+	userId: string
 	name: string
 	lastName: string
 	scheduledDeletionDate?: string
 	isAdmin: boolean
 	isTeacher: boolean
-	isTrial?: boolean
+	isTrial: boolean
 }
 
 interface IUserLogin {

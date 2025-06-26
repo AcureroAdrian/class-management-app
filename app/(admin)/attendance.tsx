@@ -1,5 +1,5 @@
 import React from 'react'
-import AttendanceScreen from '@/screens/control-panel/AttendanceScreen/AttendanceScreen'
+import AttendanceScreen from '@/screens/control-panel/AttendanceScreen'
 
 export default function attendance() {
 	return <AttendanceScreen role='admin' />

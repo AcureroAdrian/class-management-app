@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useSegments } from 'expo-router'
 import { format } from 'date-fns'
@@ -6,6 +6,7 @@ import { DateData } from 'react-native-calendars'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CalendarComponent from './components/CalendarComponent'
 import AttendanceEditModal from './components/AttendanceEditModal'
+import StudentNotesModal from './components/StudentNotesModal'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
 import { TDaysOfWeek, TUserRole } from '@/shared/common-types'
 import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
@@ -16,6 +17,7 @@ import { deleteHolidayById, registerHolidayByDate } from '@/redux/actions/holida
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { DELETE_HOLIDAY_BY_ID_RESET, REGISTER_HOLIDAY_BY_DATE_RESET } from '@/redux/constants/holidayConstants'
 import { isStudentPresent } from '@/shared/attendance-helpers'
+import { AttendanceScreenContainer } from './styles'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -216,29 +218,32 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		}
 	}, [successDeleteHolidayById])
 
-	const handleDayChange = (date: string) => {
+	const handleDayChange = useCallback((date: string) => {
 		setCurrentDate(date)
-	}
-	const handleChangeMonth = (date: DateData) => {
+	}, [])
+
+	const handleChangeMonth = useCallback((date: DateData) => {
 		setMonth(date.month)
 		setYear(date.year)
-	}
-	const handleOpenAttendance = (attendance: any) => {
+	}, [])
+
+	const handleOpenAttendance = useCallback((attendance: any) => {
 		setAttendanceData(attendance)
 		setOpenAttendanceEditModal(true)
-	}
-	const handleAddHoliday = () => {
+	}, [])
+
+	const handleAddHoliday = useCallback(() => {
 		if (holidayId?.length) {
 			dispatch(deleteHolidayById(holidayId))
 		} else {
 			const [year, month, day] = currentDate.split('-').map(Number)
 			dispatch(registerHolidayByDate({ year, month, day }))
 		}
-	}
+	}, [holidayId, currentDate, dispatch])
 
 	return (
 		<>
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+			<AttendanceScreenContainer>
 				<ScreenHeader label='Attendance' />
 				<CalendarComponent
 					role={role}
@@ -258,7 +263,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 					loadingHoliday={loadingRegisterHolidayByDate || loadingDeleteHolidayById}
 					errorHoliday={errorRegisterHolidayByDate || errorDeleteHolidayById}
 				/>
-			</View>
+			</AttendanceScreenContainer>
 			{openAttendanceEditModal && (
 				<AttendanceEditModal
 					openModal={openAttendanceEditModal}
