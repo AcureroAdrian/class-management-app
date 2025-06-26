@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text, ScrollView } from 'react-native'
-import { format, isDate } from 'date-fns'
+import { isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import AgeRangeInput from './AgeRangeInput'
-import AssignedStudentsModal from './AssignedStudentsModal'
+import AgeRangeInput from '../AgeRangeInput'
+import AssignedStudentsModal from '../AssignedStudentsModal'
 import {
 	levelsInitialValues,
 	locationsInitialValues,
 	weekDaysInitialValues,
-} from '../helpers/karate-classes-initial-values'
-import getDataToUpdate from '../helpers/get-data-to-update'
+} from '../../helpers/karate-classes-initial-values'
+import getDataToUpdate from '../../helpers/get-data-to-update'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
 import { TDaysOfWeek, TLocation, TUserLevel } from '@/shared/common-types'
 import capitalizeWords from '@/shared/capitalize-words'
@@ -23,6 +22,8 @@ import { getkarateClassById, updatekarateClassById } from '@/redux/actions/karat
 import { GET_KARATE_CLASS_BY_ID_RESET, UPDATE_KARATE_CLASS_BY_ID_RESET } from '@/redux/constants/karateClassConstants'
 import colors from '@/theme/colors'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import * as S from './ClassEditModal.styles'
+import { format } from 'date-fns'
 
 const ClassEditModal = ({
 	openModal,
@@ -144,8 +145,8 @@ const ClassEditModal = ({
 	}
 
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1, justifyContent: 'flex-start' }}>
+		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<S.ModalView>
 				<ScreenHeader
 					label='Class Info'
 					labelButton='Save'
@@ -156,25 +157,19 @@ const ClassEditModal = ({
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+				<S.ContentContainer>
 					{loadingGetKarateClassById ? (
-						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+						<S.LoaderView>
 							<Loader text='Loading class info' />
-						</View>
+						</S.LoaderView>
 					) : (
-						<View style={{ flex: 1, width: '100%' }}>
+						<S.FormContainer>
 							<KeyboardAvoidingWrapper>
-								<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+								<S.StyledScrollView>
 									{errorMessage && (
-										<Text
-											style={{
-												textAlign: 'center',
-												fontSize: 13,
-												color: 'red',
-											}}
-										>
+										<S.ErrorText>
 											{errorMessage}
-										</Text>
+										</S.ErrorText>
 									)}
 									<CustomInputForm
 										label='Class Name'
@@ -242,12 +237,12 @@ const ClassEditModal = ({
 										editable={false}
 										onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
 									/>
-								</ScrollView>
+								</S.StyledScrollView>
 							</KeyboardAvoidingWrapper>
-						</View>
+						</S.FormContainer>
 					)}
-				</View>
-			</View>
+				</S.ContentContainer>
+			</S.ModalView>
 			{showDate && (
 				<DateTimePickerModal
 					isVisible={showDate}
@@ -297,7 +292,7 @@ const ClassEditModal = ({
 					handleSaveOption={(selected: string) => setLocation(selected as TLocation)}
 				/>
 			)}
-		</Modal>
+		</S.ModalContainer>
 	)
 }
 

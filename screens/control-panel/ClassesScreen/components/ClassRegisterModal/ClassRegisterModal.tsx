@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { View, Modal, Text, ScrollView } from 'react-native'
 import { format, isDate } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
-import AssignedStudentsModal from './AssignedStudentsModal'
-import AgeRangeInput from './AgeRangeInput'
+import AssignedStudentsModal from '../AssignedStudentsModal'
+import AgeRangeInput from '../AgeRangeInput'
 import {
 	levelsInitialValues,
 	locationsInitialValues,
 	weekDaysInitialValues,
-} from '../helpers/karate-classes-initial-values'
+} from '../../helpers/karate-classes-initial-values'
 import { shortDaysOfWeek, shortLevels } from '@/shared/short-values'
 import { TDaysOfWeek, TLocation, TUserLevel } from '@/shared/common-types'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { registerKarateClass } from '@/redux/actions/karateClassActions'
 import { REGISTER_KARATE_CLASS_RESET } from '@/redux/constants/karateClassConstants'
-import colors from '@/theme/colors'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import * as S from './ClassRegisterModal.styles'
 
 const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -106,8 +105,8 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	}
 
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1, width: '100%', justifyContent: 'flex-start' }}>
+		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<S.ModalView>
 				<ScreenHeader
 					label='New Class'
 					labelButton='Save'
@@ -118,19 +117,13 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					showBackButton={true}
 					handleBack={closeModal}
 				/>
-				<View style={{ flex: 1, width: '100%' }}>
+				<S.ContentContainer>
 					<KeyboardAvoidingWrapper>
-						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+						<S.StyledScrollView>
 							{errorMessage && (
-								<Text
-									style={{
-										textAlign: 'center',
-										fontSize: 13,
-										color: 'red',
-									}}
-								>
+								<S.ErrorText>
 									{errorMessage}
-								</Text>
+								</S.ErrorText>
 							)}
 							<CustomInputForm
 								label='Class Name'
@@ -198,10 +191,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 								onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
 								icon='map'
 							/>
-						</ScrollView>
+						</S.StyledScrollView>
 					</KeyboardAvoidingWrapper>
-				</View>
-			</View>
+				</S.ContentContainer>
+			</S.ModalView>
 			{showDate && (
 				<DateTimePickerModal
 					isVisible={showDate}
@@ -251,7 +244,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					handleSaveOption={(selected: string) => setLocation(selected as TLocation)}
 				/>
 			)}
-		</Modal>
+		</S.ModalContainer>
 	)
 }
 

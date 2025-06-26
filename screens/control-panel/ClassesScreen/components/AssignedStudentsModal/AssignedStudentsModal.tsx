@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, FlatList, Modal, Button, Pressable } from 'react-native'
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
+import { ScrollView, FlatList, Pressable } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
-import { IStudent } from '../helpers/karate-classes-interfaces'
-import PickStudentsModal from './PickStudentsModal'
+import { IStudent } from '../../helpers/karate-classes-interfaces'
+import PickStudentsModal from '../PickStudentsModal'
 import capitalizeWords from '@/shared/capitalize-words'
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store'
 import { getStudentUsers } from '@/redux/actions/userActions'
 import { GET_STUDENT_USERS_RESET } from '@/redux/constants/userConstants'
 import Loader from '@/components/Loader/Loader'
 import colors from '@/theme/colors'
+import * as S from './AssignedStudentsModal.styles'
 
 const AssignedStudentsModal = ({
 	openModal,
@@ -63,15 +64,8 @@ const AssignedStudentsModal = ({
 	}
 
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View
-				style={{
-					flex: 1,
-					flexDirection: 'column',
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-				}}
-			>
+		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+			<S.ModalContent>
 				<ScreenHeader
 					label='Class Students'
 					labelButton='Add'
@@ -81,40 +75,24 @@ const AssignedStudentsModal = ({
 					showBackButton={true}
 					handleBack={handleSaveStudentsSelected}
 				/>
-				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+				<S.ContentContainer>
 					{loadingGetStudentUsers ? (
-						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+						<S.LoaderView>
 							<Loader text='Loading students' />
-						</View>
+						</S.LoaderView>
 					) : errorGetStudentUsers && !students?.length ? (
-						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: colors.variants.primary[5] }}>{errorGetStudentUsers}</Text>
-						</View>
+						<S.ErrorView>
+							<S.ErrorText>{errorGetStudentUsers}</S.ErrorText>
+						</S.ErrorView>
 					) : !studentsSelected?.length ? (
-						<View
-							style={{
-								alignItems: 'center',
-								justifyContent: 'center',
-								width: '100%',
-								height: '100%',
-								padding: 20,
-								gap: 20,
-							}}
-						>
-							<Text style={{ fontSize: 16, color: colors.variants.primary[5] }}>No students assigned</Text>
-							<Pressable onPress={() => setOpenPickStudentsModal(true)}>
-								<View
-									style={{
-										backgroundColor: colors.variants.secondary[5],
-										paddingVertical: 10,
-										paddingHorizontal: 40,
-										borderRadius: 10,
-									}}
-								>
-									<Text style={{ color: colors.primary, fontSize: 16, fontWeight: 500 }}>Pick Students</Text>
-								</View>
-							</Pressable>
-						</View>
+						<S.NoStudentsView>
+							<S.NoStudentsText>No students assigned</S.NoStudentsText>
+							<S.PickStudentsButton onPress={() => setOpenPickStudentsModal(true)}>
+								<S.PickStudentsButtonView>
+									<S.PickStudentsButtonText>Pick Students</S.PickStudentsButtonText>
+								</S.PickStudentsButtonView>
+							</S.PickStudentsButton>
+						</S.NoStudentsView>
 					) : (
 						<ScrollView>
 							<FlatList
@@ -122,60 +100,42 @@ const AssignedStudentsModal = ({
 								scrollEnabled={false}
 								data={studentsSelected.sort((a, b) => a?.name?.localeCompare(b?.name))}
 								renderItem={({ item, index }) => (
-									<View style={{ paddingTop: 12 }}>
-										<View
-											style={{
-												flexDirection: 'row',
-												alignItems: 'center',
-												width: '100%',
-												flex: 1,
-												justifyContent: 'space-between',
-												paddingHorizontal: 20,
-												paddingVertical: 8,
-											}}
-										>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, width: '100%', flex: 1 }}>
-												<Image
+									<S.StudentItemView>
+										<S.StudentItemContent>
+											<S.StudentInfoView>
+												<S.StudentAvatar
 													source={require('@/assets/img/default-avatar.png')}
-													style={{ width: 50, height: 50, borderRadius: 50 }}
 													resizeMode='contain'
 												/>
-												<View
-													style={{
-														justifyContent: 'center',
-														alignItems: 'flex-start',
-														width: '100%',
-														flexDirection: 'column',
-													}}
-												>
-													<Text numberOfLines={1} style={{ fontSize: 16, color: colors.view.black }}>
+												<S.StudentNameView>
+													<S.StudentName numberOfLines={1}>
 														{capitalizeWords(item.name)}
-													</Text>
-													<Text numberOfLines={1} style={{ fontSize: 14, color: colors.variants.grey[4] }}>
+													</S.StudentName>
+													<S.StudentLastName numberOfLines={1}>
 														{capitalizeWords(item?.lastName)}
-													</Text>
-												</View>
-											</View>
+													</S.StudentLastName>
+												</S.StudentNameView>
+											</S.StudentInfoView>
 											<MaterialCommunityIcons
 												name='close'
 												size={24}
 												color={colors.variants.primary[5]}
 												onPress={() => handleDeleteStudent(item._id)}
 											/>
-										</View>
+										</S.StudentItemContent>
 										{index + 1 !== studentsSelected.length && (
-											<View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 20 }}>
-												<View style={{ width: '100%', height: 1, backgroundColor: colors.variants.grey[0] }} />
-											</View>
+											<S.Separator>
+												<S.SeparatorLine />
+											</S.Separator>
 										)}
-									</View>
+									</S.StudentItemView>
 								)}
 								keyExtractor={(item) => item._id}
 							/>
 						</ScrollView>
 					)}
-				</View>
-			</View>
+				</S.ContentContainer>
+			</S.ModalContent>
 			{openPickStudentsModal && (
 				<PickStudentsModal
 					openModal={openPickStudentsModal}
@@ -185,7 +145,7 @@ const AssignedStudentsModal = ({
 					handleSelectStudent={handleSelectStudent}
 				/>
 			)}
-		</Modal>
+		</S.ModalContainer>
 	)
 }
 

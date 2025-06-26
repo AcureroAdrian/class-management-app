@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text } from 'react-native'
-import { StyledCustomInputlabel, StyledCustomTextInput } from '@/theme/styles'
-import colors from '@/theme/colors'
+import { StyledCustomInputlabel } from '@/theme/styles'
+import * as S from './AgeRangeInput.styles'
 
 const AgeRangeInput = ({
 	minAge,
@@ -61,29 +61,27 @@ const AgeRangeInput = ({
 	}, [minValue, maxValue])
 
 	return (
-		<View style={{ width: '100%' }}>
+		<S.AgeRangeContainer>
 			<StyledCustomInputlabel>Age Range</StyledCustomInputlabel>
-			<View style={{ flexDirection: 'row', width: '100%', gap: 20, alignItems: 'center' }}>
-				<StyledCustomTextInput
+			<S.InputContainer>
+				<S.AgeInput
 					keyboardType='numeric'
 					placeholder='min age'
 					value={String(minValue || '')}
 					onChangeText={handleMinAgeChange}
-					style={{ width: 80, paddingRight: 0, textAlign: 'center' }}
 					onBlur={handleMinAgeBlur}
 				/>
-				<Text>-</Text>
-				<StyledCustomTextInput
+				<S.Separator>-</S.Separator>
+				<S.AgeInput
 					keyboardType='numeric'
 					value={String(maxValue)}
 					placeholder='max age'
 					onChangeText={handleMaxAgeChange}
 					onBlur={handleMaxAgeBlur}
-					style={{ width: 80, paddingRight: 0, textAlign: 'center' }}
 				/>
-				<Text style={{ color: colors.variants.secondary[5], fontSize: 16, fontWeight: 500 }}>{rangeText}</Text>
-			</View>
-		</View>
+				<S.RangeText>{rangeText}</S.RangeText>
+			</S.InputContainer>
+		</S.AgeRangeContainer>
 	)
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { View, Text, ScrollView, FlatList, Pressable } from 'react-native'
+import { ScrollView, FlatList, Pressable } from 'react-native'
 import { useSegments } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
@@ -26,6 +26,7 @@ import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
 import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
 import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
 import { formatClassSchedule } from './helpers/format-class-schedule'
+import * as S from './styles'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -215,14 +216,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 
 	return (
 		<>
-			<View
-				style={{
-					flex: 1,
-					width: '100%',
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-				}}
-			>
+			<S.ScreenContainer>
 				<ScreenHeader
 					label='Classes'
 					labelButton={role === 'admin' ? 'Add' : undefined}
@@ -230,31 +224,31 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					disabledButton={loadingKarateClassesByAdmin || loadingKarateClassesForStudent}
 					iconName={role === 'admin' ? 'plus' : undefined}
 				/>
-				<View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
+				<S.ContentContainer>
 					{loadingKarateClassesByAdmin || loadingKarateClassesForStudent ? (
-						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+						<S.LoaderContainer>
 							<Loader text='Loading classes' />
-						</View>
+						</S.LoaderContainer>
 					) : (errorKarateClassesByAdmin || errorKarateClassesForStudent) && !karateClasses?.length ? (
-						<View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-							<Text style={{ fontSize: 16, color: 'red' }}>
+						<S.ErrorContainer>
+							<S.ErrorText>
 								{errorKarateClassesByAdmin || errorKarateClassesForStudent}
-							</Text>
-						</View>
+							</S.ErrorText>
+						</S.ErrorContainer>
 					) : (
 						<>
 							{role === 'student' && (
-								<View style={{ width: '100%', alignItems: 'flex-start', marginVertical: 10, paddingHorizontal: 20 }}>
-									<Text style={{ fontSize: 16, fontWeight: 500, color: colors.red }}>
+								<S.StudentInfoContainer>
+									<S.RecoveryCreditsText>
 										You have {recoveryClassCredits} absences to recover in the following classes
-									</Text>
-									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-										<Text style={{ fontSize: 16, fontWeight: 500 }}>Reserved: </Text>
+									</S.RecoveryCreditsText>
+									<S.ReservedInfoContainer>
+										<S.ReservedText>Reserved: </S.ReservedText>
 										<MaterialCommunityIcons name='star' size={20} color={colors.view.tertiary} />
-									</View>
-								</View>
+									</S.ReservedInfoContainer>
+								</S.StudentInfoContainer>
 							)}
-							<View style={{ width: '100%', flex: 1, alignItems: 'center', paddingVertical: 1 }}>
+							<S.ListContainer>
 								<ScrollView>
 									<FlatList
 										data={karateClasses}
@@ -263,121 +257,68 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 										scrollEnabled={false}
 										renderItem={({ item, index }) => (
 											<>
-												<Pressable
+												<S.ClassItem
 													key={item._id}
 													onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
 													onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
-													style={{
-														width: '100%',
-														flexDirection: 'row',
-														alignItems: 'center',
-														justifyContent: 'space-between',
-														padding: 20,
-													}}
 												>
-													<View style={{ width: '60%', alignItems: 'flex-start', gap: 10 }}>
-														<Text style={{ fontSize: 18, color: colors.view.black }}>
+													<S.ClassInfo>
+														<S.ClassName>
 															{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
-														</Text>
-														<Text style={{ fontSize: 16, color: colors.variants.grey[4] }}>
+														</S.ClassName>
+														<S.ClassDescription>
 															{item.description
 																? item?.description?.length > 20
 																	? item.description.substring(0, 20) + '...'
 																	: item.description
 																: 'No description'}
-														</Text>
-													</View>
-													<View
-														style={{
-															flexDirection: 'row',
-															justifyContent: 'flex-end',
-															alignItems: 'center',
-															width: '40%',
-														}}
-													>
-														<View
-															style={{
-																alignItems: 'flex-end',
-																paddingVertical: 10,
-															}}
-														>
-															<Text style={{ color: item.students.length ? '' : colors.view.secondary }}>
+														</S.ClassDescription>
+													</S.ClassInfo>
+													<S.ClassDetails>
+														<S.ClassDetailsInfo>
+															<S.StudentsCount hasStudents={Boolean(item.students.length)}>
 																{item.students.length} student{item.students.length ? 's' : ''}
-															</Text>
+															</S.StudentsCount>
 															{item.weekDays && item.weekDays.length > 0 && item.startTime && (
-																<Text style={{ fontSize: 12, marginTop: 2, color: colors.view.grey[5] }}>
+																<S.ScheduleText>
 																	{formatClassSchedule(item.weekDays, item.startTime, role)}
-																</Text>
+																</S.ScheduleText>
 															)}
 															{item.location && (
-																<Text
-																	style={{
-																		fontSize: 12,
-																		marginTop: 2,
-																		color:
-																			item.location === 'spring'
-																				? colors.variants.primary[4]
-																				: item.location === 'katy'
-																					? colors.variants.secondary[2]
-																					: colors.variants.grey[5],
-																		fontWeight: '500',
-																	}}
-																>
+																<S.LocationText location={item.location}>
 																	{item.location === 'spring'
 																		? 'Spring'
 																		: item.location === 'katy'
 																			? 'Katy'
 																			: item.location}
-																</Text>
+																</S.LocationText>
 															)}
 															
-														</View>
+														</S.ClassDetailsInfo>
 														{item._id === deleteId && (
-															<Pressable onPress={handleShowConfirmationModal}>
-																<View
-																	style={{
-																		width: 40,
-																		height: 50,
-																		justifyContent: 'center',
-																		alignItems: 'center',
-																	}}
-																>
-																	<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
-																</View>
-															</Pressable>
+															<S.DeleteButtonContainer onPress={handleShowConfirmationModal}>
+																<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
+															</S.DeleteButtonContainer>
 														)}
 														{role === 'student' && item?.recoveryClass && (
-															<View
-																style={{
-																	width: 40,
-																	justifyContent: 'center',
-																	alignItems: 'center',
-																}}
-															>
+															<S.StarContainer>
 																<MaterialCommunityIcons name='star' size={24} color={colors.view.tertiary} />
-															</View>
+															</S.StarContainer>
 														)}
-													</View>
-												</Pressable>
+													</S.ClassDetails>
+												</S.ClassItem>
 												{karateClasses?.length !== index + 1 && (
-													<View
-														style={{
-															width: '90%',
-															alignSelf: 'center',
-															height: 1,
-															backgroundColor: colors.variants.grey[1],
-														}}
-													/>
+													<S.Separator/>
 												)}
 											</>
 										)}
 									/>
 								</ScrollView>
-							</View>
+							</S.ListContainer>
 						</>
 					)}
-				</View>
-			</View>
+				</S.ContentContainer>
+			</S.ScreenContainer>
 			{openClassRegisterModal && (
 				<ClassRegisterModal openModal={openClassRegisterModal} closeModal={() => setOpenClassRegisterModal(false)} />
 			)}
