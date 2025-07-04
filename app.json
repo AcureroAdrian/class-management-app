@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "class-management-app",
+    "name": "Kokoro",
     "slug": "class-management-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "scheme": "classManagement",
+    "scheme": "classmanagement",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -17,14 +17,16 @@
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.miyagikeinternational.kokoro",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.classmanagementapp"
+      "package": "com.miyagikeinternational.kokoro"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -36,7 +38,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "041ea226-0cb8-4073-b252-dd0c35abdc65"
+        "projectId": "ac950e10-d6c7-405d-9ca2-934a492ea611"
       }
     }
   }

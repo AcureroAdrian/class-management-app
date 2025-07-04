@@ -56,7 +56,7 @@ const Info = () => {
 								/>
 								<BrandTitle>MIYAGI KEN</BrandTitle>
 								<BrandSubtitle>International Academy</BrandSubtitle>
-								<KarateSymbol>道</KarateSymbol>
+								<KarateSymbol>心</KarateSymbol>
 							</HeaderSection>
 
 							{/* Welcome title */}

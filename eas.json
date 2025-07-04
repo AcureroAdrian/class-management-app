@@ -12,10 +12,20 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "releaseChannel": "stable",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "${secret.EXPO_PUBLIC_API_URL}",
+        "EXPO_PUBLIC_API_KEY": "${secret.EXPO_PUBLIC_API_KEY}"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "Miyagiken.adm@gmail.com",
+        "ascAppId": "6748192663"
+      }
+    }
   }
 }

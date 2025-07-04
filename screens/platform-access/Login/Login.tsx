@@ -84,7 +84,7 @@ const Login = () => {
 							</LogoContainer>
 
 							{/* Karate Symbol */}
-							<KarateSymbol>道</KarateSymbol>
+							<KarateSymbol>心</KarateSymbol>
 
 							{/* Form */}
 							<FormContainer>
