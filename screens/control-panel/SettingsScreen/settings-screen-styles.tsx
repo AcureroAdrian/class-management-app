@@ -3,19 +3,17 @@ import styled from 'styled-components/native'
 
 export const Container = styled.View`
 	flex: 1;
-	width: 100%;
 	background-color: ${colors.primary};
 `
 
 export const Content = styled.View`
-	flex: 1;
-	width: 100%;
-	padding: 20px;
-	gap: 16px;
+	padding-top: 24px;
+	padding-bottom: 40px;
 `
 
 export const HeaderSection = styled.View`
 	margin-bottom: 32px;
+	padding-horizontal: 20px;
 `
 
 export const HeaderTitle = styled.Text`
@@ -33,18 +31,47 @@ export const HeaderSubtitle = styled.Text`
 	letter-spacing: -0.2px;
 `
 
+export const CardWrapper = styled.View`
+	padding-horizontal: 20px;
+	padding-bottom: 16px;
+`
+
 export const SettingsCard = styled.Pressable`
-	background-color: ${colors.view.primary};
-	border-radius: 16px;
+	background-color: ${colors.primary};
 	padding: 20px;
-	margin-bottom: 16px;
-	shadow-color: #000;
-	shadow-offset: 0px 2px;
+	border-radius: 12px;
+	elevation: 1;
+	shadow-color: ${colors.variants.grey[4]};
+	shadow-offset: 0px 1px;
 	shadow-opacity: 0.1;
-	shadow-radius: 8px;
-	elevation: 3;
-	border-width: 1px;
-	border-color: ${colors.variants.secondary[1]};
+	shadow-radius: 3px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 4px;
+	border-top-color: ${colors.variants.grey[1]};
+	border-right-color: ${colors.variants.grey[1]};
+	border-bottom-color: ${colors.variants.grey[1]};
+	border-left-color: ${colors.variants.primary[3]};
+`
+
+export const LogoutCard = styled.Pressable`
+	background-color: ${colors.primary};
+	padding: 20px;
+	border-radius: 12px;
+	elevation: 1;
+	shadow-color: ${colors.variants.grey[4]};
+	shadow-offset: 0px 1px;
+	shadow-opacity: 0.1;
+	shadow-radius: 3px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 4px;
+	border-top-color: ${colors.variants.grey[1]};
+	border-right-color: ${colors.variants.grey[1]};
+	border-bottom-color: ${colors.variants.grey[1]};
+	border-left-color: ${colors.red};
 `
 
 export const CardContent = styled.View`
@@ -54,51 +81,37 @@ export const CardContent = styled.View`
 `
 
 export const CardLeft = styled.View`
-	flex: 1;
 	flex-direction: row;
 	align-items: center;
+	flex: 1;
 `
 
 export const IconContainer = styled.View`
 	background-color: ${colors.variants.secondary[1]};
-	border-radius: 12px;
-	padding: 10px;
+	padding: 8px;
+	border-radius: 8px;
+	margin-right: 16px;
+`
+
+export const LogoutIconContainer = styled.View`
+	background-color: ${colors.red};
+	padding: 8px;
+	border-radius: 8px;
 	margin-right: 16px;
 `
 
 export const CardTitle = styled.Text`
-	font-size: 18px;
-	font-weight: 700;
+	font-size: 16px;
+	font-weight: 600;
 	color: ${colors.variants.secondary[5]};
+	letter-spacing: -0.2px;
 	flex: 1;
-	letter-spacing: -0.3px;
-`
-
-export const LogoutCard = styled.Pressable`
-	background-color: ${colors.variants.primary[5]};
-	border-radius: 16px;
-	padding: 20px;
-	margin-bottom: 16px;
-	shadow-color: #000;
-	shadow-offset: 0px 2px;
-	shadow-opacity: 0.1;
-	shadow-radius: 8px;
-	elevation: 3;
-	border-width: 1px;
-	border-color: ${colors.variants.primary[3]};
-`
-
-export const LogoutIconContainer = styled.View`
-	background-color: rgba(255, 255, 255, 0.2);
-	border-radius: 12px;
-	padding: 10px;
-	margin-right: 16px;
 `
 
 export const LogoutTitle = styled.Text`
-	font-size: 18px;
-	font-weight: 700;
-	color: ${colors.view.primary};
+	font-size: 16px;
+	font-weight: 600;
+	color: ${colors.variants.secondary[5]};
+	letter-spacing: -0.2px;
 	flex: 1;
-	letter-spacing: -0.3px;
 `

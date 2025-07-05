@@ -225,6 +225,82 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		return undefined
 	}, [recoveryClasses])
 
+	const renderClassCard = ({ item }: { item: IClass }) => (
+		<S.ClassItemContainer>
+			<S.ClassItem
+				onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
+				onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
+				isSelected={deleteId === item._id}
+			>
+				{/* Header */}
+				<S.ClassHeader>
+					<S.ClassTitleContainer>
+						<S.ClassName numberOfLines={1}>
+							{item.name}
+						</S.ClassName>
+						<S.ClassDescription numberOfLines={2}>
+							{item.description || 'No description available'}
+						</S.ClassDescription>
+					</S.ClassTitleContainer>
+					<S.ClassInfoBadge>
+						<S.StudentsCount hasStudents={Boolean(item.students.length)}>
+							{item.students.length} student{item.students.length !== 1 ? 's' : ''}
+						</S.StudentsCount>
+					</S.ClassInfoBadge>
+				</S.ClassHeader>
+
+				{/* Metadata */}
+				<S.ClassMetadata>
+					<S.ClassMetadataLeft>
+						{item.weekDays && item.weekDays.length > 0 && item.startTime && (
+							<S.MetadataItem>
+								<MaterialCommunityIcons name='calendar-clock' size={14} color={colors.variants.grey[4]} />
+								<S.ScheduleText>
+									{formatClassSchedule(item.weekDays, item.startTime, role)}
+								</S.ScheduleText>
+							</S.MetadataItem>
+						)}
+						{item.location && (
+							<S.LocationBadge location={item.location}>
+								<S.LocationText location={item.location}>
+									{item.location === 'spring' ? 'Spring' : item.location === 'katy' ? 'Katy' : item.location}
+								</S.LocationText>
+							</S.LocationBadge>
+						)}
+					</S.ClassMetadataLeft>
+				</S.ClassMetadata>
+
+				{/* Actions */}
+				<S.ClassActions>
+					<S.ActionBadges>
+						{role === 'student' && item?.recoveryClass && (
+							<S.ActionBadge variant="reserved">
+								<MaterialCommunityIcons name='star' size={12} color={colors.variants.secondary[5]} />
+								<S.ActionText variant="reserved">Reserved</S.ActionText>
+							</S.ActionBadge>
+						)}
+						{deleteId === item._id && (
+							<S.ActionBadge variant="delete">
+								<MaterialCommunityIcons name='delete' size={12} color={colors.variants.primary[5]} />
+								<S.ActionText variant="delete">Delete</S.ActionText>
+							</S.ActionBadge>
+						)}
+					</S.ActionBadges>
+					
+					{deleteId === item._id ? (
+						<S.DeleteButtonContainer onPress={handleShowConfirmationModal}>
+							<MaterialCommunityIcons name='delete' size={20} color={colors.variants.primary[5]} />
+						</S.DeleteButtonContainer>
+					) : (
+						<S.ChevronIcon>
+							<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+						</S.ChevronIcon>
+					)}
+				</S.ClassActions>
+			</S.ClassItem>
+		</S.ClassItemContainer>
+	)
+
 	return (
 		<>
 			<S.ScreenContainer>
@@ -250,81 +326,37 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 						<>
 							{role === 'student' && (
 								<S.StudentInfoContainer>
-									<S.RecoveryCreditsText>
-										You have {recoveryClassCredits} absences to recover in the following classes
-									</S.RecoveryCreditsText>
-									<S.ReservedInfoContainer>
-										<S.ReservedText>Reserved: </S.ReservedText>
-										<MaterialCommunityIcons name='star' size={20} color={colors.view.tertiary} />
-									</S.ReservedInfoContainer>
+									<S.StudentInfoCard>
+										<S.StudentInfoHeader>
+											<S.StudentInfoTitle>Recovery Classes</S.StudentInfoTitle>
+											<S.RecoveryCreditsContainer>
+												<MaterialCommunityIcons name='account-clock' size={16} color={colors.variants.secondary[5]} />
+												<S.RecoveryCreditsText>{recoveryClassCredits}</S.RecoveryCreditsText>
+											</S.RecoveryCreditsContainer>
+										</S.StudentInfoHeader>
+										<S.ClassDescription>
+											You have {recoveryClassCredits} absences to recover in the following classes
+										</S.ClassDescription>
+										<S.ReservedInfoContainer>
+											<MaterialCommunityIcons name='star' size={16} color={colors.variants.secondary[5]} />
+											<S.ReservedText>Reserved classes are marked with a star</S.ReservedText>
+										</S.ReservedInfoContainer>
+									</S.StudentInfoCard>
 								</S.StudentInfoContainer>
 							)}
 							<S.ListContainer>
-								<ScrollView>
+								<ScrollView 
+									style={{ flex: 1 }}
+									contentContainerStyle={{ paddingTop: 16, paddingBottom: 40 }}
+									showsVerticalScrollIndicator={false}
+								>
 									<FlatList
 										data={karateClasses}
 										keyExtractor={(item) => item._id}
 										nestedScrollEnabled={true}
 										scrollEnabled={false}
-										renderItem={({ item, index }) => (
-											<>
-												<S.ClassItem
-													key={item._id}
-													onPress={() => [handleClassSelect(item._id), setDeleteId('')]}
-													onLongPress={() => role === 'admin' && handleSelectDeleteClass(item._id)}
-												>
-													<S.ClassInfo>
-														<S.ClassName>
-															{item.name?.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
-														</S.ClassName>
-														<S.ClassDescription>
-															{item.description
-																? item?.description?.length > 20
-																	? item.description.substring(0, 20) + '...'
-																	: item.description
-																: 'No description'}
-														</S.ClassDescription>
-													</S.ClassInfo>
-													<S.ClassDetails>
-														<S.ClassDetailsInfo>
-															<S.StudentsCount hasStudents={Boolean(item.students.length)}>
-																{item.students.length} student{item.students.length ? 's' : ''}
-															</S.StudentsCount>
-															{item.weekDays && item.weekDays.length > 0 && item.startTime && (
-																<S.ScheduleText>
-																	{formatClassSchedule(item.weekDays, item.startTime, role)}
-																</S.ScheduleText>
-															)}
-															{item.location && (
-																<S.LocationText location={item.location}>
-																	{item.location === 'spring'
-																		? 'Spring'
-																		: item.location === 'katy'
-																			? 'Katy'
-																			: item.location}
-																</S.LocationText>
-															)}
-															
-														</S.ClassDetailsInfo>
-														{item._id === deleteId && (
-															<S.DeleteButtonContainer onPress={handleShowConfirmationModal}>
-																<MaterialCommunityIcons name='delete' size={24} color={colors.view.secondary} />
-															</S.DeleteButtonContainer>
-														)}
-														{role === 'student' && item?.recoveryClass && (
-															<S.StarContainer>
-																<MaterialCommunityIcons name='star' size={24} color={colors.view.tertiary} />
-															</S.StarContainer>
-														)}
-													</S.ClassDetails>
-												</S.ClassItem>
-												{karateClasses?.length !== index + 1 && (
-													<S.Separator>
-														<S.SeparatorLine />
-													</S.Separator>
-												)}
-											</>
-										)}
+										renderItem={renderClassCard}
+										ItemSeparatorComponent={() => null}
 									/>
 								</ScrollView>
 							</S.ListContainer>

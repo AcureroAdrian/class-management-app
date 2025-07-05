@@ -34,79 +34,122 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 		description, 
 		icon, 
 		onPress, 
-		gradient = false 
+		featured = false 
 	}: {
 		title: string
 		description: string
 		icon: string
 		onPress: () => void
-		gradient?: boolean
+		featured?: boolean
 	}) => (
-		<Pressable 
-			onPress={onPress}
-			style={({ pressed }) => [
-				{
-					width: '100%',
-					backgroundColor: gradient ? colors.brand : colors.view.primary,
-					borderRadius: 16,
-					padding: 20,
-					marginBottom: 16,
-					shadowColor: '#000',
-					shadowOffset: {
-						width: 0,
-						height: 2,
-					},
-					shadowOpacity: 0.1,
-					shadowRadius: 8,
-					elevation: 3,
-					borderWidth: 1,
-					borderColor: gradient ? 'transparent' : colors.variants.secondary[1],
-					transform: [{ scale: pressed ? 0.98 : 1 }],
-				}
-			]}
-		>
-			<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-				<View style={{ flex: 1 }}>
-					<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-						<View style={{ 
-							backgroundColor: gradient ? 'rgba(255,255,255,0.2)' : colors.variants.secondary[1],
-							borderRadius: 12,
-							padding: 10,
-							marginRight: 16
-						}}>
-							<MaterialCommunityIcons 
-								name={icon as any} 
-								size={24} 
-								color={gradient ? colors.view.primary : colors.brand} 
-							/>
-						</View>
+		<View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
+			<Pressable 
+				onPress={onPress}
+				style={({ pressed }) => [
+					{
+						backgroundColor: colors.primary,
+						padding: 20,
+						borderRadius: 12,
+						elevation: 1,
+						shadowColor: colors.variants.grey[4],
+						shadowOffset: { width: 0, height: 1 },
+						shadowOpacity: 0.1,
+						shadowRadius: 3,
+						borderTopWidth: 1,
+						borderRightWidth: 1,
+						borderBottomWidth: 1,
+						borderLeftWidth: 4,
+						borderTopColor: colors.variants.grey[1],
+						borderRightColor: colors.variants.grey[1],
+						borderBottomColor: colors.variants.grey[1],
+						borderLeftColor: featured ? colors.brand : colors.variants.primary[3],
+						transform: [{ scale: pressed ? 0.98 : 1 }],
+					}
+				]}
+			>
+				{/* Top Row */}
+				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+					<View style={{ 
+						backgroundColor: featured ? colors.brand : colors.variants.secondary[1],
+						padding: 8,
+						borderRadius: 8,
+					}}>
+						<MaterialCommunityIcons 
+							name={icon as any} 
+							size={20} 
+							color={featured ? colors.view.primary : colors.brand} 
+						/>
+					</View>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+						<MaterialCommunityIcons 
+							name='chart-line' 
+							size={16} 
+							color={colors.variants.grey[4]} 
+						/>
 						<Text style={{ 
-							fontSize: 18, 
-							fontWeight: '700', 
-							color: gradient ? colors.view.primary : colors.variants.secondary[5],
-							flex: 1,
-							letterSpacing: -0.3
+							color: colors.variants.grey[4],
+							fontSize: 12,
+							fontWeight: '500'
 						}}>
-							{title}
+							Analytics
 						</Text>
 					</View>
+				</View>
+
+				{/* Content */}
+				<View style={{ marginBottom: 12 }}>
+					<Text style={{ 
+						fontSize: 16, 
+						fontWeight: '600', 
+						color: colors.variants.secondary[5],
+						marginBottom: 4,
+						lineHeight: 20,
+						letterSpacing: -0.2
+					}}>
+						{title}
+					</Text>
 					<Text style={{ 
 						fontSize: 14, 
-						color: gradient ? 'rgba(255,255,255,0.85)' : colors.variants.grey[4],
-						lineHeight: 20,
-						marginLeft: 50,
+						color: colors.variants.grey[4],
+						lineHeight: 18,
 						letterSpacing: -0.1
 					}}>
 						{description}
 					</Text>
 				</View>
-				<MaterialCommunityIcons 
-					name='chevron-right' 
-					size={20} 
-					color={gradient ? 'rgba(255,255,255,0.6)' : colors.variants.grey[3]} 
-				/>
-			</View>
-		</Pressable>
+
+				{/* Bottom Row */}
+				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+					<View style={{
+						backgroundColor: colors.variants.grey[0],
+						padding: 8,
+						paddingHorizontal: 12,
+						borderRadius: 8,
+						flexDirection: 'row',
+						alignItems: 'center',
+						gap: 6
+					}}>
+						<MaterialCommunityIcons 
+							name='circle' 
+							size={8} 
+							color={featured ? colors.brand : colors.variants.primary[3]} 
+						/>
+						<Text style={{ 
+							color: colors.variants.grey[5],
+							fontSize: 12,
+							fontWeight: '500'
+						}}>
+							{featured ? 'Featured' : 'Available'}
+						</Text>
+					</View>
+					<MaterialCommunityIcons 
+						name='chevron-right' 
+						size={20} 
+						color={colors.variants.grey[3]} 
+					/>
+				</View>
+			</Pressable>
+		</View>
 	)
 
 	return (
@@ -117,14 +160,13 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 				<ScrollView 
 					style={{ flex: 1 }}
 					contentContainerStyle={{
-						paddingHorizontal: 20,
 						paddingTop: 24,
 						paddingBottom: 40,
 					}}
 					showsVerticalScrollIndicator={false}
 				>
 					{/* Header Section */}
-					<View style={{ marginBottom: 32 }}>
+					<View style={{ marginBottom: 32, paddingHorizontal: 20 }}>
 						<Text style={{ 
 							fontSize: 28, 
 							fontWeight: '700', 
@@ -152,7 +194,7 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 								description="View attendance grouped by days with detailed metrics"
 								icon="calendar-check"
 								onPress={() => setOpenDailyReportModal(true)}
-								gradient={true}
+								featured={true}
 							/>
 						)}
 						
@@ -175,7 +217,8 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 
 					{/* Footer Info */}
 					<View style={{
-						marginTop: 32,
+						marginTop: 16,
+						marginHorizontal: 20,
 						padding: 20,
 						backgroundColor: colors.variants.secondary[1],
 						borderRadius: 12,

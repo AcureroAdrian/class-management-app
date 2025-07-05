@@ -14,6 +14,7 @@ import {
 	HeaderSection, 
 	HeaderTitle, 
 	HeaderSubtitle, 
+	CardWrapper,
 	SettingsCard, 
 	CardContent, 
 	CardLeft, 
@@ -55,56 +56,64 @@ const SettingsScreen = ({ role }: { role: TUserRole }) => {
 						</HeaderSection>
 
 						{/* Settings Cards */}
-						<SettingsCard onPress={() => setOpenMyProfileModal(true)}>
-							<CardContent>
-								<CardLeft>
-									<IconContainer>
-										<MaterialCommunityIcons name='account' size={iconSize} color={colors.brand} />
-									</IconContainer>
-									<CardTitle>My Account</CardTitle>
-								</CardLeft>
-								<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
-							</CardContent>
-						</SettingsCard>
-
-						<SettingsCard onPress={() => setOpenInfoModal(true)}>
-							<CardContent>
-								<CardLeft>
-									<IconContainer>
-										<MaterialCommunityIcons name='information' size={iconSize} color={colors.brand} />
-									</IconContainer>
-									<CardTitle>About Miyagi Ken International</CardTitle>
-								</CardLeft>
-								<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
-							</CardContent>
-						</SettingsCard>
-
-						{userInfo?.isSuper && (
-							<SettingsCard onPress={() => setOpenSystemConfigModal(true)}>
+						<CardWrapper>
+							<SettingsCard onPress={() => setOpenMyProfileModal(true)}>
 								<CardContent>
 									<CardLeft>
 										<IconContainer>
-											<MaterialCommunityIcons name='cog' size={iconSize} color={colors.brand} />
+											<MaterialCommunityIcons name='account' size={iconSize} color={colors.brand} />
 										</IconContainer>
-										<CardTitle>System Configuration</CardTitle>
+										<CardTitle>My Account</CardTitle>
 									</CardLeft>
 									<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
 								</CardContent>
 							</SettingsCard>
+						</CardWrapper>
+
+						<CardWrapper>
+							<SettingsCard onPress={() => setOpenInfoModal(true)}>
+								<CardContent>
+									<CardLeft>
+										<IconContainer>
+											<MaterialCommunityIcons name='information' size={iconSize} color={colors.brand} />
+										</IconContainer>
+										<CardTitle>About Miyagi Ken International</CardTitle>
+									</CardLeft>
+									<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+								</CardContent>
+							</SettingsCard>
+						</CardWrapper>
+
+						{userInfo?.isSuper && (
+							<CardWrapper>
+								<SettingsCard onPress={() => setOpenSystemConfigModal(true)}>
+									<CardContent>
+										<CardLeft>
+											<IconContainer>
+												<MaterialCommunityIcons name='cog' size={iconSize} color={colors.brand} />
+											</IconContainer>
+											<CardTitle>System Configuration</CardTitle>
+										</CardLeft>
+										<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+									</CardContent>
+								</SettingsCard>
+							</CardWrapper>
 						)}
 
 						{/* Logout Card */}
-						<LogoutCard onPress={handleOnLogout}>
-							<CardContent>
-								<CardLeft>
-									<LogoutIconContainer>
-										<MaterialCommunityIcons name='logout' size={iconSize} color={colors.view.primary} />
-									</LogoutIconContainer>
-									<LogoutTitle>Logout</LogoutTitle>
-								</CardLeft>
-								<MaterialCommunityIcons name='chevron-right' size={20} color="rgba(255,255,255,0.6)" />
-							</CardContent>
-						</LogoutCard>
+						<CardWrapper>
+							<LogoutCard onPress={handleOnLogout}>
+								<CardContent>
+									<CardLeft>
+										<LogoutIconContainer>
+											<MaterialCommunityIcons name='logout' size={iconSize} color={colors.view.primary} />
+										</LogoutIconContainer>
+										<LogoutTitle>Logout</LogoutTitle>
+									</CardLeft>
+									<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+								</CardContent>
+							</LogoutCard>
+						</CardWrapper>
 					</Content>
 				</ScrollView>
 			</Container>
