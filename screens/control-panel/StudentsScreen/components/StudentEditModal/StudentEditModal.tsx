@@ -218,7 +218,7 @@ const StudentEditModal = ({
 										placeholderTextColor={colors.darkLight}
 										value={level}
 										editable={false}
-										onPress={() => (console.log('onPress'), !loadingUpdateStudentUserById && setOpenLevelModal(true))}
+										onPress={() => !loadingUpdateStudentUserById && setOpenLevelModal(true)}
 										icon='karate'
 									/>
 									<CustomInputForm

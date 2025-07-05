@@ -64,7 +64,9 @@ export const PickStudentsButtonText = styled(Text)`
 `;
 
 export const StudentItemView = styled(View)`
-    padding-top: 12px;
+    width: 100%;
+    min-height: 70px;
+    justify-content: center;
 `;
 
 export const StudentItemContent = styled(View)`
@@ -74,27 +76,28 @@ export const StudentItemContent = styled(View)`
     flex: 1;
     justify-content: space-between;
     padding: 8px 20px;
+    min-height: 70px;
 `;
 
 export const StudentInfoView = styled(View)`
     flex-direction: row;
     align-items: center;
     gap: 10px;
-    width: 100%;
+    width: 75%;
     flex: 1;
 `;
 
 export const StudentAvatar = styled(Image)`
     width: 50px;
     height: 50px;
-    border-radius: 50px;
+    border-radius: 25px;
 `;
 
 export const StudentNameView = styled(View)`
     justify-content: center;
     align-items: flex-start;
-    width: 100%;
     flex-direction: column;
+    max-width: 150px;
 `;
 
 export const StudentName = styled(Text)`
