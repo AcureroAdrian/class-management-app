@@ -18,6 +18,7 @@ export const LoaderContainer = styled.View`
 export const ContentContainer = styled.View`
 	flex: 1;
 	width: 100%;
+	padding-top: 20px;
 	padding-bottom: 25px;
 `
 

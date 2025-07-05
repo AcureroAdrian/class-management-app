@@ -107,6 +107,7 @@ export const SearchInput = styled.TextInput`
 	color: ${colors.variants.secondary[5]};
 	font-weight: 500;
 	letter-spacing: -0.1px;
+	padding: 10px;
 `
 
 export const ClearSearchButton = styled.Pressable`

@@ -113,113 +113,138 @@ const StudentsRegisterModal = ({
 				/>
 				<S.ContentContainer>
 					<KeyboardAvoidingWrapper>
-						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+						<ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
 							{(errorMessage || errorRegisterStudents) && (
 								<S.ErrorText>
 									{errorMessage || errorRegisterStudents}
 								</S.ErrorText>
 							)}
-							<CustomInputForm
-								label='User ID'
-								placeholder='USER123'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={(text) => setUserId(text.trim().toUpperCase())}
-								value={userId}
-								editable={!loadingRegisterStudents}
-								icon='account-key'
-								autoCapitalize='characters'
-								maxLength={20}
-							/>
-							<CustomInputForm
-								label='First Name'
-								placeholder='Manuel'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setStudentName}
-								value={studentName}
-								editable={!loadingRegisterStudents}
-								icon='account'
-							/>
-							<CustomInputForm
-								label='Last Name'
-								placeholder='Smith'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setStudentLastName}
-								value={studentLastName}
-								editable={!loadingRegisterStudents}
-								icon='account'
-							/>
-							<CustomInputForm
-								label='Date of Birth'
-								placeholder='YYY - MM - DD'
-								placeholderTextColor={colors.darkLight}
-								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-								editable={false}
-								onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
-								icon='calendar'
-							/>
-							<CustomInputForm
-								label='Level'
-								placeholder='novice'
-								placeholderTextColor={colors.darkLight}
-								value={level}
-								editable={false}
-								onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
-								icon='karate'
-							/>
-							<CustomInputForm
-								label='Email'
-								placeholder='manuel@gmail.com'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setEmail}
-								value={email}
-								editable={!loadingRegisterStudents}
-								icon='email'
-							/>
-							<CustomInputForm
-								label='Phone'
-								placeholder='+506 1234 5678'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setPhone}
-								value={phone}
-								editable={!loadingRegisterStudents}
-								icon='phone'
-							/>
-							<CustomInputForm
-								label='Notes'
-								placeholder='This student has 3 brothers...'
-								placeholderTextColor={colors.darkLight}
-								onChangeText={setNotes}
-								value={notes}
-								editable={!loadingRegisterStudents}
-								multiline={true}
-								icon='note'
-							/>
-							<S.SwitchContainer>
-								{role === 'admin' && (
-									<S.SwitchOption>
-										<Switch
-											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-											thumbColor={colors.variants.secondary[0]}
-											ios_backgroundColor={colors.variants.secondary[2]}
-											onValueChange={() => setIsTeacher(!isTeacher)}
-											value={isTeacher}
-										/>
-										<S.SwitchLabel>Is Teacher</S.SwitchLabel>
-									</S.SwitchOption>
-								)}
-								{userInfo?.isSuper && (
-									<S.SwitchOption>
-										<Switch
-											trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-											thumbColor={colors.variants.secondary[0]}
-											ios_backgroundColor={colors.variants.secondary[2]}
-											onValueChange={() => setIsAdmin(!isAdmin)}
-											value={isAdmin}
-										/>
-										<S.SwitchLabel>Is Admin</S.SwitchLabel>
-									</S.SwitchOption>
-								)}
-							</S.SwitchContainer>
+							
+							{/* Personal Information */}
+							<S.FormSection>
+								<S.SectionTitle>Personal Information</S.SectionTitle>
+								<S.FormGroup>
+									<CustomInputForm
+										label='User ID'
+										placeholder='USER123'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={(text) => setUserId(text.trim().toUpperCase())}
+										value={userId}
+										editable={!loadingRegisterStudents}
+										icon='account-key'
+										autoCapitalize='characters'
+										maxLength={20}
+									/>
+									<CustomInputForm
+										label='First Name'
+										placeholder='Manuel'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setStudentName}
+										value={studentName}
+										editable={!loadingRegisterStudents}
+										icon='account'
+									/>
+									<CustomInputForm
+										label='Last Name'
+										placeholder='Smith'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setStudentLastName}
+										value={studentLastName}
+										editable={!loadingRegisterStudents}
+										icon='account'
+									/>
+									<CustomInputForm
+										label='Date of Birth'
+										placeholder='YYY - MM - DD'
+										placeholderTextColor={colors.darkLight}
+										value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+										editable={false}
+										onPress={() => !loadingRegisterStudents && setShowDatePicker(true)}
+										icon='calendar'
+									/>
+									<CustomInputForm
+										label='Level'
+										placeholder='novice'
+										placeholderTextColor={colors.darkLight}
+										value={level}
+										editable={false}
+										onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
+										icon='karate'
+									/>
+								</S.FormGroup>
+							</S.FormSection>
+
+							{/* Contact Information */}
+							<S.FormSection>
+								<S.SectionTitle>Contact Information</S.SectionTitle>
+								<S.FormGroup>
+									<CustomInputForm
+										label='Email'
+										placeholder='manuel@gmail.com'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setEmail}
+										value={email}
+										editable={!loadingRegisterStudents}
+										icon='email'
+									/>
+									<CustomInputForm
+										label='Phone'
+										placeholder='+506 1234 5678'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setPhone}
+										value={phone}
+										editable={!loadingRegisterStudents}
+										icon='phone'
+									/>
+									<CustomInputForm
+										label='Notes'
+										placeholder='This student has 3 brothers...'
+										placeholderTextColor={colors.darkLight}
+										onChangeText={setNotes}
+										value={notes}
+										editable={!loadingRegisterStudents}
+										multiline={true}
+										icon='note'
+									/>
+								</S.FormGroup>
+							</S.FormSection>
+
+							{/* Permissions and Roles */}
+							{(role === 'admin' || userInfo?.isSuper) && (
+								<S.SwitchContainer>
+									<S.SectionTitle>Permissions and Roles</S.SectionTitle>
+									{role === 'admin' && (
+										<S.SwitchOption>
+											<S.SwitchInfo>
+												<S.SwitchLabel>Is Teacher</S.SwitchLabel>
+												<S.SwitchDescription>Grants permissions to manage classes</S.SwitchDescription>
+											</S.SwitchInfo>
+											<Switch
+												trackColor={{ false: colors.variants.grey[2], true: colors.variants.secondary[4] }}
+												thumbColor={isTeacher ? colors.variants.secondary[5] : colors.variants.grey[0]}
+												ios_backgroundColor={colors.variants.grey[2]}
+												onValueChange={() => setIsTeacher(!isTeacher)}
+												value={isTeacher}
+											/>
+										</S.SwitchOption>
+									)}
+									{userInfo?.isSuper && (
+										<S.SwitchOption>
+											<S.SwitchInfo>
+												<S.SwitchLabel>Is Admin</S.SwitchLabel>
+												<S.SwitchDescription>Grants full administrative permissions</S.SwitchDescription>
+											</S.SwitchInfo>
+											<Switch
+												trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
+												thumbColor={isAdmin ? colors.variants.primary[5] : colors.variants.grey[0]}
+												ios_backgroundColor={colors.variants.grey[2]}
+												onValueChange={() => setIsAdmin(!isAdmin)}
+												value={isAdmin}
+											/>
+										</S.SwitchOption>
+									)}
+								</S.SwitchContainer>
+							)}
 						</ScrollView>
 					</KeyboardAvoidingWrapper>
 				</S.ContentContainer>

@@ -51,16 +51,30 @@ export const FormGroup = styled.View`
 	gap: 24px;
 `
 
+export const InfoCard = styled.View`
+	background-color: ${colors.variants.secondary[0]};
+	border-radius: 8px;
+	padding: 16px;
+	border-left-width: 4px;
+	border-left-color: ${colors.variants.secondary[5]};
+	margin-bottom: 20px;
+`
+
+export const InfoCardTitle = styled.Text`
+	font-size: 16px;
+	font-weight: 600;
+	color: ${colors.variants.secondary[5]};
+	margin-bottom: 4px;
+`
+
+export const InfoCardDescription = styled.Text`
+	font-size: 14px;
+	color: ${colors.variants.secondary[4]};
+	line-height: 20px;
+`
+
 export const SwitchContainer = styled.View`
-	background-color: ${colors.view.primary};
-	border-radius: 12px;
-	padding: 20px;
-	margin: 0 20px 20px 20px;
-	shadow-color: ${colors.variants.grey[7]};
-	shadow-offset: 0px 2px;
-	shadow-opacity: 0.1;
-	shadow-radius: 8px;
-	elevation: 3;
+	gap: 12px;
 `
 
 export const SwitchOption = styled.View`
@@ -70,7 +84,6 @@ export const SwitchOption = styled.View`
 	padding: 16px;
 	background-color: ${colors.variants.grey[0]};
 	border-radius: 8px;
-	margin-bottom: 12px;
 	border: 1px solid ${colors.variants.grey[1]};
 `
 

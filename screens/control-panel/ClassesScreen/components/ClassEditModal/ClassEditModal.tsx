@@ -171,72 +171,101 @@ const ClassEditModal = ({
 											{errorMessage}
 										</S.ErrorText>
 									)}
-									<CustomInputForm
-										label='Class Name'
-										placeholder='Mon 7 PM Class'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setName}
-										value={name}
-										editable={!loadingUpdateKarateClassById}
-										multiline={true}
-									/>
-									<CustomInputForm
-										label='Additional Info'
-										placeholder='Its a description ...'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setDescription}
-										value={description}
-										editable={!loadingUpdateKarateClassById}
-										multiline={true}
-									/>
-									<CustomInputForm
-										label='Start Time'
-										placeholder='12:00 p.m.'
-										placeholderTextColor={colors.darkLight}
-										value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-										editable={false}
-										onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
-									/>
-									<CustomInputForm
-										label='Class Students'
-										placeholder='Tap to add students'
-										placeholderTextColor={colors.darkLight}
-										value={`${studentsAssigned?.length} students (Tap to add students)`}
-										editable={false}
-										onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
-									/>
-									<CustomInputForm
-										label='Weekdays'
-										placeholder='Tap to manage class days'
-										placeholderTextColor={colors.darkLight}
-										value={
-											weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
-										}
-										editable={false}
-										onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
-									/>
-									<AgeRangeInput
-										minAge={minAge}
-										maxAge={maxAge}
-										saveMinAge={(value: number) => setMinAge(value)}
-										saveMaxAge={(value: number) => setMaxAge(value)}
-									/>
-									<CustomInputForm
-										label='Levels'
-										placeholder='Tap to manage student levels'
-										placeholderTextColor={colors.darkLight}
-										value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-										editable={false}
-										onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
-									/>
-									<CustomInputForm
-										label='Location'
-										placeholder='Tap to select a location'
-										placeholderTextColor={colors.darkLight}
-										value={capitalizeWords(location)}
-										editable={false}
-										onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
-									/>
+									
+									{/* Basic Information */}
+									<S.FormSection>
+										<S.SectionTitle>Basic Information</S.SectionTitle>
+										<S.FormGroup>
+											<CustomInputForm
+												label='Class Name'
+												placeholder='Mon 7 PM Class'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setName}
+												value={name}
+												editable={!loadingUpdateKarateClassById}
+												multiline={true}
+												icon='school'
+											/>
+											<CustomInputForm
+												label='Additional Info'
+												placeholder='Its a description ...'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setDescription}
+												value={description}
+												editable={!loadingUpdateKarateClassById}
+												multiline={true}
+												icon='information'
+											/>
+											<CustomInputForm
+												label='Location'
+												placeholder='Tap to select a location'
+												placeholderTextColor={colors.darkLight}
+												value={capitalizeWords(location)}
+												editable={false}
+												onPress={() => !loadingUpdateKarateClassById && setOpenLocationsModal(true)}
+												icon='map-marker'
+											/>
+										</S.FormGroup>
+									</S.FormSection>
+
+									{/* Schedule & Timing */}
+									<S.FormSection>
+										<S.SectionTitle>Schedule & Timing</S.SectionTitle>
+										<S.FormGroup>
+											<CustomInputForm
+												label='Start Time'
+												placeholder='12:00 p.m.'
+												placeholderTextColor={colors.darkLight}
+												value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+												editable={false}
+												onPress={() => !loadingUpdateKarateClassById && setShowDate(true)}
+												icon='clock'
+											/>
+											<CustomInputForm
+												label='Weekdays'
+												placeholder='Tap to manage class days'
+												placeholderTextColor={colors.darkLight}
+												value={
+													weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
+												}
+												editable={false}
+												onPress={() => !loadingUpdateKarateClassById && setOpenWeekDaysModal(true)}
+												icon='calendar-week'
+											/>
+										</S.FormGroup>
+									</S.FormSection>
+
+									{/* Student Configuration */}
+									<S.FormSection>
+										<S.SectionTitle>Student Configuration</S.SectionTitle>
+										<S.FormGroup>
+											<CustomInputForm
+												label='Class Students'
+												placeholder='Tap to add students'
+												placeholderTextColor={colors.darkLight}
+												value={`${studentsAssigned?.length} students (Tap to add students)`}
+												editable={false}
+												onPress={() => !loadingUpdateKarateClassById && setOpenAssignedStudentsModal(true)}
+												icon='account-group'
+											/>
+											<CustomInputForm
+												label='Student Levels'
+												placeholder='Tap to manage student levels'
+												placeholderTextColor={colors.darkLight}
+												value={levels?.length ? levels.map((level: TUserLevel) => shortLevels[level]).join(', ') : undefined}
+												editable={false}
+												onPress={() => !loadingUpdateKarateClassById && setOpenLevelsModal(true)}
+												icon='karate'
+											/>
+											<AgeRangeInput
+												minAge={minAge}
+												maxAge={maxAge}
+												saveMinAge={(value: number) => setMinAge(value)}
+												saveMaxAge={(value: number) => setMaxAge(value)}
+											/>
+										</S.FormGroup>
+									</S.FormSection>
+
 								</S.StyledScrollView>
 							</KeyboardAvoidingWrapper>
 						</S.FormContainer>

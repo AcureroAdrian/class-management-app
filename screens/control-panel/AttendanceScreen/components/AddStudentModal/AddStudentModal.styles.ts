@@ -35,7 +35,7 @@ export const SearchBarContainer = styled.View`
 `
 
 export const SearchInput = styled.TextInput`
-	background-color: ${colors.variants.secondary[1]};
+	color: ${colors.variants.secondary[5]};
 	border-radius: 10px;
 	padding-horizontal: 15px;
 	padding-vertical: 12px;

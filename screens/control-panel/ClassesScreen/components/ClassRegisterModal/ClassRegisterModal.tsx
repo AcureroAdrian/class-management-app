@@ -125,72 +125,93 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									{errorMessage}
 								</S.ErrorText>
 							)}
-							<CustomInputForm
-								label='Class Name'
-								placeholder='Mon 7 PM Class'
-								onChangeText={setName}
-								value={name}
-								editable={!loadingRegisterKarateClass}
-								multiline={true}
-								icon='account'
-							/>
-							<CustomInputForm
-								label='Additional Info'
-								placeholder='Its a description ...'
-								onChangeText={setDescription}
-								value={description}
-								editable={!loadingRegisterKarateClass}
-								multiline={true}
-								icon='note-edit'
-							/>
-							<CustomInputForm
-								label='Start Time'
-								placeholder='12:00 p.m.'
-								value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
-								editable={false}
-								onPress={() => !loadingRegisterKarateClass && setShowDate(true)}
-								icon='timer'
-							/>
-							<CustomInputForm
-								label='Class Students'
-								placeholder='Tap to add students'
-								value={`${studentsAssigned?.length} students (Tap to add students)`}
-								editable={false}
-								onPress={() => !loadingRegisterKarateClass && setOpenAssignedStudentsModal(true)}
-								icon='account-group'
-							/>
-							<CustomInputForm
-								label='Weekdays'
-								placeholder='Tap to manage class days'
-								value={
-									weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
-								}
-								editable={false}
-								onPress={() => !loadingRegisterKarateClass && setOpenWeekDaysModal(true)}
-								icon='calendar'
-							/>
-							<AgeRangeInput
-								minAge={minAge}
-								maxAge={maxAge}
-								saveMinAge={(value: number) => setMinAge(value)}
-								saveMaxAge={(value: number) => setMaxAge(value)}
-							/>
-							<CustomInputForm
-								label='Levels'
-								placeholder='Tap to manage student levels'
-								value={levels?.length ? levels.map((day: TUserLevel) => shortLevels[day]).join(', ') : undefined}
-								editable={false}
-								onPress={() => !loadingRegisterKarateClass && setOpenLevelsModal(true)}
-								icon='karate'
-							/>
-							<CustomInputForm
-								label='Location'
-								placeholder='Tap to select a location'
-								value={capitalizeWords(location)}
-								editable={false}
-								onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
-								icon='map'
-							/>
+							
+							{/* Basic Information */}
+							<S.FormSection>
+								<S.SectionTitle>Basic Information</S.SectionTitle>
+								<S.FormGroup>
+									<CustomInputForm
+										label='Class Name'
+										placeholder='Mon 7 PM Class'
+										onChangeText={setName}
+										value={name}
+										editable={!loadingRegisterKarateClass}
+										multiline={true}
+										icon='school'
+									/>
+									<CustomInputForm
+										label='Additional Info'
+										placeholder='Its a description ...'
+										onChangeText={setDescription}
+										value={description}
+										editable={!loadingRegisterKarateClass}
+										multiline={true}
+										icon='information'
+									/>
+									<CustomInputForm
+										label='Location'
+										placeholder='Tap to select a location'
+										value={capitalizeWords(location)}
+										editable={false}
+										onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
+										icon='map-marker'
+									/>
+								</S.FormGroup>
+							</S.FormSection>
+
+							{/* Schedule & Timing */}
+							<S.FormSection>
+								<S.SectionTitle>Schedule & Timing</S.SectionTitle>
+								<S.FormGroup>
+									<CustomInputForm
+										label='Start Time'
+										placeholder='12:00 p.m.'
+										value={startTime ? format(new Date(startTime), 'HH:mm aaaa') : ''}
+										editable={false}
+										onPress={() => !loadingRegisterKarateClass && setShowDate(true)}
+										icon='clock'
+									/>
+									<CustomInputForm
+										label='Weekdays'
+										placeholder='Tap to manage class days'
+										value={
+											weekDays?.length ? weekDays.map((day: TDaysOfWeek) => shortDaysOfWeek[day]).join(', ') : undefined
+										}
+										editable={false}
+										onPress={() => !loadingRegisterKarateClass && setOpenWeekDaysModal(true)}
+										icon='calendar-week'
+									/>
+								</S.FormGroup>
+							</S.FormSection>
+
+							{/* Student Configuration */}
+							<S.FormSection>
+								<S.SectionTitle>Student Configuration</S.SectionTitle>
+								<S.FormGroup>
+									<CustomInputForm
+										label='Class Students'
+										placeholder='Tap to add students'
+										value={`${studentsAssigned?.length} students (Tap to add students)`}
+										editable={false}
+										onPress={() => !loadingRegisterKarateClass && setOpenAssignedStudentsModal(true)}
+										icon='account-group'
+									/>
+									<CustomInputForm
+										label='Student Levels'
+										placeholder='Tap to manage student levels'
+										value={levels?.length ? levels.map((level: TUserLevel) => shortLevels[level]).join(', ') : undefined}
+										editable={false}
+										onPress={() => !loadingRegisterKarateClass && setOpenLevelsModal(true)}
+										icon='karate'
+									/>
+									<AgeRangeInput
+										minAge={minAge}
+										maxAge={maxAge}
+										saveMinAge={(value: number) => setMinAge(value)}
+										saveMaxAge={(value: number) => setMaxAge(value)}
+									/>
+								</S.FormGroup>
+							</S.FormSection>
 						</S.StyledScrollView>
 					</KeyboardAvoidingWrapper>
 				</S.ContentContainer>
