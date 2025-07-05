@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { View, Modal, Image, Text, FlatList, Pressable, ScrollView } from 'react-native'
+import { View, Modal, Image, Text, FlatList, Pressable, ScrollView, Alert } from 'react-native'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
@@ -86,6 +86,7 @@ const AttendanceEditModal = ({
 }) => {
 	const dispatch = useAppDispatch()
 
+	const [initialAttendance, setInitialAttendance] = useState<IAttendanceItem[]>([])
 	const [attendance, setAttendance] = useState<IAttendanceItem[]>([])
 	const [searchQuery, setSearchQuery] = useState<string>('')
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -180,6 +181,7 @@ const AttendanceEditModal = ({
 		}
 
 		setAttendance(attendanceItem)
+		setInitialAttendance(JSON.parse(JSON.stringify(attendanceItem)))
 	}
 
 	useEffect(() => {
@@ -271,6 +273,7 @@ const AttendanceEditModal = ({
 			// Update existing real attendance
 			dispatch(updateStudentAttendanceById(attendanceData?._id, { attendance: validAttendance }))
 		}
+		setInitialAttendance(JSON.parse(JSON.stringify(attendance)))
 	}
 
 	const handleSelectStudent = (studentId: string) => {
@@ -322,6 +325,25 @@ const AttendanceEditModal = ({
 		setSelectedStudentForStatus(null)
 	}
 
+	const handleClose = () => {
+		const isDirty = JSON.stringify(initialAttendance) !== JSON.stringify(attendance)
+		if (isDirty) {
+			Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to discard them?', [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Discard',
+					onPress: () => closeModal(),
+					style: 'destructive',
+				},
+			])
+		} else {
+			closeModal()
+		}
+	}
+
 	//MEMORIZE CONSTANTS
 	const { presents, absents, late } = useMemo(() => {
 		const presents = attendance?.filter((student) => isStudentPresent(student?.attendanceStatus))?.length
@@ -369,7 +391,7 @@ const AttendanceEditModal = ({
 
 
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<ModalContainer>
 				<ScreenHeader
 					label='Attendance Info'
@@ -379,7 +401,7 @@ const AttendanceEditModal = ({
 					loadingButtonAction={loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
 					handleOnPress={handleSaveAtendance}
 					showBackButton={true}
-					handleBack={closeModal}
+					handleBack={handleClose}
 				/>
 				<CompactHeaderContainer>
 					<ClassInfoRow>

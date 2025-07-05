@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { format, isDate } from 'date-fns'
+import { Alert } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomOptionsModal from '@/components/CustomOptionsModal/CustomOptionsModal'
@@ -39,6 +40,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
 	const [openAssignedStudentsModal, setOpenAssignedStudentsModal] = useState<boolean>(false)
+	const [isDirty, setIsDirty] = useState<boolean>(false)
 
 	const { loadingRegisterKarateClass, errorRegisterKarateClass } = useAppSelector(
 		(state: RootState) => state.registerKarateClass,
@@ -61,6 +63,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		const currentDate = date || startTime
 		setStartTime(currentDate)
 		setShowDate(false)
+		setIsDirty(true)
 	}
 	const handleRegisterClass = () => {
 		setErrorMessage(null)
@@ -78,6 +81,12 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 		}
 		if (!location?.length) {
 			setErrorMessage('Please select a location')
+			return
+		}
+
+		const studentLimit = location?.toLowerCase() === 'katy' ? 20 : 40
+		if (studentsAssigned.length > studentLimit) {
+			setErrorMessage(`The number of students for ${capitalizeWords(location)} location cannot exceed ${studentLimit}.`)
 			return
 		}
 
@@ -102,10 +111,29 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	}
 	const handleAssignStudents = (students: string[]) => {
 		setStudentsAssigned(students)
+		setIsDirty(true)
+	}
+
+	const handleClose = () => {
+		if (isDirty) {
+			Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to discard them?', [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Discard',
+					onPress: () => closeModal(),
+					style: 'destructive',
+				},
+			])
+		} else {
+			closeModal()
+		}
 	}
 
 	return (
-		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<S.ModalView>
 				<ScreenHeader
 					label='New Class'
@@ -115,7 +143,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					loadingButtonAction={loadingRegisterKarateClass}
 					handleOnPress={handleRegisterClass}
 					showBackButton={true}
-					handleBack={closeModal}
+					handleBack={handleClose}
 				/>
 				<S.ContentContainer>
 					<KeyboardAvoidingWrapper>
@@ -133,7 +161,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									<CustomInputForm
 										label='Class Name'
 										placeholder='Mon 7 PM Class'
-										onChangeText={setName}
+										onChangeText={(text) => {
+											setName(text)
+											setIsDirty(true)
+										}}
 										value={name}
 										editable={!loadingRegisterKarateClass}
 										multiline={true}
@@ -142,7 +173,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									<CustomInputForm
 										label='Additional Info'
 										placeholder='Its a description ...'
-										onChangeText={setDescription}
+										onChangeText={(text) => {
+											setDescription(text)
+											setIsDirty(true)
+										}}
 										value={description}
 										editable={!loadingRegisterKarateClass}
 										multiline={true}
@@ -207,8 +241,14 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									<AgeRangeInput
 										minAge={minAge}
 										maxAge={maxAge}
-										saveMinAge={(value: number) => setMinAge(value)}
-										saveMaxAge={(value: number) => setMaxAge(value)}
+										saveMinAge={(value: number) => {
+											setMinAge(value)
+											setIsDirty(true)
+										}}
+										saveMaxAge={(value: number) => {
+											setMaxAge(value)
+											setIsDirty(true)
+										}}
 									/>
 								</S.FormGroup>
 							</S.FormSection>
@@ -242,7 +282,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					title='Week Days'
 					options={weekDaysInitialValues}
 					selected={weekDays}
-					handleSaveOptions={(selected: any) => setWeekDays(selected)}
+					handleSaveOptions={(selected: any) => {
+						setWeekDays(selected)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 			{openLevelsModal && (
@@ -252,7 +295,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					title='Levels'
 					options={levelsInitialValues}
 					selected={levels}
-					handleSaveOptions={(selected: any) => setLevels(selected)}
+					handleSaveOptions={(selected: any) => {
+						setLevels(selected)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 			{openLocationsModal && (
@@ -262,7 +308,10 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 					title='Class Locations'
 					options={locationsInitialValues}
 					selected={location || ''}
-					handleSaveOption={(selected: string) => setLocation(selected as TLocation)}
+					handleSaveOption={(selected: string) => {
+						setLocation(selected as TLocation)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 		</S.ModalContainer>

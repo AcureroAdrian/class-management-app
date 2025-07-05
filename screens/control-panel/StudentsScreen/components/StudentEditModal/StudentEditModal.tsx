@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Switch, ScrollView } from 'react-native'
+import { Modal, Switch, ScrollView, Alert } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -49,6 +49,7 @@ const StudentEditModal = ({
 	const [isTeacher, setIsTeacher] = useState<boolean>(false)
 	const [isAdmin, setIsAdmin] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
+	const [isDirty, setIsDirty] = useState<boolean>(false)
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingGetStudentUserById, successGetStudentUserById, studentUserById, errorGetStudentUserById } =
@@ -92,6 +93,7 @@ const StudentEditModal = ({
 				)
 				setDob(dob)
 			}
+			setIsDirty(false)
 		}
 	}, [successGetStudentUserById])
 	useEffect(() => {
@@ -159,12 +161,14 @@ const StudentEditModal = ({
 		}
 
 		dispatch(updateStudentUserById(studentId, dataToUpdate))
+		setIsDirty(false)
 	}
 	const handleSelectDob = (date: Date) => {
 		setErrorMessage(null)
 		const currentDate = date || dob
 		setDob(currentDate)
 		setShowDatePicker(false)
+		setIsDirty(true)
 	}
 
 	const handleAdjustCredits = (adjustment: 1 | -1) => {
@@ -174,8 +178,26 @@ const StudentEditModal = ({
 		}
 	}
 
+	const handleClose = () => {
+		if (isDirty) {
+			Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to discard them?', [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Discard',
+					onPress: () => closeModal(),
+					style: 'destructive',
+				},
+			])
+		} else {
+			closeModal()
+		}
+	}
+
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<S.ModalContainer>
 				<ScreenHeader
 					label='Student Info'
@@ -184,7 +206,7 @@ const StudentEditModal = ({
 					disabledButton={loadingGetStudentUserById || loadingUpdateStudentUserById || loadingAdjustRecoveryCredits}
 					handleOnPress={handleUpdateStudent}
 					showBackButton={true}
-					handleBack={closeModal}
+					handleBack={handleClose}
 					loadingButtonAction={loadingUpdateStudentUserById}
 				/>
 				{loadingGetStudentUserById ? (
@@ -204,7 +226,10 @@ const StudentEditModal = ({
 												label='User ID'
 												placeholder='USER123'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setUserId}
+												onChangeText={(text) => {
+													setUserId(text)
+													setIsDirty(true)
+												}}
 												value={userId}
 												editable={!loadingUpdateStudentUserById && (role === 'admin' || userInfo?.isSuper)}
 												icon='account-key'
@@ -215,7 +240,10 @@ const StudentEditModal = ({
 												label='First Name'
 												placeholder='Manuel'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setName}
+												onChangeText={(text) => {
+													setName(text)
+													setIsDirty(true)
+												}}
 												value={name}
 												editable={!loadingUpdateStudentUserById}
 												icon='account'
@@ -224,7 +252,10 @@ const StudentEditModal = ({
 												label='Last Name'
 												placeholder='Smith'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setLastName}
+												onChangeText={(text) => {
+													setLastName(text)
+													setIsDirty(true)
+												}}
 												value={lastName}
 												editable={!loadingUpdateStudentUserById}
 												icon='account'
@@ -258,7 +289,10 @@ const StudentEditModal = ({
 												label='Email'
 												placeholder='manuel@gmail.com'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setEmail}
+												onChangeText={(text) => {
+													setEmail(text)
+													setIsDirty(true)
+												}}
 												value={email}
 												editable={!loadingUpdateStudentUserById}
 												icon='email'
@@ -267,7 +301,10 @@ const StudentEditModal = ({
 												label='Phone'
 												placeholder='+506 1234 5678'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setPhone}
+												onChangeText={(text) => {
+													setPhone(text)
+													setIsDirty(true)
+												}}
 												value={phone}
 												editable={!loadingUpdateStudentUserById}
 												icon='phone'
@@ -276,7 +313,10 @@ const StudentEditModal = ({
 												label='Notes'
 												placeholder='This student has 3 brothers...'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setNotes}
+												onChangeText={(text) => {
+													setNotes(text)
+													setIsDirty(true)
+												}}
 												value={notes}
 												editable={!loadingUpdateStudentUserById}
 												multiline={true}
@@ -336,7 +376,10 @@ const StudentEditModal = ({
 														trackColor={{ false: colors.variants.grey[2], true: colors.variants.secondary[4] }}
 														thumbColor={isTeacher ? colors.variants.secondary[5] : colors.variants.grey[0]}
 														ios_backgroundColor={colors.variants.grey[2]}
-														onValueChange={() => setIsTeacher(!isTeacher)}
+														onValueChange={() => {
+															setIsTeacher(!isTeacher)
+															setIsDirty(true)
+														}}
 														value={isTeacher}
 													/>
 												</S.SwitchOption>
@@ -351,7 +394,10 @@ const StudentEditModal = ({
 														trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
 														thumbColor={isAdmin ? colors.variants.primary[5] : colors.variants.grey[0]}
 														ios_backgroundColor={colors.variants.grey[2]}
-														onValueChange={() => setIsAdmin(!isAdmin)}
+														onValueChange={() => {
+															setIsAdmin(!isAdmin)
+															setIsDirty(true)
+														}}
 														value={isAdmin}
 													/>
 												</S.SwitchOption>
@@ -386,7 +432,10 @@ const StudentEditModal = ({
 					title='Student Levels'
 					options={levelsInitialValues}
 					selected={level || ''}
-					handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
+					handleSaveOption={(selected: string) => {
+						setLevel(selected as TUserLevel)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 		</Modal>

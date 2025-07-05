@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Switch, ScrollView } from 'react-native'
+import { Modal, Switch, ScrollView, Alert } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -41,6 +41,7 @@ const StudentsRegisterModal = ({
 	const [isAdmin, setIsAdmin] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
+	const [isDirty, setIsDirty] = useState<boolean>(false)
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingRegisterStudents, errorRegisterStudents } = useAppSelector((state) => state.registerStudents)
@@ -96,10 +97,29 @@ const StudentsRegisterModal = ({
 		const currentDate = date || dob
 		setDob(currentDate)
 		setShowDatePicker(false)
+		setIsDirty(true)
+	}
+
+	const handleClose = () => {
+		if (isDirty) {
+			Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to discard them?', [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Discard',
+					onPress: () => closeModal(),
+					style: 'destructive',
+				},
+			])
+		} else {
+			closeModal()
+		}
 	}
 
 	return (
-		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<Modal visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<S.ModalContainer>
 				<ScreenHeader
 					label='Add Student'
@@ -109,7 +129,7 @@ const StudentsRegisterModal = ({
 					loadingButtonAction={loadingRegisterStudents}
 					handleOnPress={handleRegisterStudents}
 					showBackButton={true}
-					handleBack={closeModal}
+					handleBack={handleClose}
 				/>
 				<S.ContentContainer>
 					<KeyboardAvoidingWrapper>
@@ -128,7 +148,10 @@ const StudentsRegisterModal = ({
 										label='User ID'
 										placeholder='USER123'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={(text) => setUserId(text.trim().toUpperCase())}
+										onChangeText={(text) => {
+											setUserId(text.trim().toUpperCase())
+											setIsDirty(true)
+										}}
 										value={userId}
 										editable={!loadingRegisterStudents}
 										icon='account-key'
@@ -139,7 +162,10 @@ const StudentsRegisterModal = ({
 										label='First Name'
 										placeholder='Manuel'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={setStudentName}
+										onChangeText={(text) => {
+											setStudentName(text)
+											setIsDirty(true)
+										}}
 										value={studentName}
 										editable={!loadingRegisterStudents}
 										icon='account'
@@ -148,7 +174,10 @@ const StudentsRegisterModal = ({
 										label='Last Name'
 										placeholder='Smith'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={setStudentLastName}
+										onChangeText={(text) => {
+											setStudentLastName(text)
+											setIsDirty(true)
+										}}
 										value={studentLastName}
 										editable={!loadingRegisterStudents}
 										icon='account'
@@ -182,7 +211,10 @@ const StudentsRegisterModal = ({
 										label='Email'
 										placeholder='manuel@gmail.com'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={setEmail}
+										onChangeText={(text) => {
+											setEmail(text)
+											setIsDirty(true)
+										}}
 										value={email}
 										editable={!loadingRegisterStudents}
 										icon='email'
@@ -191,7 +223,10 @@ const StudentsRegisterModal = ({
 										label='Phone'
 										placeholder='+506 1234 5678'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={setPhone}
+										onChangeText={(text) => {
+											setPhone(text)
+											setIsDirty(true)
+										}}
 										value={phone}
 										editable={!loadingRegisterStudents}
 										icon='phone'
@@ -200,7 +235,10 @@ const StudentsRegisterModal = ({
 										label='Notes'
 										placeholder='This student has 3 brothers...'
 										placeholderTextColor={colors.darkLight}
-										onChangeText={setNotes}
+										onChangeText={(text) => {
+											setNotes(text)
+											setIsDirty(true)
+										}}
 										value={notes}
 										editable={!loadingRegisterStudents}
 										multiline={true}
@@ -223,7 +261,10 @@ const StudentsRegisterModal = ({
 												trackColor={{ false: colors.variants.grey[2], true: colors.variants.secondary[4] }}
 												thumbColor={isTeacher ? colors.variants.secondary[5] : colors.variants.grey[0]}
 												ios_backgroundColor={colors.variants.grey[2]}
-												onValueChange={() => setIsTeacher(!isTeacher)}
+												onValueChange={() => {
+													setIsTeacher(!isTeacher)
+													setIsDirty(true)
+												}}
 												value={isTeacher}
 											/>
 										</S.SwitchOption>
@@ -238,7 +279,10 @@ const StudentsRegisterModal = ({
 												trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
 												thumbColor={isAdmin ? colors.variants.primary[5] : colors.variants.grey[0]}
 												ios_backgroundColor={colors.variants.grey[2]}
-												onValueChange={() => setIsAdmin(!isAdmin)}
+												onValueChange={() => {
+													setIsAdmin(!isAdmin)
+													setIsDirty(true)
+												}}
 												value={isAdmin}
 											/>
 										</S.SwitchOption>
@@ -267,7 +311,10 @@ const StudentsRegisterModal = ({
 					title='Student Levels'
 					options={levelsInitialValues}
 					selected={level || ''}
-					handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
+					handleSaveOption={(selected: string) => {
+						setLevel(selected as TUserLevel)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 		</Modal>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { isDate } from 'date-fns'
+import { Alert } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -51,6 +52,7 @@ const ClassEditModal = ({
 	const [openLevelsModal, setOpenLevelsModal] = useState<boolean>(false)
 	const [openLocationsModal, setOpenLocationsModal] = useState<boolean>(false)
 	const [openAssignedStudentsModal, setOpenAssignedStudentsModal] = useState<boolean>(false)
+	const [isDirty, setIsDirty] = useState<boolean>(false)
 
 	const { loadingGetKarateClassById, successGetKarateClassById, karateClassById, errorGetKarateClassById } =
 		useAppSelector((state: RootState) => state.getKarateClassById)
@@ -83,6 +85,7 @@ const ClassEditModal = ({
 			const date = new Date()
 			date.setHours(karateClassById.startTime.hour, karateClassById.startTime.minute)
 			setStartTime(date)
+			setIsDirty(false)
 		}
 	}, [successGetKarateClassById])
 	useEffect(() => {
@@ -102,6 +105,7 @@ const ClassEditModal = ({
 		const currentDate = date || startTime
 		setStartTime(currentDate)
 		setShowDate(false)
+		setIsDirty(true)
 	}
 	const handleUpdateClass = () => {
 		setErrorMessage(null)
@@ -115,6 +119,12 @@ const ClassEditModal = ({
 		}
 		if (!startTime || !isDate(new Date(startTime))) {
 			setErrorMessage('Please select a start time')
+			return
+		}
+
+		const studentLimit = location?.toLowerCase() === 'katy' ? 20 : 40
+		if (studentsAssigned.length > studentLimit) {
+			setErrorMessage(`The number of students for ${capitalizeWords(location)} location cannot exceed ${studentLimit}.`)
 			return
 		}
 
@@ -138,14 +148,34 @@ const ClassEditModal = ({
 		}
 
 		dispatch(updatekarateClassById(classId, dataToUpdate))
+		setIsDirty(false)
 	}
 	const handleAssignStudents = (students: string[]) => {
 		setErrorMessage(null)
 		setStudentsAssigned(students)
+		setIsDirty(true)
+	}
+
+	const handleClose = () => {
+		if (isDirty) {
+			Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to discard them?', [
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Discard',
+					onPress: () => closeModal(),
+					style: 'destructive',
+				},
+			])
+		} else {
+			closeModal()
+		}
 	}
 
 	return (
-		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
+		<S.ModalContainer visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<S.ModalView>
 				<ScreenHeader
 					label='Class Info'
@@ -155,7 +185,7 @@ const ClassEditModal = ({
 					loadingButtonAction={loadingUpdateKarateClassById}
 					handleOnPress={handleUpdateClass}
 					showBackButton={true}
-					handleBack={closeModal}
+					handleBack={handleClose}
 				/>
 				<S.ContentContainer>
 					{loadingGetKarateClassById ? (
@@ -180,7 +210,10 @@ const ClassEditModal = ({
 												label='Class Name'
 												placeholder='Mon 7 PM Class'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setName}
+												onChangeText={(text) => {
+													setName(text)
+													setIsDirty(true)
+												}}
 												value={name}
 												editable={!loadingUpdateKarateClassById}
 												multiline={true}
@@ -190,7 +223,10 @@ const ClassEditModal = ({
 												label='Additional Info'
 												placeholder='Its a description ...'
 												placeholderTextColor={colors.darkLight}
-												onChangeText={setDescription}
+												onChangeText={(text) => {
+													setDescription(text)
+													setIsDirty(true)
+												}}
 												value={description}
 												editable={!loadingUpdateKarateClassById}
 												multiline={true}
@@ -260,8 +296,14 @@ const ClassEditModal = ({
 											<AgeRangeInput
 												minAge={minAge}
 												maxAge={maxAge}
-												saveMinAge={(value: number) => setMinAge(value)}
-												saveMaxAge={(value: number) => setMaxAge(value)}
+												saveMinAge={(value: number) => {
+													setMinAge(value)
+													setIsDirty(true)
+												}}
+												saveMaxAge={(value: number) => {
+													setMaxAge(value)
+													setIsDirty(true)
+												}}
 											/>
 										</S.FormGroup>
 									</S.FormSection>
@@ -290,7 +332,10 @@ const ClassEditModal = ({
 					title='Week Days'
 					options={weekDaysInitialValues}
 					selected={weekDays}
-					handleSaveOptions={(selected: any) => setWeekDays(selected)}
+					handleSaveOptions={(selected: any) => {
+						setWeekDays(selected)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 			{openLevelsModal && (
@@ -300,7 +345,10 @@ const ClassEditModal = ({
 					title='Levels'
 					options={levelsInitialValues}
 					selected={levels}
-					handleSaveOptions={(selected: any) => setLevels(selected)}
+					handleSaveOptions={(selected: any) => {
+						setLevels(selected)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 			{openAssignedStudentsModal && (
@@ -318,7 +366,10 @@ const ClassEditModal = ({
 					title='Class Locations'
 					options={locationsInitialValues}
 					selected={location || ''}
-					handleSaveOption={(selected: string) => setLocation(selected as TLocation)}
+					handleSaveOption={(selected: string) => {
+						setLocation(selected as TLocation)
+						setIsDirty(true)
+					}}
 				/>
 			)}
 		</S.ModalContainer>
