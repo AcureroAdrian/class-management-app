@@ -191,3 +191,30 @@ export const registerTrialStudent = (dataToSend: any) => async (dispatch: Dispat
 		})
 	}
 }
+
+export const adjustStudentRecoveryCredits =
+	(studentId: string, adjustment: 1 | -1) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.ADJUST_RECOVERY_CREDITS_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.post(`/api/users/${studentId}/adjust-credits`, { adjustment }, config)
+
+			dispatch({ type: types.ADJUST_RECOVERY_CREDITS_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.ADJUST_RECOVERY_CREDITS_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

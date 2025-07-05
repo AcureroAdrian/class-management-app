@@ -39,6 +39,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const [deleteId, setDeleteId] = useState<string>('')
 	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
 	const [recoveryClasses, setRecoveryClasses] = useState<any[]>([])
+	const [recoveryCreditsAdjustment, setRecoveryCreditsAdjustment] = useState<number>(0)
 	const [openReserveRecoveryClassModal, setOpenReserveRecoveryClassModal] = useState<boolean>(false)
 	const [openDeleteRecoveryClassModal, setOpenDeleteRecoveryClassModal] = useState<boolean>(false)
 	const [recoveryClassIdSelected, setRecoveryClassIdSelected] = useState<string>('')
@@ -98,6 +99,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setDeleteId('')
 			setKarateClasses(karateClassesForStudentList.karateClasses)
 			setRecoveryClasses(karateClassesForStudentList.absents)
+			setRecoveryCreditsAdjustment(karateClassesForStudentList.recoveryCreditsAdjustment || 0)
 		}
 	}, [successKarateClassesForStudent])
 
@@ -211,7 +213,16 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		return classSelected
 	}, [classIdSelected])
 	const recoveryClassCredits = useMemo(() => {
-		return (recoveryClasses || []).filter((e) => !e?.recoveryClass)?.length
+		const unbookedAbsences = (recoveryClasses || []).filter((e) => !e?.recoveryClass)?.length
+		return unbookedAbsences + recoveryCreditsAdjustment
+	}, [recoveryClasses, recoveryCreditsAdjustment])
+
+	const attendanceIdToUse = useMemo(() => {
+		const unbookedAbsences = (recoveryClasses || []).filter((e) => !e?.recoveryClass)
+		if (unbookedAbsences.length > 0) {
+			return unbookedAbsences[0]?._id
+		}
+		return undefined
 	}, [recoveryClasses])
 
 	return (
@@ -353,7 +364,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					location={karateClassSelected?.location!}
 					karateClassId={karateClassSelected?._id!}
 					karateClassName={karateClassSelected?.name || ''}
-					attendanceId={recoveryClasses?.[0]?._id}
+					attendanceId={attendanceIdToUse}
 				/>
 			)}
 			{openDeleteRecoveryClassModal && (

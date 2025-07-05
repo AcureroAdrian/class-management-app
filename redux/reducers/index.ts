@@ -13,6 +13,7 @@ import {
 	updateKarateClassByIdReducer,
 } from './karateClassReducers'
 import {
+	adjustRecoveryCreditsReducer,
 	deleteStudentUserByIdReducer,
 	getStudentUserByIdReducer,
 	getStudentUsersReducer,
@@ -41,6 +42,7 @@ const loginPersistConfig = {
 }
 
 export default combineReducers({
+	adjustRecoveryCredits: adjustRecoveryCreditsReducer,
 	addStudentToAttendance: addStudentToAttendanceReducer,
 	bookingRecoveryClassById: bookingRecoveryClassByIdReducer,
 	deleteHolidayById: deleteHolidayByIdReducer,

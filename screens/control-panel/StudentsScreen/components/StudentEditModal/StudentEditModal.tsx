@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Switch, ScrollView } from 'react-native'
+import { Modal, Switch, ScrollView, TouchableOpacity } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
@@ -12,8 +13,12 @@ import { levelsInitialValues } from '../../helpers/student-screen-initial-values
 import capitalizeWords from '@/shared/capitalize-words'
 import { TUserLevel, TUserRole } from '@/shared/common-types'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { getStudentUserById, updateStudentUserById } from '@/redux/actions/userActions'
-import { GET_STUDENT_USER_BY_ID_RESET, UPDATE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
+import { adjustStudentRecoveryCredits, getStudentUserById, updateStudentUserById } from '@/redux/actions/userActions'
+import {
+	ADJUST_RECOVERY_CREDITS_RESET,
+	GET_STUDENT_USER_BY_ID_RESET,
+	UPDATE_STUDENT_USER_BY_ID_RESET,
+} from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import * as S from './styles'
@@ -51,11 +56,15 @@ const StudentEditModal = ({
 	const { loadingUpdateStudentUserById, errorUpdateStudentUserById } = useAppSelector(
 		(state) => state.updateStudentUserById,
 	)
+	const { loadingAdjustRecoveryCredits, errorAdjustRecoveryCredits } = useAppSelector(
+		(state) => state.adjustRecoveryCredits,
+	)
 
 	useEffect(() => {
 		return () => {
 			dispatch({ type: GET_STUDENT_USER_BY_ID_RESET })
 			dispatch({ type: UPDATE_STUDENT_USER_BY_ID_RESET })
+			dispatch({ type: ADJUST_RECOVERY_CREDITS_RESET })
 			closeModal()
 		}
 	}, [])
@@ -96,6 +105,12 @@ const StudentEditModal = ({
 			dispatch({ type: UPDATE_STUDENT_USER_BY_ID_RESET })
 		}
 	}, [errorUpdateStudentUserById])
+	useEffect(() => {
+		if (errorAdjustRecoveryCredits) {
+			setErrorMessage(errorAdjustRecoveryCredits)
+			dispatch({ type: ADJUST_RECOVERY_CREDITS_RESET })
+		}
+	}, [errorAdjustRecoveryCredits])
 
 	const handleUpdateStudent = () => {
 		setErrorMessage(null)
@@ -152,6 +167,13 @@ const StudentEditModal = ({
 		setShowDatePicker(false)
 	}
 
+	const handleAdjustCredits = (adjustment: 1 | -1) => {
+		setErrorMessage(null)
+		if (role === 'admin' || userInfo?.isSuper) {
+			dispatch(adjustStudentRecoveryCredits(studentId, adjustment))
+		}
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<S.ModalContainer>
@@ -159,7 +181,7 @@ const StudentEditModal = ({
 					label='Student Info'
 					labelButton='Save'
 					iconName='content-save'
-					disabledButton={loadingGetStudentUserById || loadingUpdateStudentUserById}
+					disabledButton={loadingGetStudentUserById || loadingUpdateStudentUserById || loadingAdjustRecoveryCredits}
 					handleOnPress={handleUpdateStudent}
 					showBackButton={true}
 					handleBack={closeModal}
@@ -250,6 +272,34 @@ const StudentEditModal = ({
 										submitBehavior='blurAndSubmit'
 										icon='note'
 									/>
+									{(role === 'admin' || userInfo?.isSuper) && (
+										<S.CreditsContainer>
+											<S.CreditsInfoContainer>
+												<S.CreditsInfo>
+													<S.CreditsLabel>Total Credits:</S.CreditsLabel>
+													<S.CreditsValue>{studentUserById?.totalRecoveryCredits ?? 0}</S.CreditsValue>
+												</S.CreditsInfo>
+												<S.CreditsInfo>
+													<S.CreditsLabel>Adjusted:</S.CreditsLabel>
+													<S.CreditsValue>{studentUserById?.recoveryCreditsAdjustment ?? 0}</S.CreditsValue>
+												</S.CreditsInfo>
+											</S.CreditsInfoContainer>
+											<S.CreditsActions>
+												<TouchableOpacity
+													onPress={() => handleAdjustCredits(-1)}
+													disabled={loadingAdjustRecoveryCredits}
+												>
+													<MaterialCommunityIcons name='minus-circle' size={32} color={colors.view.secondary} />
+												</TouchableOpacity>
+												<TouchableOpacity
+													onPress={() => handleAdjustCredits(1)}
+													disabled={loadingAdjustRecoveryCredits}
+												>
+													<MaterialCommunityIcons name='plus-circle' size={32} color={colors.view.primary} />
+												</TouchableOpacity>
+											</S.CreditsActions>
+										</S.CreditsContainer>
+									)}
 									<S.SwitchContainer>
 										{role === 'admin' && (
 											<S.SwitchOption>

@@ -24,6 +24,8 @@ interface IUser {
 	token: string
 	scheduledDeletionDate?: string
 	isTrial?: boolean
+	recoveryCreditsAdjustment?: number
+	totalRecoveryCredits?: number
 }
 interface IStudent {
 	_id: string
@@ -102,6 +104,12 @@ interface IDeleteStudentUserByIdState {
 	errorDeleteStudentUserById?: string
 }
 
+interface IAdjustRecoveryCreditsState {
+	loadingAdjustRecoveryCredits?: boolean
+	successAdjustRecoveryCredits?: boolean
+	errorAdjustRecoveryCredits?: string
+}
+
 type TUserLoginReducer = Reducer<IUserLoginState, any>
 type TGetStudentUsersReducer = Reducer<IGetStudentUsersState, any>
 type TRegisterStudentsReducer = Reducer<IRegisterStudentsState, any>
@@ -109,6 +117,7 @@ type TRegisterTrialStudentReducer = Reducer<IRegisterTrialStudentState, any>
 type TGetStudentUserByIdReducer = Reducer<IGetStudentUserByIdState, any>
 type TUpdateStudentUserByIdReducer = Reducer<IUpdateStudentUserByIdState, any>
 type TDeleteStudentUserByIdReducer = Reducer<IDeleteStudentUserByIdState, any>
+type TAdjustRecoveryCreditsReducer = Reducer<IAdjustRecoveryCreditsState, any>
 
 export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 	switch (action.type) {
@@ -207,6 +216,11 @@ export const getStudentUserByIdReducer: TGetStudentUserByIdReducer = (state = {}
 				successGetStudentUserById: true,
 				studentUserById: action.payload,
 			}
+		case types.ADJUST_RECOVERY_CREDITS_SUCCESS:
+			return {
+				...state,
+				studentUserById: action.payload,
+			}
 		case types.GET_STUDENT_USER_BY_ID_FAIL:
 			return {
 				loadingGetStudentUserById: false,
@@ -257,6 +271,27 @@ export const deleteStudentUserByIdReducer: TDeleteStudentUserByIdReducer = (stat
 				errorDeleteStudentUserById: action.payload,
 			}
 		case types.DELETE_STUDENT_USER_BY_ID_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+export const adjustRecoveryCreditsReducer: TAdjustRecoveryCreditsReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.ADJUST_RECOVERY_CREDITS_REQUEST:
+			return { loadingAdjustRecoveryCredits: true }
+		case types.ADJUST_RECOVERY_CREDITS_SUCCESS:
+			return {
+				loadingAdjustRecoveryCredits: false,
+				successAdjustRecoveryCredits: true,
+			}
+		case types.ADJUST_RECOVERY_CREDITS_FAIL:
+			return {
+				loadingAdjustRecoveryCredits: false,
+				errorAdjustRecoveryCredits: action.payload,
+			}
+		case types.ADJUST_RECOVERY_CREDITS_RESET:
 			return {}
 		default:
 			return state

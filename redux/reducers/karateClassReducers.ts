@@ -40,7 +40,7 @@ interface IDeleteKarateClassByIdState {
 interface IGetKarateClassesForStudentState {
 	loadingKarateClassesForStudent?: boolean
 	successKarateClassesForStudent?: boolean
-	karateClassesForStudentList?: { karateClasses: any[]; absents: any[] }
+	karateClassesForStudentList?: { karateClasses: any[]; absents: any[]; recoveryCreditsAdjustment?: number }
 	errorKarateClassesForStudent?: string
 }
 interface IGetKarateClassesByStudentIdState {

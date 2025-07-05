@@ -44,4 +44,41 @@ export const SwitchOption = styled.View`
 export const SwitchLabel = styled.Text`
 	color: ${colors.variants.secondary[5]};
 	font-weight: 500;
+`
+
+export const CreditsContainer = styled.View`
+	width: 100%;
+	border: 1px solid ${colors.view.tertiary};
+	border-radius: 8px;
+	padding: 16px;
+	background-color: ${colors.darkLight};
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+`
+
+export const CreditsInfoContainer = styled.View`
+	gap: 8px;
+`
+
+export const CreditsInfo = styled.View`
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+`
+
+export const CreditsLabel = styled.Text`
+	color: ${colors.view.primary};
+	font-weight: bold;
+	font-size: 16px;
+`
+
+export const CreditsValue = styled.Text`
+	color: ${colors.view.primary};
+	font-size: 16px;
+`
+
+export const CreditsActions = styled.View`
+	flex-direction: row;
+	gap: 16px;
 ` 
