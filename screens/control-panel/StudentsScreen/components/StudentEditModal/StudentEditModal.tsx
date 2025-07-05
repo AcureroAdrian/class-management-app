@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Switch, ScrollView, TouchableOpacity } from 'react-native'
+import { Modal, Switch, ScrollView } from 'react-native'
 import { format } from 'date-fns'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -195,137 +195,169 @@ const StudentEditModal = ({
 					<>
 						<S.ContentContainer>
 							<KeyboardAvoidingWrapper>
-								<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
-									<CustomInputForm
-										label='User ID'
-										placeholder='USER123'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setUserId}
-										value={userId}
-										editable={!loadingUpdateStudentUserById && (role === 'admin' || userInfo?.isSuper)}
-										icon='account-key'
-										autoCapitalize='characters'
-										maxLength={20}
-									/>
-									<CustomInputForm
-										label='First Name'
-										placeholder='Manuel'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setName}
-										value={name}
-										editable={!loadingUpdateStudentUserById}
-										icon='account'
-									/>
-									<CustomInputForm
-										label='Last Name'
-										placeholder='Smith'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setLastName}
-										value={lastName}
-										editable={!loadingUpdateStudentUserById}
-										icon='account'
-									/>
-									<CustomInputForm
-										label='Date of Birth'
-										placeholder='YYY - MM - DD'
-										placeholderTextColor={colors.darkLight}
-										value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
-										editable={false}
-										onPress={() => !loadingUpdateStudentUserById && setShowDatePicker(true)}
-										icon='calendar'
-									/>
-									<CustomInputForm
-										label='Level'
-										placeholder='novice'
-										placeholderTextColor={colors.darkLight}
-										value={level}
-										editable={false}
-										onPress={() => !loadingUpdateStudentUserById && setOpenLevelModal(true)}
-										icon='karate'
-									/>
-									<CustomInputForm
-										label='Email'
-										placeholder='manuel@gmail.com'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setEmail}
-										value={email}
-										editable={!loadingUpdateStudentUserById}
-										icon='email'
-									/>
-									<CustomInputForm
-										label='Phone'
-										placeholder='+506 1234 5678'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setPhone}
-										value={phone}
-										editable={!loadingUpdateStudentUserById}
-										icon='phone'
-									/>
-									<CustomInputForm
-										label='Notes'
-										placeholder='This student has 3 brothers...'
-										placeholderTextColor={colors.darkLight}
-										onChangeText={setNotes}
-										value={notes}
-										editable={!loadingUpdateStudentUserById}
-										multiline={true}
-										submitBehavior='blurAndSubmit'
-										icon='note'
-									/>
+								<ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+									{/* Personal Information */}
+									<S.FormSection>
+										<S.SectionTitle>Personal Information</S.SectionTitle>
+										<S.FormGroup>
+											<CustomInputForm
+												label='User ID'
+												placeholder='USER123'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setUserId}
+												value={userId}
+												editable={!loadingUpdateStudentUserById && (role === 'admin' || userInfo?.isSuper)}
+												icon='account-key'
+												autoCapitalize='characters'
+												maxLength={20}
+											/>
+											<CustomInputForm
+												label='First Name'
+												placeholder='Manuel'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setName}
+												value={name}
+												editable={!loadingUpdateStudentUserById}
+												icon='account'
+											/>
+											<CustomInputForm
+												label='Last Name'
+												placeholder='Smith'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setLastName}
+												value={lastName}
+												editable={!loadingUpdateStudentUserById}
+												icon='account'
+											/>
+											<CustomInputForm
+												label='Date of Birth'
+												placeholder='YYY - MM - DD'
+												placeholderTextColor={colors.darkLight}
+												value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+												editable={false}
+												onPress={() => !loadingUpdateStudentUserById && setShowDatePicker(true)}
+												icon='calendar'
+											/>
+											<CustomInputForm
+												label='Level'
+												placeholder='novice'
+												placeholderTextColor={colors.darkLight}
+												value={level}
+												editable={false}
+												onPress={() => !loadingUpdateStudentUserById && setOpenLevelModal(true)}
+												icon='karate'
+											/>
+										</S.FormGroup>
+									</S.FormSection>
+
+									{/* Contact Information */}
+									<S.FormSection>
+										<S.SectionTitle>Contact Information</S.SectionTitle>
+										<S.FormGroup>
+											<CustomInputForm
+												label='Email'
+												placeholder='manuel@gmail.com'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setEmail}
+												value={email}
+												editable={!loadingUpdateStudentUserById}
+												icon='email'
+											/>
+											<CustomInputForm
+												label='Phone'
+												placeholder='+506 1234 5678'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setPhone}
+												value={phone}
+												editable={!loadingUpdateStudentUserById}
+												icon='phone'
+											/>
+											<CustomInputForm
+												label='Notes'
+												placeholder='This student has 3 brothers...'
+												placeholderTextColor={colors.darkLight}
+												onChangeText={setNotes}
+												value={notes}
+												editable={!loadingUpdateStudentUserById}
+												multiline={true}
+												submitBehavior='blurAndSubmit'
+												icon='note'
+											/>
+										</S.FormGroup>
+									</S.FormSection>
+
+									{/* Credit Management */}
 									{(role === 'admin' || userInfo?.isSuper) && (
 										<S.CreditsContainer>
-											<S.CreditsInfoContainer>
-												<S.CreditsInfo>
-													<S.CreditsLabel>Total Credits:</S.CreditsLabel>
-													<S.CreditsValue>{studentUserById?.totalRecoveryCredits ?? 0}</S.CreditsValue>
-												</S.CreditsInfo>
-												<S.CreditsInfo>
-													<S.CreditsLabel>Adjusted:</S.CreditsLabel>
-													<S.CreditsValue>{studentUserById?.recoveryCreditsAdjustment ?? 0}</S.CreditsValue>
-												</S.CreditsInfo>
-											</S.CreditsInfoContainer>
-											<S.CreditsActions>
-												<TouchableOpacity
-													onPress={() => handleAdjustCredits(-1)}
-													disabled={loadingAdjustRecoveryCredits}
-												>
-													<MaterialCommunityIcons name='minus-circle' size={32} color={colors.view.secondary} />
-												</TouchableOpacity>
-												<TouchableOpacity
-													onPress={() => handleAdjustCredits(1)}
-													disabled={loadingAdjustRecoveryCredits}
-												>
-													<MaterialCommunityIcons name='plus-circle' size={32} color={colors.view.primary} />
-												</TouchableOpacity>
-											</S.CreditsActions>
+											<S.CreditsHeader>
+												<S.CreditsTitle>Credit Management</S.CreditsTitle>
+												<S.CreditsSubtitle>Manage the student's recovery credits</S.CreditsSubtitle>
+											</S.CreditsHeader>
+											<S.CreditsContent>
+												<S.CreditsInfoContainer>
+													<S.CreditsInfo>
+														<S.CreditsLabel>Total:</S.CreditsLabel>
+														<S.CreditsValue>{studentUserById?.totalRecoveryCredits ?? 0}</S.CreditsValue>
+													</S.CreditsInfo>
+													<S.CreditsInfo>
+														<S.CreditsLabel>Adjusted:</S.CreditsLabel>
+														<S.CreditsValue>{studentUserById?.recoveryCreditsAdjustment ?? 0}</S.CreditsValue>
+													</S.CreditsInfo>
+												</S.CreditsInfoContainer>
+												<S.CreditsActions>
+													<S.CreditButtonMinus
+														onPress={() => handleAdjustCredits(-1)}
+														disabled={loadingAdjustRecoveryCredits}
+													>
+														<MaterialCommunityIcons name='minus' size={24} color={colors.variants.primary[5]} />
+													</S.CreditButtonMinus>
+													<S.CreditButtonPlus
+														onPress={() => handleAdjustCredits(1)}
+														disabled={loadingAdjustRecoveryCredits}
+													>
+														<MaterialCommunityIcons name='plus' size={24} color={colors.variants.secondary[5]} />
+													</S.CreditButtonPlus>
+												</S.CreditsActions>
+											</S.CreditsContent>
 										</S.CreditsContainer>
 									)}
-									<S.SwitchContainer>
-										{role === 'admin' && (
-											<S.SwitchOption>
-												<Switch
-													trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-													thumbColor={colors.variants.secondary[0]}
-													ios_backgroundColor={colors.variants.secondary[2]}
-													onValueChange={() => setIsTeacher(!isTeacher)}
-													value={isTeacher}
-												/>
-												<S.SwitchLabel>Is Teacher</S.SwitchLabel>
-											</S.SwitchOption>
-										)}
-										{userInfo?.isSuper && (
-											<S.SwitchOption>
-												<Switch
-													trackColor={{ false: colors.variants.secondary[2], true: colors.variants.secondary[5] }}
-													thumbColor={colors.variants.secondary[0]}
-													ios_backgroundColor={colors.variants.secondary[2]}
-													onValueChange={() => setIsAdmin(!isAdmin)}
-													value={isAdmin}
-												/>
-												<S.SwitchLabel>Is Admin</S.SwitchLabel>
-											</S.SwitchOption>
-										)}
-									</S.SwitchContainer>
+
+									{/* Permissions and Roles */}
+									{(role === 'admin' || userInfo?.isSuper) && (
+										<S.SwitchContainer>
+											<S.SectionTitle>Permissions and Roles</S.SectionTitle>
+											{role === 'admin' && (
+												<S.SwitchOption>
+													<S.SwitchInfo>
+														<S.SwitchLabel>Is Teacher</S.SwitchLabel>
+														<S.SwitchDescription>Grants permissions to manage classes</S.SwitchDescription>
+													</S.SwitchInfo>
+													<Switch
+														trackColor={{ false: colors.variants.grey[2], true: colors.variants.secondary[4] }}
+														thumbColor={isTeacher ? colors.variants.secondary[5] : colors.variants.grey[0]}
+														ios_backgroundColor={colors.variants.grey[2]}
+														onValueChange={() => setIsTeacher(!isTeacher)}
+														value={isTeacher}
+													/>
+												</S.SwitchOption>
+											)}
+											{userInfo?.isSuper && (
+												<S.SwitchOption>
+													<S.SwitchInfo>
+														<S.SwitchLabel>Is Admin</S.SwitchLabel>
+														<S.SwitchDescription>Grants full administrative permissions</S.SwitchDescription>
+													</S.SwitchInfo>
+													<Switch
+														trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
+														thumbColor={isAdmin ? colors.variants.primary[5] : colors.variants.grey[0]}
+														ios_backgroundColor={colors.variants.grey[2]}
+														onValueChange={() => setIsAdmin(!isAdmin)}
+														value={isAdmin}
+													/>
+												</S.SwitchOption>
+											)}
+										</S.SwitchContainer>
+									)}
 								</ScrollView>
 							</KeyboardAvoidingWrapper>
 						</S.ContentContainer>
