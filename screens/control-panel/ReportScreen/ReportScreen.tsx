@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import DailyReportModal from './components/DailyReportModal'
 import StudentReportModal from './components/StudentReportModal'
@@ -29,74 +29,184 @@ const ReportScreen = ({ role }: { role: TUserRole }) => {
 		}
 	}, [])
 
+	const ReportCard = ({ 
+		title, 
+		description, 
+		icon, 
+		onPress, 
+		gradient = false 
+	}: {
+		title: string
+		description: string
+		icon: string
+		onPress: () => void
+		gradient?: boolean
+	}) => (
+		<Pressable 
+			onPress={onPress}
+			style={({ pressed }) => [
+				{
+					width: '100%',
+					backgroundColor: gradient ? colors.brand : colors.view.primary,
+					borderRadius: 16,
+					padding: 20,
+					marginBottom: 16,
+					shadowColor: '#000',
+					shadowOffset: {
+						width: 0,
+						height: 2,
+					},
+					shadowOpacity: 0.1,
+					shadowRadius: 8,
+					elevation: 3,
+					borderWidth: 1,
+					borderColor: gradient ? 'transparent' : colors.variants.secondary[1],
+					transform: [{ scale: pressed ? 0.98 : 1 }],
+				}
+			]}
+		>
+			<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+				<View style={{ flex: 1 }}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+						<View style={{ 
+							backgroundColor: gradient ? 'rgba(255,255,255,0.2)' : colors.variants.secondary[1],
+							borderRadius: 12,
+							padding: 10,
+							marginRight: 16
+						}}>
+							<MaterialCommunityIcons 
+								name={icon as any} 
+								size={24} 
+								color={gradient ? colors.view.primary : colors.brand} 
+							/>
+						</View>
+						<Text style={{ 
+							fontSize: 18, 
+							fontWeight: '700', 
+							color: gradient ? colors.view.primary : colors.variants.secondary[5],
+							flex: 1,
+							letterSpacing: -0.3
+						}}>
+							{title}
+						</Text>
+					</View>
+					<Text style={{ 
+						fontSize: 14, 
+						color: gradient ? 'rgba(255,255,255,0.85)' : colors.variants.grey[4],
+						lineHeight: 20,
+						marginLeft: 50,
+						letterSpacing: -0.1
+					}}>
+						{description}
+					</Text>
+				</View>
+				<MaterialCommunityIcons 
+					name='chevron-right' 
+					size={20} 
+					color={gradient ? 'rgba(255,255,255,0.6)' : colors.variants.grey[3]} 
+				/>
+			</View>
+		</Pressable>
+	)
+
 	return (
 		<>
-			<View
-				style={{
-					flex: 1,
-					width: '100%',
-					justifyContent: 'flex-start',
-					alignItems: 'center',
-				}}
-			>
+			<View style={{ flex: 1, backgroundColor: colors.primary }}>
 				<ScreenHeader label='Reports' />
-				<View
-					style={{ width: '100%', flex: 1, alignItems: 'center', gap: 20, paddingHorizontal: 20, paddingVertical: 20 }}
+				
+				<ScrollView 
+					style={{ flex: 1 }}
+					contentContainerStyle={{
+						paddingHorizontal: 20,
+						paddingTop: 24,
+						paddingBottom: 40,
+					}}
+					showsVerticalScrollIndicator={false}
 				>
-					{role === 'admin' && (
-						<View
-							style={{
-								width: '100%',
-								padding: 20,
-								backgroundColor: colors.variants.secondary[0],
-								borderRadius: 20,
-							}}
-						>
-							<Pressable onPress={() => setOpenDailyReportModal(true)}>
-								<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Daily Report</Text>
-								<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
-									Grouped and sorted by days.
-								</Text>
-								<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
-							</Pressable>
-						</View>
-					)}
-					<View
-						style={{
-							width: '100%',
-							padding: 20,
-							backgroundColor: colors.variants.secondary[0],
-							borderRadius: 20,
-						}}
-					>
-						<Pressable onPress={() => setOpenStudentReportModal(true)}>
-							<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Student Report</Text>
-							<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
-								Attendance information for a student.
-							</Text>
-							<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
-						</Pressable>
+					{/* Header Section */}
+					<View style={{ marginBottom: 32 }}>
+						<Text style={{ 
+							fontSize: 28, 
+							fontWeight: '700', 
+							color: colors.variants.secondary[5],
+							marginBottom: 8,
+							letterSpacing: -0.5
+						}}>
+							Analytics & Reports
+						</Text>
+						<Text style={{ 
+							fontSize: 16, 
+							color: colors.variants.grey[4],
+							lineHeight: 22,
+							letterSpacing: -0.2
+						}}>
+							Access detailed information about attendance and performance
+						</Text>
 					</View>
-					{role === 'admin' && (
-						<View
-							style={{
-								width: '100%',
-								padding: 20,
-								backgroundColor: colors.variants.secondary[0],
-								borderRadius: 20,
-							}}
-						>
-							<Pressable onPress={() => setOpenClassReportModal(true)}>
-								<Text style={{ fontSize: 25, fontWeight: 500, color: colors.variants.secondary[5] }}>Class Report</Text>
-								<Text style={{ fontSize: 15, color: colors.variants.secondary[4], paddingVertical: 20 }}>
-									Grouped by classes.
-								</Text>
-								<MaterialCommunityIcons name='arrow-right' size={24} color={colors.view.tertiary} />
-							</Pressable>
+
+					{/* Report Cards */}
+					<View>
+						{role === 'admin' && (
+							<ReportCard
+								title="Daily Report"
+								description="View attendance grouped by days with detailed metrics"
+								icon="calendar-check"
+								onPress={() => setOpenDailyReportModal(true)}
+								gradient={true}
+							/>
+						)}
+						
+						<ReportCard
+							title="Student Report"
+							description="Complete attendance information and individual progress"
+							icon="account-search"
+							onPress={() => setOpenStudentReportModal(true)}
+						/>
+						
+						{role === 'admin' && (
+							<ReportCard
+								title="Class Report"
+								description="Attendance statistics organized by specific classes"
+								icon="google-classroom"
+								onPress={() => setOpenClassReportModal(true)}
+							/>
+						)}
+					</View>
+
+					{/* Footer Info */}
+					<View style={{
+						marginTop: 32,
+						padding: 20,
+						backgroundColor: colors.variants.secondary[1],
+						borderRadius: 12,
+						borderLeftWidth: 4,
+						borderLeftColor: colors.brand
+					}}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+							<MaterialCommunityIcons name="information" size={20} color={colors.brand} />
+							<Text style={{ 
+								fontSize: 14, 
+								fontWeight: '600', 
+								color: colors.variants.secondary[5],
+								marginLeft: 8,
+								letterSpacing: -0.2
+							}}>
+								Information
+							</Text>
 						</View>
-					)}
-				</View>
+						<Text style={{ 
+							fontSize: 13, 
+							color: colors.variants.secondary[3],
+							lineHeight: 18,
+							letterSpacing: -0.1
+						}}>
+							Reports are generated in real-time based on recorded attendance data
+						</Text>
+					</View>
+				</ScrollView>
 			</View>
+
+			{/* Modals */}
 			{openDailyReportModal && (
 				<DailyReportModal openModal={openDailyReportModal} closeModal={() => setOpenDailyReportModal(false)} />
 			)}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Pressable, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { USER_LOGOUT } from '@/redux/constants/userConstants'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -8,12 +8,25 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import MyProfileModal from './components/MyProfileModal'
 import InfoModal from './components/InfoModal'
 import SystemConfigModal from './components/SystemConfigModal'
-import { Container, Content, PressableContainer, TextBold } from './settings-screen-styles'
+import { 
+	Container, 
+	Content, 
+	HeaderSection, 
+	HeaderTitle, 
+	HeaderSubtitle, 
+	SettingsCard, 
+	CardContent, 
+	CardLeft, 
+	IconContainer, 
+	CardTitle, 
+	LogoutCard, 
+	LogoutIconContainer, 
+	LogoutTitle 
+} from './settings-screen-styles'
 import colors from '@/theme/colors'
 
 const SettingsScreen = ({ role }: { role: TUserRole }) => {
-	const iconSize = 40
-	const iconColor = colors.variants.secondary[5]
+	const iconSize = 24
 	const dispatch = useAppDispatch()
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 
@@ -29,36 +42,71 @@ const SettingsScreen = ({ role }: { role: TUserRole }) => {
 		<>
 			<Container>
 				<ScreenHeader label='Settings' />
-		<ScrollView>
-				<Content>
-					<Pressable style={{ width: '100%' }} onPress={() => setOpenMyProfileModal(true)}>
-						<PressableContainer>
-							<MaterialCommunityIcons name='account' size={iconSize} color={iconColor} />
-							<TextBold>My Account</TextBold>
-						</PressableContainer>
-					</Pressable>
-					<Pressable style={{ width: '100%' }} onPress={() => setOpenInfoModal(true)}>
-						<PressableContainer>
-							<MaterialCommunityIcons name='information' size={iconSize} color={iconColor} />
-							<TextBold>About Miyagi Ken International</TextBold>
-						</PressableContainer>
-					</Pressable>
-					{userInfo?.isSuper && (
-						<Pressable style={{ width: '100%' }} onPress={() => setOpenSystemConfigModal(true)}>
-							<PressableContainer>
-								<MaterialCommunityIcons name='cog' size={iconSize} color={iconColor} />
-								<TextBold>System Configuration</TextBold>
-							</PressableContainer>
-						</Pressable>
-					)}
-					<Pressable style={{ width: '100%' }} onPress={handleOnLogout}>
-						<PressableContainer>
-							<MaterialCommunityIcons name='logout' size={iconSize} color={iconColor} />
-							<TextBold>Logout</TextBold>
-						</PressableContainer>
-					</Pressable>
-				</Content>
-			</ScrollView>
+				<ScrollView 
+					style={{ flex: 1 }}
+					contentContainerStyle={{ paddingBottom: 40 }}
+					showsVerticalScrollIndicator={false}
+				>
+					<Content>
+						{/* Header Section */}
+						<HeaderSection>
+							<HeaderTitle>Account & Settings</HeaderTitle>
+							<HeaderSubtitle>Manage your profile, preferences, and system configuration</HeaderSubtitle>
+						</HeaderSection>
+
+						{/* Settings Cards */}
+						<SettingsCard onPress={() => setOpenMyProfileModal(true)}>
+							<CardContent>
+								<CardLeft>
+									<IconContainer>
+										<MaterialCommunityIcons name='account' size={iconSize} color={colors.brand} />
+									</IconContainer>
+									<CardTitle>My Account</CardTitle>
+								</CardLeft>
+								<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+							</CardContent>
+						</SettingsCard>
+
+						<SettingsCard onPress={() => setOpenInfoModal(true)}>
+							<CardContent>
+								<CardLeft>
+									<IconContainer>
+										<MaterialCommunityIcons name='information' size={iconSize} color={colors.brand} />
+									</IconContainer>
+									<CardTitle>About Miyagi Ken International</CardTitle>
+								</CardLeft>
+								<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+							</CardContent>
+						</SettingsCard>
+
+						{userInfo?.isSuper && (
+							<SettingsCard onPress={() => setOpenSystemConfigModal(true)}>
+								<CardContent>
+									<CardLeft>
+										<IconContainer>
+											<MaterialCommunityIcons name='cog' size={iconSize} color={colors.brand} />
+										</IconContainer>
+										<CardTitle>System Configuration</CardTitle>
+									</CardLeft>
+									<MaterialCommunityIcons name='chevron-right' size={20} color={colors.variants.grey[3]} />
+								</CardContent>
+							</SettingsCard>
+						)}
+
+						{/* Logout Card */}
+						<LogoutCard onPress={handleOnLogout}>
+							<CardContent>
+								<CardLeft>
+									<LogoutIconContainer>
+										<MaterialCommunityIcons name='logout' size={iconSize} color={colors.view.primary} />
+									</LogoutIconContainer>
+									<LogoutTitle>Logout</LogoutTitle>
+								</CardLeft>
+								<MaterialCommunityIcons name='chevron-right' size={20} color="rgba(255,255,255,0.6)" />
+							</CardContent>
+						</LogoutCard>
+					</Content>
+				</ScrollView>
 			</Container>
 			{openMyProfileModal && (
 				<MyProfileModal openModal={openMyProfileModal} closeModal={() => setOpenMyProfileModal(false)} />

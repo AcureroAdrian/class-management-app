@@ -6,6 +6,7 @@ import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import capitalizeWords from '@/shared/capitalize-words'
 import { useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const { userInfo } = useAppSelector((state) => state.userLogin)
@@ -26,11 +27,60 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+			<View style={{ flex: 1, backgroundColor: colors.primary }}>
 				<ScreenHeader label='My Profile' showBackButton={true} handleBack={closeModal} />
 				{userInfo ? (
-					<View style={{ flex: 1, width: '100%' }}>
-						<ScrollView contentContainerStyle={{ gap: 40, padding: 20 }}>
+					<ScrollView 
+						style={{ flex: 1 }}
+						contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 }}
+						showsVerticalScrollIndicator={false}
+					>
+						{/* Header Section */}
+						<View style={{ marginBottom: 32 }}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+								<View style={{ 
+									backgroundColor: colors.brand,
+									borderRadius: 12,
+									padding: 8,
+									marginRight: 12
+								}}>
+									<MaterialCommunityIcons name="account" size={24} color={colors.view.primary} />
+								</View>
+								<Text style={{ 
+									fontSize: 24, 
+									fontWeight: '700', 
+									color: colors.variants.secondary[5],
+									flex: 1,
+									letterSpacing: -0.5
+								}}>
+									My Profile
+								</Text>
+							</View>
+							<Text style={{ 
+								fontSize: 16, 
+								color: colors.variants.grey[4],
+								lineHeight: 22,
+								marginLeft: 52,
+								letterSpacing: -0.2
+							}}>
+								View your account information and details
+							</Text>
+						</View>
+
+						{/* Profile Form */}
+						<View style={{ 
+							backgroundColor: colors.view.primary,
+							borderRadius: 16,
+							padding: 20,
+							shadowColor: '#000',
+							shadowOffset: { width: 0, height: 2 },
+							shadowOpacity: 0.1,
+							shadowRadius: 8,
+							elevation: 3,
+							borderWidth: 1,
+							borderColor: colors.variants.secondary[1],
+							gap: 20
+						}}>
 							<CustomInputForm
 								label='First Name'
 								placeholder='Manuel'
@@ -49,7 +99,7 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 							/>
 							<CustomInputForm
 								label='Date of Birth'
-								placeholder='YYY - MM - DD'
+								placeholder='YYYY - MM - DD'
 								placeholderTextColor={colors.darkLight}
 								value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
 								editable={false}
@@ -71,19 +121,17 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								editable={false}
 								icon='email'
 							/>
-							<CustomInputForm
-								label='Phone'
-								placeholder='+506 1234 5678'
-								placeholderTextColor={colors.darkLight}
-								value={userInfo.phone}
-								editable={false}
-								icon='phone'
-							/>
-						</ScrollView>
-					</View>
+						</View>
+					</ScrollView>
 				) : (
-					<View style={{ flex: 1, padding: 20, width: '100%' }}>
-						<Text style={{ fontSize: 24, fontWeight: 500, color: colors.variants.primary[5], textAlign: 'center' }}>
+					<View style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
+						<Text style={{ 
+							fontSize: 24, 
+							fontWeight: '500', 
+							color: colors.variants.primary[5], 
+							textAlign: 'center',
+							letterSpacing: -0.4
+						}}>
 							You are not logged in
 						</Text>
 					</View>

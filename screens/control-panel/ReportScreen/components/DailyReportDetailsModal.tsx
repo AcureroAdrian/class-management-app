@@ -8,6 +8,228 @@ import capitalizeWords from '@/shared/capitalize-words'
 import colors from '@/theme/colors'
 import { isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import styled from 'styled-components/native'
+
+// Styled Components
+const ModalContainer = styled.View`
+	flex: 1;
+	background-color: ${colors.primary};
+`
+
+const ContentContainer = styled.ScrollView`
+	flex: 1;
+	padding-horizontal: 20px;
+	padding-top: 24px;
+`
+
+const DateCard = styled.View`
+	background-color: ${colors.view.primary};
+	border-radius: 16px;
+	padding: 20px;
+	margin-bottom: 20px;
+	shadow-color: #000;
+	shadow-offset: 0px 2px;
+	shadow-opacity: 0.1;
+	shadow-radius: 8px;
+	elevation: 3;
+	border-width: 1px;
+	border-color: ${colors.variants.secondary[1]};
+`
+
+const DateHeader = styled.View`
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 16px;
+`
+
+const DateIconContainer = styled.View`
+	background-color: ${colors.brand};
+	border-radius: 12px;
+	padding: 8px;
+	margin-right: 12px;
+`
+
+const DateTitle = styled.Text`
+	font-size: 20px;
+	font-weight: 700;
+	color: ${colors.variants.secondary[5]};
+	letter-spacing: -0.3px;
+`
+
+const ClassCard = styled.View`
+	background-color: ${colors.view.primary};
+	border-radius: 16px;
+	margin-bottom: 16px;
+	shadow-color: #000;
+	shadow-offset: 0px 2px;
+	shadow-opacity: 0.1;
+	shadow-radius: 8px;
+	elevation: 3;
+	border-width: 1px;
+	border-color: ${colors.variants.secondary[1]};
+	overflow: hidden;
+`
+
+const ClassHeader = styled.View`
+	background-color: ${colors.brand};
+	padding: 16px 20px;
+	flex-direction: row;
+	align-items: center;
+`
+
+const ClassTitle = styled.Text`
+	font-size: 18px;
+	font-weight: 700;
+	color: ${colors.view.primary};
+	flex: 1;
+	letter-spacing: -0.2px;
+`
+
+const StatsRow = styled.View`
+	background-color: ${colors.variants.secondary[1]};
+	padding: 16px 20px;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+`
+
+const StatContainer = styled.View`
+	flex-direction: row;
+	align-items: center;
+	background-color: ${colors.view.primary};
+	padding-horizontal: 12px;
+	padding-vertical: 8px;
+	border-radius: 20px;
+`
+
+const StatBadge = styled.View<{ color: string }>`
+	background-color: ${(props: { color: string }) => props.color};
+	border-radius: 12px;
+	width: 24px;
+	height: 24px;
+	justify-content: center;
+	align-items: center;
+	margin-right: 8px;
+`
+
+const StatBadgeText = styled.Text`
+	color: ${colors.view.primary};
+	font-size: 12px;
+	font-weight: 700;
+`
+
+const StatLabel = styled.Text`
+	color: ${colors.variants.secondary[5]};
+	font-size: 14px;
+	font-weight: 600;
+`
+
+const TotalText = styled.Text`
+	font-size: 14px;
+	color: ${colors.variants.secondary[4]};
+	font-weight: 500;
+`
+
+const StudentsContainer = styled.View`
+	padding: 16px 20px 20px 20px;
+`
+
+const StudentItem = styled.View`
+	flex-direction: row;
+	align-items: center;
+	padding-vertical: 12px;
+	border-bottom-width: 1px;
+	border-bottom-color: ${colors.variants.secondary[1]};
+`
+
+const StudentAvatar = styled.Image`
+	width: 44px;
+	height: 44px;
+	border-radius: 22px;
+	border-width: 1px;
+	border-color: ${colors.variants.grey[1]};
+	margin-right: 12px;
+`
+
+const StudentInfoContainer = styled.View`
+	flex: 1;
+`
+
+const StudentName = styled.Text`
+	font-size: 16px;
+	font-weight: 600;
+	color: ${colors.variants.secondary[5]};
+	margin-bottom: 2px;
+	letter-spacing: -0.2px;
+`
+
+const StudentLastName = styled.Text`
+	font-size: 14px;
+	font-weight: 500;
+	color: ${colors.variants.grey[3]};
+	margin-bottom: 4px;
+	letter-spacing: -0.1px;
+`
+
+const BadgesRow = styled.View`
+	flex-direction: row;
+	gap: 4px;
+	margin-bottom: 4px;
+`
+
+const StatusBadge = styled.View`
+	background-color: #FFF3CD;
+	padding-horizontal: 6px;
+	padding-vertical: 2px;
+	border-radius: 4px;
+	border-width: 1px;
+	border-color: #F0E68C;
+`
+
+const StatusBadgeText = styled.Text`
+	color: #856404;
+	font-size: 8px;
+	font-weight: 700;
+`
+
+const DayBadge = styled.View`
+	background-color: #E1F5FE;
+	padding-horizontal: 6px;
+	padding-vertical: 2px;
+	border-radius: 4px;
+	border-width: 1px;
+	border-color: #B3E5FC;
+`
+
+const DayBadgeText = styled.Text`
+	color: #01579B;
+	font-size: 8px;
+	font-weight: 700;
+`
+
+const ObservationCard = styled.View`
+	margin-top: 6px;
+	padding: 8px;
+	background-color: ${colors.variants.secondary[0]};
+	border-radius: 8px;
+	border-left-width: 3px;
+	border-left-color: ${colors.brand};
+`
+
+const ObservationText = styled.Text`
+	font-size: 10px;
+	color: ${colors.variants.secondary[4]};
+	font-style: italic;
+	line-height: 14px;
+`
+
+const StatusContainer = styled.View`
+	background-color: ${colors.variants.secondary[1]};
+	border-radius: 8px;
+	padding: 8px;
+	margin-left: 8px;
+`
 
 const DailyReportDetailsModal = ({
 	openModal,
@@ -20,188 +242,132 @@ const DailyReportDetailsModal = ({
 }) => {
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View style={{ flex: 1 }}>
-				<ScreenHeader label='Reports' showBackButton={true} handleBack={closeModal} />
-				<View style={{ width: '100%', flex: 1 }}>
-					<ScrollView>
-						<FlatList
-							nestedScrollEnabled={true}
-							scrollEnabled={false}
-							data={reports}
-							keyExtractor={(item) => item._id}
-							style={{ width: '100%' }}
-							renderItem={({ item }) => (
-								<View
-									style={{
-										paddingHorizontal: 20,
-										paddingVertical: 20,
-									}}
-								>
-									<View
-										style={{
-											width: '100%',
-											paddingHorizontal: 10,
-											paddingVertical: 5,
-											backgroundColor: colors.variants.secondary[1],
-										}}
-									>
-										<Text
-											numberOfLines={1}
-											style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
-										>
-											{format(new Date(item._id), 'MMMM dd, yyyy')}
-										</Text>
-									</View>
-									<FlatList
-										data={item.karateClasses}
-										keyExtractor={(item) => item._id}
-										style={{ width: '100%', marginTop: 5 }}
-										renderItem={({ item }) => {
-											const presents = item.attendance.filter((item) => isStudentPresent(item.attendanceStatus))?.length
-											const absents = item.attendance.filter((item) => !isStudentPresent(item.attendanceStatus))?.length
-											return (
-												<>
-													<View
-														style={{
-															borderColor: colors.variants.secondary[1],
-															borderWidth: 1,
-															width: '100%',
-															padding: 10,
-														}}
-													>
-														<Text
-															numberOfLines={1}
-															style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
-														>
-															{item.karateClassName}
-														</Text>
-													</View>
-													<View
-														style={{
-															width: '100%',
-															padding: 5,
-															marginTop: 5,
-															backgroundColor: colors.variants.secondary[1],
-															flexDirection: 'row',
-															justifyContent: 'space-between',
-															alignItems: 'center',
-														}}
-													>
-														<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-															{Boolean(presents) && (
-																<View
-																	style={{
-																		backgroundColor: 'green',
-																		padding: 5,
-																		width: 30,
-																		height: 30,
-																		justifyContent: 'center',
-																		alignItems: 'center',
-																		borderRadius: '50%',
-																	}}
-																>
-																	<Text style={{ color: colors.view.primary, fontSize: 14 }}>{presents}</Text>
-																</View>
-															)}
-															{Boolean(absents) && (
-																<View
-																	style={{
-																		backgroundColor: 'red',
-																		padding: 5,
-																		width: 30,
-																		height: 30,
-																		justifyContent: 'center',
-																		alignItems: 'center',
-																		borderRadius: '50%',
-																	}}
-																>
-																	<Text style={{ color: colors.view.primary, fontSize: 14 }}>{absents}</Text>
-																</View>
-															)}
-														</View>
-														<Text
-															numberOfLines={1}
-															style={{ fontSize: 14, fontWeight: 500, color: colors.variants.secondary[5] }}
-														>
-															Total: {item.attendance.length}
-														</Text>
-													</View>
-													<View>
-														<FlatList
-															data={item.attendance}
-															keyExtractor={(item) => item.student._id}
-															style={{ width: '100%', marginTop: 5 }}
-															renderItem={({ item }) => (
-																<View
-																	style={{
-																		marginVertical: 2,
-																		flexDirection: 'row',
-																		alignItems: 'center',
-																		flex: 1,
-																		gap: 5,
-																	}}
-																>
-																	<View
-																		style={{
-																			borderColor: colors.variants.secondary[1],
-																			borderWidth: 1,
-																			width: '100%',
-																			padding: 10,
-																			flexDirection: 'row',
-																			flex: 1,
-																			alignItems: 'center',
-																			gap: 10,
-																		}}
-																	>
-																		<Image
-																			source={require('@/assets/img/default-avatar.png')}
-																			style={{ width: 30, height: 30, borderRadius: 30 }}
-																			resizeMode='contain'
-																		/>
-																		<View
-																			style={{
-																				justifyContent: 'center',
-																				alignItems: 'flex-start',
-																				width: '100%',
-																				flexDirection: 'column',
-																			}}
-																		>
-																			<Text style={{ fontWeight: 400, fontSize: 12 }}>
-																				{capitalizeWords(item.student.name)}
-																			</Text>
-																			<Text style={{ fontSize: 10, color: 'grey' }}>
-																				{capitalizeWords(item?.student.lastName)}
-																			</Text>
-																		</View>
-																	</View>
-																	<View
-																		style={{
-																			borderColor: colors.variants.secondary[1],
-																			borderWidth: 1,
-																			padding: 10,
-																			alignItems: 'center',
-																			justifyContent: 'center',
-																		}}
-																	>
+			<ModalContainer>
+				<ScreenHeader label='Daily Reports' showBackButton={true} handleBack={closeModal} />
+				<ContentContainer
+					showsVerticalScrollIndicator={false}
+					contentContainerStyle={{ paddingBottom: 40 }}
+				>
+					<FlatList
+						nestedScrollEnabled={true}
+						scrollEnabled={false}
+						data={reports}
+						keyExtractor={(item) => item._id}
+						renderItem={({ item }) => (
+							<DateCard>
+								<DateHeader>
+									<DateIconContainer>
+										<MaterialCommunityIcons name='calendar' size={20} color={colors.view.primary} />
+									</DateIconContainer>
+									<DateTitle>
+										{format(new Date(item._id), 'MMMM dd, yyyy')}
+									</DateTitle>
+								</DateHeader>
+								
+								<FlatList
+									data={item.karateClasses}
+									keyExtractor={(classItem) => classItem._id}
+									renderItem={({ item: classItem }) => {
+										const presents = classItem.attendance.filter((student) => isStudentPresent(student.attendanceStatus))?.length
+										const absents = classItem.attendance.filter((student) => !isStudentPresent(student.attendanceStatus))?.length
+										return (
+											<ClassCard>
+												<ClassHeader>
+													<ClassTitle numberOfLines={1}>
+														{classItem.karateClassName}
+													</ClassTitle>
+												</ClassHeader>
+												
+												<StatsRow>
+													{Boolean(presents) && (
+														<StatContainer>
+															<StatBadge color='#4CAF50'>
+																<StatBadgeText>{presents}</StatBadgeText>
+															</StatBadge>
+															<StatLabel>Present</StatLabel>
+														</StatContainer>
+													)}
+													{Boolean(absents) && (
+														<StatContainer>
+															<StatBadge color='#F44336'>
+																<StatBadgeText>{absents}</StatBadgeText>
+															</StatBadge>
+															<StatLabel>Absent</StatLabel>
+														</StatContainer>
+													)}
+													<TotalText>Total: {classItem.attendance.length}</TotalText>
+												</StatsRow>
+												
+												<StudentsContainer>
+													<FlatList
+														data={classItem.attendance}
+														keyExtractor={(student) => student.student._id}
+														scrollEnabled={false}
+														nestedScrollEnabled={true}
+														renderItem={({ item: student, index }) => (
+															<>
+																<StudentItem>
+																	<StudentAvatar
+																		source={require('@/assets/img/default-avatar.png')}
+																		resizeMode='contain'
+																	/>
+																	<StudentInfoContainer>
+																		<StudentName>
+																			{capitalizeWords(student.student.name)}
+																		</StudentName>
+																		<StudentLastName>
+																			{capitalizeWords(student.student.lastName)}
+																		</StudentLastName>
+																		
+																		{/* Badges */}
+																		{(student.student.isTrial || student.isDayOnly) && (
+																			<BadgesRow>
+																				{student.student.isTrial && (
+																					<StatusBadge>
+																						<StatusBadgeText>TRIAL</StatusBadgeText>
+																					</StatusBadge>
+																				)}
+																				{student.isDayOnly && (
+																					<DayBadge>
+																						<DayBadgeText>DAY</DayBadgeText>
+																					</DayBadge>
+																				)}
+																			</BadgesRow>
+																		)}
+																		
+																		{/* Observations */}
+																		{student.observations && (
+																			<ObservationCard>
+																				<ObservationText>
+																					"Note: {student.observations}"
+																				</ObservationText>
+																			</ObservationCard>
+																		)}
+																	</StudentInfoContainer>
+																	<StatusContainer>
 																		<StatusIcon 
-																			status={item.attendanceStatus} 
-																			size={30} 
+																			status={student.attendanceStatus} 
+																			size={24} 
 																		/>
-																	</View>
-																</View>
-															)}
-														/>
-													</View>
-												</>
-											)
-										}}
-									/>
-								</View>
-							)}
-						/>
-					</ScrollView>
-				</View>
-			</View>
+																	</StatusContainer>
+																</StudentItem>
+																{/* Only show separator if not the last item */}
+																{index < classItem.attendance.length - 1 && (
+																	<View style={{ height: 1, backgroundColor: colors.variants.secondary[1], marginHorizontal: 20 }} />
+																)}
+															</>
+														)}
+													/>
+												</StudentsContainer>
+											</ClassCard>
+										)
+									}}
+								/>
+							</DateCard>
+						)}
+					/>
+				</ContentContainer>
+			</ModalContainer>
 		</Modal>
 	)
 }

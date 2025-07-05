@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Modal, Pressable, ActivityIndicator, ScrollView } from 'react-native'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -11,6 +11,7 @@ import { getClassReportByClassIdForAdmin } from '@/redux/actions/studentAttendan
 import { GET_CLASS_REPORT_BY_CLASS_ID_FOR_ADMIN_RESET } from '@/redux/constants/studentAttendanceConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import colors from '@/theme/colors'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -88,70 +89,234 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
-			<View>
+			<View style={{ flex: 1, backgroundColor: colors.primary }}>
 				<ScreenHeader label='Class Report' showBackButton={true} handleBack={closeModal} />
-				<View style={{ width: '100%', alignItems: 'center' }}>
-					<Text style={{ padding: 20, fontSize: 16, color: colors.brand }}>
-						Select the class, start and end dates for the report
-					</Text>
-					<View style={{ width: '100%', paddingHorizontal: 20, gap: 40 }}>
-						<CustomInputForm
-							label='Class'
-							value={classSelected}
-							editable={false}
-							onPress={() => !loadingClassReportByClassIdForAdmin && setOpenClassesModal(true)}
-							icon='book'
-						/>
-						<CustomInputForm
-							label='Start Time'
-							value={startDate ? format(new Date(startDate), 'MMMM dd, yyyy') : ''}
-							editable={false}
-							onPress={() => !loadingClassReportByClassIdForAdmin && setShowStartDate(true)}
-							icon='calendar'
-						/>
-						<CustomInputForm
-							label='End Time'
-							value={endDate ? format(new Date(endDate), 'MMMM dd, yyyy') : ''}
-							editable={false}
-							onPress={() => !loadingClassReportByClassIdForAdmin && setShowEndDate(true)}
-							icon='calendar'
-						/>
-					</View>
-					<Pressable onPress={handleGenerateClassReport}>
-						<View
-							style={{
-								paddingHorizontal: 40,
-								paddingVertical: 10,
-								backgroundColor: colors.variants.secondary[5],
-								borderRadius: 10,
-								marginTop: 40,
-								height: 40,
-								justifyContent: 'center',
-								alignItems: 'center',
-							}}
-						>
-							{loadingClassReportByClassIdForAdmin ? (
-								<ActivityIndicator size='small' color={colors.view.primary} />
-							) : (
-								<Text style={{ color: colors.view.primary, fontSize: 16, fontWeight: 500 }}>Generate Report</Text>
-							)}
-						</View>
-					</Pressable>
-					{errorMessage && (
-						<View style={{ marginTop: 40, width: '100%', alignItems: 'center' }}>
-							<Text
-								style={{
-									textAlign: 'center',
-									fontSize: 16,
-									color: colors.variants.primary[5],
-								}}
-							>
-								{errorMessage}
+				
+				<ScrollView 
+					style={{ flex: 1 }}
+					contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 }}
+					showsVerticalScrollIndicator={false}
+				>
+					{/* Header Section */}
+					<View style={{ marginBottom: 32 }}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+							<View style={{ 
+								backgroundColor: colors.brand,
+								borderRadius: 12,
+								padding: 8,
+								marginRight: 12
+							}}>
+								<MaterialCommunityIcons name="google-classroom" size={24} color={colors.view.primary} />
+							</View>
+							<Text style={{ 
+								fontSize: 24, 
+								fontWeight: '700', 
+								color: colors.variants.secondary[5],
+								flex: 1,
+								letterSpacing: -0.5
+							}}>
+								Class Report
 							</Text>
 						</View>
+						<Text style={{ 
+							fontSize: 16, 
+							color: colors.variants.grey[4],
+							lineHeight: 22,
+							marginLeft: 52,
+							letterSpacing: -0.2
+						}}>
+							Select class and date range to generate the report
+						</Text>
+					</View>
+
+					{/* Form Section */}
+					<View style={{ 
+						backgroundColor: colors.view.primary,
+						borderRadius: 16,
+						padding: 20,
+						shadowColor: '#000',
+						shadowOffset: { width: 0, height: 2 },
+						shadowOpacity: 0.1,
+						shadowRadius: 8,
+						elevation: 3,
+						borderWidth: 1,
+						borderColor: colors.variants.secondary[1],
+						marginBottom: 24
+					}}>
+						<Text style={{ 
+							fontSize: 16, 
+							fontWeight: '600', 
+							color: colors.variants.secondary[5],
+							marginBottom: 20,
+							letterSpacing: -0.3
+						}}>
+							Report Configuration
+						</Text>
+						
+						<View style={{ gap: 20 }}>
+							{/* Class Selection */}
+							<View>
+								<Text style={{ 
+									fontSize: 14, 
+									fontWeight: '500', 
+									color: colors.variants.secondary[4],
+									marginBottom: 8,
+									letterSpacing: -0.2
+								}}>
+									Class
+								</Text>
+								<CustomInputForm
+									label=''
+									value={classSelected}
+									editable={false}
+									onPress={() => !loadingClassReportByClassIdForAdmin && setOpenClassesModal(true)}
+									icon='google-classroom'
+								/>
+							</View>
+
+							{/* Date Range */}
+							<View>
+								<Text style={{ 
+									fontSize: 14, 
+									fontWeight: '500', 
+									color: colors.variants.secondary[4],
+									marginBottom: 8,
+									letterSpacing: -0.2
+								}}>
+									Date Range
+								</Text>
+								<View style={{ flexDirection: 'row', gap: 12 }}>
+									<View style={{ flex: 1 }}>
+										<CustomInputForm
+											label=''
+											value={startDate ? format(new Date(startDate), 'MM/dd/yyyy') : ''}
+											editable={false}
+											onPress={() => !loadingClassReportByClassIdForAdmin && setShowStartDate(true)}
+											icon='calendar-start'
+										/>
+									</View>
+									<View style={{ flex: 1 }}>
+										<CustomInputForm
+											label=''
+											value={endDate ? format(new Date(endDate), 'MM/dd/yyyy') : ''}
+											editable={false}
+											onPress={() => !loadingClassReportByClassIdForAdmin && setShowEndDate(true)}
+											icon='calendar-end'
+										/>
+									</View>
+								</View>
+							</View>
+						</View>
+					</View>
+
+					{/* Generate Button */}
+					<Pressable 
+						onPress={handleGenerateClassReport}
+						disabled={loadingClassReportByClassIdForAdmin}
+						style={({ pressed }) => [
+							{
+								backgroundColor: colors.brand,
+								borderRadius: 12,
+								paddingVertical: 16,
+								paddingHorizontal: 24,
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'center',
+								shadowColor: colors.brand,
+								shadowOffset: { width: 0, height: 4 },
+								shadowOpacity: 0.3,
+								shadowRadius: 8,
+								elevation: 8,
+								opacity: loadingClassReportByClassIdForAdmin ? 0.7 : 1,
+								transform: [{ scale: pressed ? 0.98 : 1 }],
+								marginBottom: 24
+							}
+						]}
+					>
+						{loadingClassReportByClassIdForAdmin ? (
+							<>
+								<ActivityIndicator size='small' color={colors.view.primary} style={{ marginRight: 8 }} />
+								<Text style={{ 
+									color: colors.view.primary, 
+									fontSize: 16, 
+									fontWeight: '600',
+									letterSpacing: -0.2
+								}}>
+									Generating...
+								</Text>
+							</>
+						) : (
+							<>
+								<MaterialCommunityIcons name="file-document-outline" size={20} color={colors.view.primary} style={{ marginRight: 8 }} />
+								<Text style={{ 
+									color: colors.view.primary, 
+									fontSize: 16, 
+									fontWeight: '600',
+									letterSpacing: -0.2
+								}}>
+									Generate Report
+								</Text>
+							</>
+						)}
+					</Pressable>
+
+					{/* Error Message */}
+					{errorMessage && (
+						<View style={{ 
+							backgroundColor: '#FFF5F5',
+							borderRadius: 12,
+							padding: 16,
+							borderLeftWidth: 4,
+							borderLeftColor: colors.variants.primary[5],
+							marginBottom: 24
+						}}>
+							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+								<MaterialCommunityIcons name="alert-circle" size={20} color={colors.variants.primary[5]} />
+								<Text style={{ 
+									fontSize: 14, 
+									color: colors.variants.primary[5],
+									marginLeft: 8,
+									fontWeight: '500'
+								}}>
+									{errorMessage}
+								</Text>
+							</View>
+						</View>
 					)}
-				</View>
+
+					{/* Info Section */}
+					<View style={{
+						backgroundColor: colors.variants.secondary[1],
+						borderRadius: 12,
+						padding: 16,
+						borderLeftWidth: 4,
+						borderLeftColor: colors.brand
+					}}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+							<MaterialCommunityIcons name="information" size={18} color={colors.brand} />
+							<Text style={{ 
+								fontSize: 14, 
+								fontWeight: '600', 
+								color: colors.variants.secondary[5],
+								marginLeft: 8,
+								letterSpacing: -0.2
+							}}>
+								Report Information
+							</Text>
+						</View>
+						<Text style={{ 
+							fontSize: 13, 
+							color: colors.variants.secondary[3],
+							lineHeight: 18,
+							letterSpacing: -0.1
+						}}>
+							This report shows attendance statistics organized by specific classes with student details
+						</Text>
+					</View>
+				</ScrollView>
 			</View>
+
+			{/* Date Pickers */}
 			{showStartDate && (
 				<DateTimePickerModal
 					key='start-date-picker'
