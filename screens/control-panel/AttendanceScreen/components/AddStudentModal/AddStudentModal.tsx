@@ -9,6 +9,7 @@ import capitalizeWords from '@/shared/capitalize-words'
 import { ADD_STUDENT_TO_ATTENDANCE_RESET } from '@/redux/constants/studentAttendanceConstants'
 import { Badge, BADGE_CONFIG } from '@/shared/Badge'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
+import TrialStudentModal from '../TrialStudentModal'
 import {
 	CreateTrialButton,
 	CreateTrialButtonContainer,
@@ -32,7 +33,6 @@ import {
 interface AddStudentModalProps {
 	visible: boolean
 	onClose: () => void
-	onOpenTrial: () => void
 	attendanceId: string
 	currentStudents: string[]
 	onStudentAdded: () => void
@@ -43,7 +43,6 @@ interface AddStudentModalProps {
 const AddStudentModal = ({
 	visible,
 	onClose,
-	onOpenTrial,
 	attendanceId,
 	currentStudents,
 	onStudentAdded,
@@ -51,12 +50,14 @@ const AddStudentModal = ({
 	date,
 }: AddStudentModalProps) => {
 	const dispatch = useAppDispatch()
-	
+
 	const [searchText, setSearchText] = useState('')
-	
-	const { studentUsersList } = useAppSelector(state => state.getStudentUsers)
-	const { loadingAddStudentToAttendance, successAddStudentToAttendance } = 
-		useAppSelector(state => state.addStudentToAttendance)
+	const [openTrialStudentModal, setOpenTrialStudentModal] = useState<boolean>(false)
+
+	const { studentUsersList } = useAppSelector((state) => state.getStudentUsers)
+	const { loadingAddStudentToAttendance, successAddStudentToAttendance } = useAppSelector(
+		(state) => state.addStudentToAttendance,
+	)
 
 	useEffect(() => {
 		if (visible) {
@@ -72,121 +73,123 @@ const AddStudentModal = ({
 		}
 	}, [successAddStudentToAttendance])
 
-	const availableStudents = studentUsersList?.filter((student: any) => 
-		!currentStudents.includes(student._id) &&
-		(student.name.toLowerCase().includes(searchText.toLowerCase()) ||
-		 student.lastName.toLowerCase().includes(searchText.toLowerCase()))
-	) || []
+	const availableStudents =
+		studentUsersList?.filter(
+			(student: any) =>
+				!currentStudents.includes(student._id) &&
+				(student.name.toLowerCase().includes(searchText.toLowerCase()) ||
+					student.lastName.toLowerCase().includes(searchText.toLowerCase())),
+		) || []
 
 	const handleClose = () => {
 		setSearchText('')
 		onClose()
 	}
 
+	const handleOpenTrial = () => {
+		setOpenTrialStudentModal(true)
+	}
+
 	const handleAddStudent = (studentId: string, isDayOnly: boolean, addPermanently: boolean) => {
-		dispatch(addStudentToAttendance({
-			studentId,
-			attendanceId,
-			isDayOnly,
-			addPermanently,
-			classId,
-			date
-		}))
+		dispatch(
+			addStudentToAttendance({
+				studentId,
+				attendanceId,
+				isDayOnly,
+				addPermanently,
+				classId,
+				date,
+			}),
+		)
 	}
 
 	return (
-		<Modal visible={visible} animationType='slide' onRequestClose={handleClose} statusBarTranslucent={true}>
-			<ModalContainer>
-				<ScreenHeader
-					label='Add Student'
-					showBackButton={true}
-					handleBack={handleClose}
-				/>
+		<>
+			<Modal visible={visible} animationType='slide' onRequestClose={handleClose} statusBarTranslucent={true}>
+				<ModalContainer>
+					<ScreenHeader label='Add Student' showBackButton={true} handleBack={handleClose} />
 
-				{/* Search Bar */}
-				<SearchBarContainer>
-					<SearchInput
-						placeholder='Search student...'
-						placeholderTextColor={colors.variants.grey[3]}
-						value={searchText}
-						onChangeText={setSearchText}
+					{/* Search Bar */}
+					<SearchBarContainer>
+						<SearchInput
+							placeholder='Search student...'
+							placeholderTextColor={colors.variants.grey[3]}
+							value={searchText}
+							onChangeText={setSearchText}
+						/>
+					</SearchBarContainer>
+
+					{/* Create Trial Student Button */}
+					<CreateTrialButtonContainer>
+						<CreateTrialButton onPress={handleOpenTrial}>
+							<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
+							<CreateTrialButtonText>Create a Trial Student</CreateTrialButtonText>
+						</CreateTrialButton>
+					</CreateTrialButtonContainer>
+
+					{/* Students List */}
+					<FlatList
+						data={availableStudents}
+						keyExtractor={(item) => item._id}
+						style={{ flex: 1 }}
+						renderItem={({ item }) => (
+							<StudentListItemContainer>
+								<StudentListItemContent>
+									<StudentAvatar source={require('@/assets/img/default-avatar.png')} resizeMode='contain' />
+									<StudentInfoContainer>
+										<StudentName>
+											{capitalizeWords(item.name)} {capitalizeWords(item.lastName)}
+										</StudentName>
+
+										{/* Badges */}
+										<BadgesContainer>
+											{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
+											{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
+										</BadgesContainer>
+									</StudentInfoContainer>
+
+									{/* Action Buttons */}
+									<ActionButtonsContainer>
+										<ActionButton
+											onPress={() => handleAddStudent(item._id, false, true)}
+											disabled={loadingAddStudentToAttendance}
+											permanent
+										>
+											<ActionButtonText>Permanent</ActionButtonText>
+										</ActionButton>
+										<ActionButton
+											onPress={() => handleAddStudent(item._id, true, false)}
+											disabled={loadingAddStudentToAttendance}
+										>
+											<ActionButtonText>Day only</ActionButtonText>
+										</ActionButton>
+									</ActionButtonsContainer>
+								</StudentListItemContent>
+							</StudentListItemContainer>
+						)}
+						ListEmptyComponent={() => (
+							<EmptyListContainer>
+								<MaterialCommunityIcons name='account-search' size={64} color={colors.variants.grey[3]} />
+								<EmptyListText>No available students found</EmptyListText>
+							</EmptyListContainer>
+						)}
 					/>
-				</SearchBarContainer>
+				</ModalContainer>
 
-				{/* Create Trial Student Button */}
-				<CreateTrialButtonContainer>
-					<CreateTrialButton onPress={onOpenTrial}>
-						<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
-						<CreateTrialButtonText>Create a Trial Student</CreateTrialButtonText>
-					</CreateTrialButton>
-				</CreateTrialButtonContainer>
-
-				{/* Students List */}
-				<FlatList
-					data={availableStudents}
-					keyExtractor={(item) => item._id}
-					style={{ flex: 1 }}
-					renderItem={({ item }) => (
-						<StudentListItemContainer>
-							<StudentListItemContent>
-								<StudentAvatar
-									source={require('@/assets/img/default-avatar.png')}
-									resizeMode='contain'
-								/>
-								<StudentInfoContainer>
-									<StudentName>
-										{capitalizeWords(item.name)} {capitalizeWords(item.lastName)}
-									</StudentName>
-									
-									{/* Badges */}
-									<BadgesContainer>
-										{item.isTrial && (
-											<Badge {...BADGE_CONFIG.trial}/>
-										)}
-										{item.scheduledDeletionDate && (
-											<Badge {...BADGE_CONFIG.scheduledDeletion}/>
-										)}
-									</BadgesContainer>
-								</StudentInfoContainer>
-								
-								{/* Action Buttons */}
-								<ActionButtonsContainer>
-									<ActionButton
-										onPress={() => handleAddStudent(item._id, false, true)}
-										disabled={loadingAddStudentToAttendance}
-										permanent
-									>
-										<ActionButtonText>
-											Permanent
-										</ActionButtonText>
-									</ActionButton>
-									<ActionButton
-										onPress={() => handleAddStudent(item._id, true, false)}
-										disabled={loadingAddStudentToAttendance}
-									>
-										<ActionButtonText>
-											Day only
-										</ActionButtonText>
-									</ActionButton>
-								</ActionButtonsContainer>
-							</StudentListItemContent>
-						</StudentListItemContainer>
-					)}
-					ListEmptyComponent={() => (
-						<EmptyListContainer>
-							<MaterialCommunityIcons 
-								name="account-search" 
-								size={64} 
-								color={colors.variants.grey[3]} 
-							/>
-							<EmptyListText>
-								No available students found
-							</EmptyListText>
-						</EmptyListContainer>
-					)}
+				{/* Trial Student Modal */}
+				<TrialStudentModal
+					visible={openTrialStudentModal}
+					onClose={() => setOpenTrialStudentModal(false)}
+					attendanceId={attendanceId}
+					classId={classId}
+					date={date}
+					onStudentAdded={() => {
+						onStudentAdded()
+						setOpenTrialStudentModal(false)
+					}}
 				/>
-			</ModalContainer>
-		</Modal>
+			</Modal>
+		</>
 	)
 }
 

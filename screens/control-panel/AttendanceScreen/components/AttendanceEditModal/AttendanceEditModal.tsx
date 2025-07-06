@@ -19,7 +19,6 @@ import colors from '@/theme/colors'
 import StudentNotesModal from '../StudentNotesModal'
 import AddStudentModal from '../AddStudentModal'
 import AttendanceStatusModal from '../AttendanceStatusModal'
-import TrialStudentModal from '../TrialStudentModal'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
 import { TAttendanceStatus } from '@/shared/common-types'
 import { getMacroStatus, toggleBasicAttendance, isStudentPresent } from '@/shared/attendance-helpers'
@@ -93,7 +92,6 @@ const AttendanceEditModal = ({
 	const [openNotesModal, setOpenNotesModal] = useState<boolean>(false)
 	const [selectedStudentForNotes, setSelectedStudentForNotes] = useState<any>(null)
 	const [openAddStudentModal, setOpenAddStudentModal] = useState<boolean>(false)
-	const [openTrialStudentModal, setOpenTrialStudentModal] = useState<boolean>(false)
 	const [openStatusModal, setOpenStatusModal] = useState<boolean>(false)
 	const [selectedStudentForStatus, setSelectedStudentForStatus] = useState<IAttendanceItem | null>(null)
 
@@ -539,10 +537,6 @@ const AttendanceEditModal = ({
 			<AddStudentModal
 				visible={openAddStudentModal}
 				onClose={() => setOpenAddStudentModal(false)}
-				onOpenTrial={() => {
-					setOpenAddStudentModal(false)
-					setOpenTrialStudentModal(true)
-				}}
 				attendanceId={attendanceData?._id}
 				currentStudents={attendance.map((item) => item.student)}
 				classId={attendanceData?.karateClass?._id}
@@ -558,25 +552,6 @@ const AttendanceEditModal = ({
 						),
 					)
 					setOpenAddStudentModal(false)
-				}}
-			/>
-
-			{/* Trial Student Modal */}
-			<TrialStudentModal
-				visible={openTrialStudentModal}
-				onClose={() => setOpenTrialStudentModal(false)}
-				attendanceId={attendanceData?._id}
-				classId={attendanceData?.karateClass?._id}
-				date={attendanceData?.date}
-				onStudentAdded={() => {
-					dispatch(
-						getStudentAttendanceByDay(
-							attendanceData?.date?.year,
-							attendanceData?.date?.month,
-							attendanceData?.date?.day,
-						),
-					)
-					setOpenTrialStudentModal(false)
 				}}
 			/>
 
