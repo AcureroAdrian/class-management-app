@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable, Modal } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
+import { View, Text, ScrollView, Image, FlatList, TextInput, Pressable, Modal, Animated } from 'react-native'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudent } from '../helpers/karate-classes-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
@@ -21,6 +21,8 @@ const PickStudentsModal = ({
 }) => {
 	const [filteredStudents, setFilteredStudents] = useState<IStudent[]>([])
 	const [textSearch, setTextSearch] = useState<string>('')
+	const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+	const animationValue = useRef(new Animated.Value(0)).current
 
 	useEffect(() => {
 		const alreadySelected = studentsSelected.map((student: IStudent) => student._id)
@@ -32,6 +34,26 @@ const PickStudentsModal = ({
 		}
 		setFilteredStudents(filteredStudents)
 	}, [textSearch, students, studentsSelected])
+
+	const handleStudentSelection = (student: IStudent) => {
+		setSelectedItemId(student._id)
+		
+		Animated.sequence([
+			Animated.timing(animationValue, {
+				toValue: 1,
+				duration: 200,
+				useNativeDriver: true,
+			}),
+			Animated.timing(animationValue, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}),
+		]).start(() => {
+			setSelectedItemId(null)
+			handleSelectStudent(student)
+		})
+	}
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
@@ -60,6 +82,7 @@ const PickStudentsModal = ({
 								height: 50,
 								color: colors.variants.secondary[5],
 							}}
+							autoComplete='off'
 						/>
 					</View>
 				</View>
@@ -71,13 +94,20 @@ const PickStudentsModal = ({
 							data={filteredStudents.sort((a, b) => a?.name?.localeCompare(b?.name))}
 							renderItem={({ item, index }) => (
 								<>
-									<Pressable onPress={() => handleSelectStudent(item)}>
+									<Pressable 
+										onPress={() => handleStudentSelection(item)}
+										style={({ pressed }) => ({
+											opacity: pressed ? 0.9 : 1,
+										})}
+									>
 										<View
 											style={{
 												width: '100%',
 												alignItems: 'flex-start',
 												paddingHorizontal: 20,
 												paddingVertical: 8,
+												backgroundColor: 'transparent',
+												position: 'relative',
 											}}
 											key={item._id}
 										>
@@ -103,6 +133,38 @@ const PickStudentsModal = ({
 													</Text>
 												</View>
 											</View>
+											
+											{selectedItemId === item._id && (
+												<Animated.View
+													style={{
+														position: 'absolute',
+														top: 0,
+														left: 0,
+														right: 0,
+														bottom: 0,
+														backgroundColor: 'rgba(34, 197, 94, 0.2)',
+														justifyContent: 'center',
+														alignItems: 'center',
+														borderRadius: 8,
+														marginHorizontal: 20,
+														opacity: animationValue,
+														transform: [
+															{
+																scale: animationValue.interpolate({
+																	inputRange: [0, 1],
+																	outputRange: [0.8, 1],
+																})
+															}
+														]
+													}}
+												>
+													<MaterialCommunityIcons
+														name="check-circle"
+														size={40}
+														color="#22c55e"
+													/>
+												</Animated.View>
+											)}
 										</View>
 									</Pressable>
 									{index + 1 !== filteredStudents.length && (

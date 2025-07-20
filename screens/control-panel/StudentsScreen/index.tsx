@@ -160,6 +160,7 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 									onChangeText={setTextSearch}
 									placeholder={mode === 'students' ? 'Search students' : 'Search teachers'}
 									placeholderTextColor={colors.variants.grey[3]}
+									autoComplete='off'
 								/>
 							</S.SearchInputContainer>
 						</S.SearchContainer>

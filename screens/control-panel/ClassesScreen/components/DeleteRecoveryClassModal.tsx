@@ -2,7 +2,15 @@ import React, { useEffect } from 'react'
 import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
 import colors from '@/theme/colors'
 
-const DeleteRecoveryClassModal = ({ openModal, closeModal, handleDeleteRecoveryClass, loadingDelete, errorDelete }) => {
+interface IDeleteRecoveryClassModalProps {
+	openModal: boolean
+	closeModal: () => void
+	handleDeleteRecoveryClass: () => void
+	loadingDelete: boolean
+	errorDelete: string
+}
+
+const DeleteRecoveryClassModal = ({ openModal, closeModal, handleDeleteRecoveryClass, loadingDelete, errorDelete }: IDeleteRecoveryClassModalProps) => {
 	useEffect(() => {
 		return () => {
 			closeModal()

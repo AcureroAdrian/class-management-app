@@ -436,6 +436,7 @@ const AttendanceEditModal = ({
 								placeholderTextColor={colors.variants.grey[3]}
 								value={searchQuery}
 								onChangeText={setSearchQuery}
+								autoComplete='off'
 							/>
 							{searchQuery.length > 0 && (
 								<ClearSearchButton onPress={() => setSearchQuery('')}>

@@ -7,17 +7,17 @@ import { login } from '@/redux/actions/userActions'
 import colors from '@/theme/colors'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
-import { 
-	LoginContainer, 
-	LoginCard, 
-	LogoContainer, 
-	LoginLogo, 
+import {
+	LoginContainer,
+	LoginCard,
+	LogoContainer,
+	LoginLogo,
 	BrandContainer,
-	MainTitle, 
-	SubTitle, 
-	FormContainer, 
-	LoginButton, 
-	LoginButtonText, 
+	MainTitle,
+	SubTitle,
+	FormContainer,
+	LoginButton,
+	LoginButtonText,
 	ErrorMessage,
 	FooterContainer,
 	FooterText,
@@ -25,7 +25,7 @@ import {
 	DividerContainer,
 	DividerLine,
 	DividerText,
-	KarateSymbol
+	KarateSymbol,
 } from './login-styles'
 
 const Login = () => {
@@ -65,18 +65,12 @@ const Login = () => {
 		<LoginContainer>
 			<StatusBar style='light' />
 			<KeyboardAvoidingWrapper>
-				<ScrollView 
-					showsVerticalScrollIndicator={false}
-					contentContainerStyle={{ flexGrow: 1 }}
-				>
+				<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
 					<View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
 						<LoginCard>
 							{/* Logo and Branding */}
 							<LogoContainer>
-								<LoginLogo 
-									resizeMode='contain' 
-									source={require('@/assets/img/logo.png')} 
-								/>
+								<LoginLogo resizeMode='contain' source={require('@/assets/img/logo.png')} />
 								<BrandContainer>
 									<MainTitle>MIYAGI KEN</MainTitle>
 									<SubTitle>International Academy</SubTitle>
@@ -88,21 +82,25 @@ const Login = () => {
 
 							{/* Form */}
 							<FormContainer>
-								<Text style={{ 
-									fontSize: 24, 
-									fontWeight: '600', 
-									color: colors.variants.secondary[5],
-									marginBottom: 8,
-									textAlign: 'center'
-								}}>
+								<Text
+									style={{
+										fontSize: 24,
+										fontWeight: '600',
+										color: colors.variants.secondary[5],
+										marginBottom: 8,
+										textAlign: 'center',
+									}}
+								>
 									Welcome
 								</Text>
-								<Text style={{ 
-									fontSize: 16, 
-									color: colors.variants.grey[4],
-									marginBottom: 32,
-									textAlign: 'center'
-								}}>
+								<Text
+									style={{
+										fontSize: 16,
+										color: colors.variants.grey[4],
+										marginBottom: 32,
+										textAlign: 'center',
+									}}
+								>
 									Sign in to your account to continue
 								</Text>
 
@@ -114,11 +112,10 @@ const Login = () => {
 									value={userId}
 									autoCapitalize='characters'
 									maxLength={20}
+									autoComplete='off'
 								/>
 
-								{message && (
-									<ErrorMessage>{message}</ErrorMessage>
-								)}
+								{message && <ErrorMessage>{message}</ErrorMessage>}
 
 								<LoginButton disabled={loadingUserLogin} onPress={handleLogin}>
 									{loadingUserLogin ? (

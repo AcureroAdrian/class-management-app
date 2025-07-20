@@ -58,6 +58,7 @@ const SelectStudentModal = ({
 								height: 50,
 								color: colors.variants.secondary[5],
 							}}
+							autoComplete='off'
 						/>
 					</View>
 				</View>

@@ -116,6 +116,7 @@ const AddStudentModal = ({
 							placeholderTextColor={colors.variants.grey[3]}
 							value={searchText}
 							onChangeText={setSearchText}
+							autoComplete='off'
 						/>
 					</SearchBarContainer>
 

@@ -29,12 +29,12 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 	const [showDate, setShowDate] = useState<boolean>(false)
 	const [name, setName] = useState<string>('')
 	const [description, setDescription] = useState<string>('')
-	const [startTime, setStartTime] = useState<Date>(new Date('2000-01-01 12:00:00'))
-	const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>(weekDaysInitialValues)
-	const [levels, setLevels] = useState<TUserLevel[]>(levelsInitialValues)
+	const [startTime, setStartTime] = useState<Date>()
+	const [weekDays, setWeekDays] = useState<TDaysOfWeek[]>([])
+	const [levels, setLevels] = useState<TUserLevel[]>([])
 	const [minAge, setMinAge] = useState<number>(0)
 	const [maxAge, setMaxAge] = useState<number>(100)
-	const [location, setLocation] = useState<TLocation>('spring')
+	const [location, setLocation] = useState<TLocation>()
 	const [openLocationsModal, setOpenLocationsModal] = useState<boolean>(false)
 	const [studentsAssigned, setStudentsAssigned] = useState<string[]>([])
 	const [openWeekDaysModal, setOpenWeekDaysModal] = useState<boolean>(false)
@@ -185,7 +185,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 									<CustomInputForm
 										label='Location'
 										placeholder='Tap to select a location'
-										value={capitalizeWords(location)}
+										value={capitalizeWords(location || '')}
 										editable={false}
 										onPress={() => !loadingRegisterKarateClass && setOpenLocationsModal(true)}
 										icon='map-marker'

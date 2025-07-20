@@ -37,7 +37,7 @@ const AgendaItem = (props: ItemProps) => {
 	const startTime = format(date, 'HH:mm')
 
 	// Calcular el color del borde basado en el porcentaje de asistencia
-	const totalStudents = item?.item?.students?.length || 0
+	const totalStudents = item?.item?.karateClass?.students?.length || 0
 	const presentStudents = disabled ? 0 : (item.presents || 0)
 	const absentStudents = disabled ? totalStudents : (item.absents || 0)
 	

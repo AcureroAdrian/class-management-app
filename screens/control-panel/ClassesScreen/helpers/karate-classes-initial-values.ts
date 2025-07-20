@@ -2,6 +2,6 @@ import { TDaysOfWeek, TLocation, TUserLevel } from '@/shared/common-types'
 
 export const weekDaysInitialValues: TDaysOfWeek[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
-export const levelsInitialValues: TUserLevel[] = ['novice', 'beginner', 'intermediate', 'advanced', 'elite']
+export const levelsInitialValues: TUserLevel[] = ['beginner', 'novice', 'intermediate', 'advanced', 'elite']
 
 export const locationsInitialValues: TLocation[] = ['katy', 'spring']

@@ -1,3 +1,3 @@
 import { TUserLevel } from '@/shared/common-types'
 
-export const levelsInitialValues: TUserLevel[] = ['novice', 'beginner', 'intermediate', 'advanced', 'elite']
+export const levelsInitialValues: TUserLevel[] = ['beginner', 'novice', 'intermediate', 'advanced', 'elite']
