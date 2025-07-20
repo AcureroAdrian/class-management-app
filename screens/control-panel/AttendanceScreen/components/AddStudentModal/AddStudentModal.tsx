@@ -104,80 +104,79 @@ const AddStudentModal = ({
 	}
 
 	return (
-		<>
-			<Modal visible={visible} animationType='slide' onRequestClose={handleClose} statusBarTranslucent={true}>
-				<ModalContainer>
-					<ScreenHeader label='Add Student' showBackButton={true} handleBack={handleClose} />
+		<Modal visible={visible} animationType='slide' onRequestClose={handleClose} statusBarTranslucent={true}>
+			<ModalContainer>
+				<ScreenHeader label='Add Student' showBackButton={true} handleBack={handleClose} />
 
-					{/* Search Bar */}
-					<SearchBarContainer>
-						<SearchInput
-							placeholder='Search student...'
-							placeholderTextColor={colors.variants.grey[3]}
-							value={searchText}
-							onChangeText={setSearchText}
-							autoComplete='off'
-						/>
-					</SearchBarContainer>
-
-					{/* Create Trial Student Button */}
-					<CreateTrialButtonContainer>
-						<CreateTrialButton onPress={handleOpenTrial}>
-							<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
-							<CreateTrialButtonText>Create a Trial Student</CreateTrialButtonText>
-						</CreateTrialButton>
-					</CreateTrialButtonContainer>
-
-					{/* Students List */}
-					<FlatList
-						data={availableStudents}
-						keyExtractor={(item) => item._id}
-						style={{ flex: 1 }}
-						renderItem={({ item }) => (
-							<StudentListItemContainer>
-								<StudentListItemContent>
-									<StudentAvatar source={require('@/assets/img/default-avatar.png')} resizeMode='contain' />
-									<StudentInfoContainer>
-										<StudentName>
-											{capitalizeWords(item.name)} {capitalizeWords(item.lastName)}
-										</StudentName>
-
-										{/* Badges */}
-										<BadgesContainer>
-											{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
-											{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
-										</BadgesContainer>
-									</StudentInfoContainer>
-
-									{/* Action Buttons */}
-									<ActionButtonsContainer>
-										<ActionButton
-											onPress={() => handleAddStudent(item._id, false, true)}
-											disabled={loadingAddStudentToAttendance}
-											permanent
-										>
-											<ActionButtonText>Permanent</ActionButtonText>
-										</ActionButton>
-										<ActionButton
-											onPress={() => handleAddStudent(item._id, true, false)}
-											disabled={loadingAddStudentToAttendance}
-										>
-											<ActionButtonText>Day only</ActionButtonText>
-										</ActionButton>
-									</ActionButtonsContainer>
-								</StudentListItemContent>
-							</StudentListItemContainer>
-						)}
-						ListEmptyComponent={() => (
-							<EmptyListContainer>
-								<MaterialCommunityIcons name='account-search' size={64} color={colors.variants.grey[3]} />
-								<EmptyListText>No available students found</EmptyListText>
-							</EmptyListContainer>
-						)}
+				{/* Search Bar */}
+				<SearchBarContainer>
+					<SearchInput
+						placeholder='Search student...'
+						placeholderTextColor={colors.variants.grey[3]}
+						value={searchText}
+						onChangeText={setSearchText}
+						autoComplete='off'
 					/>
-				</ModalContainer>
+				</SearchBarContainer>
+
+				{/* Create Trial Student Button */}
+				<CreateTrialButtonContainer>
+					<CreateTrialButton onPress={handleOpenTrial}>
+						<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
+						<CreateTrialButtonText>Create a Trial Student</CreateTrialButtonText>
+					</CreateTrialButton>
+				</CreateTrialButtonContainer>
+
+				{/* Students List */}
+				<FlatList
+					data={availableStudents}
+					keyExtractor={(item) => item._id}
+					style={{ flex: 1 }}
+					renderItem={({ item }) => (
+						<StudentListItemContainer>
+							<StudentListItemContent>
+								<StudentAvatar source={require('@/assets/img/default-avatar.png')} resizeMode='contain' />
+								<StudentInfoContainer>
+									<StudentName>
+										{capitalizeWords(item.name)} {capitalizeWords(item.lastName)}
+									</StudentName>
+
+									{/* Badges */}
+									<BadgesContainer>
+										{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
+										{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
+									</BadgesContainer>
+								</StudentInfoContainer>
+
+								{/* Action Buttons */}
+								<ActionButtonsContainer>
+									<ActionButton
+										onPress={() => handleAddStudent(item._id, false, true)}
+										disabled={loadingAddStudentToAttendance}
+										permanent
+									>
+										<ActionButtonText>Permanent</ActionButtonText>
+									</ActionButton>
+									<ActionButton
+										onPress={() => handleAddStudent(item._id, true, false)}
+										disabled={loadingAddStudentToAttendance}
+									>
+										<ActionButtonText>Day only</ActionButtonText>
+									</ActionButton>
+								</ActionButtonsContainer>
+							</StudentListItemContent>
+						</StudentListItemContainer>
+					)}
+					ListEmptyComponent={() => (
+						<EmptyListContainer>
+							<MaterialCommunityIcons name='account-search' size={64} color={colors.variants.grey[3]} />
+							<EmptyListText>No available students found</EmptyListText>
+						</EmptyListContainer>
+					)}
+				/>
 
 				{/* Trial Student Modal */}
+				{openTrialStudentModal && (
 				<TrialStudentModal
 					visible={openTrialStudentModal}
 					onClose={() => setOpenTrialStudentModal(false)}
@@ -187,10 +186,11 @@ const AddStudentModal = ({
 					onStudentAdded={() => {
 						onStudentAdded()
 						setOpenTrialStudentModal(false)
-					}}
-				/>
-			</Modal>
-		</>
+						}}
+					/>
+				)}
+			</ModalContainer>
+		</Modal>
 	)
 }
 

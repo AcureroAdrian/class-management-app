@@ -235,6 +235,7 @@ const StudentEditModal = ({
 												icon='account-key'
 												autoCapitalize='characters'
 												maxLength={20}
+												autoComplete='off'
 											/>
 											<CustomInputForm
 												label='First Name'
@@ -247,6 +248,7 @@ const StudentEditModal = ({
 												value={name}
 												editable={!loadingUpdateStudentUserById}
 												icon='account'
+												autoComplete='off'
 											/>
 											<CustomInputForm
 												label='Last Name'
@@ -259,6 +261,7 @@ const StudentEditModal = ({
 												value={lastName}
 												editable={!loadingUpdateStudentUserById}
 												icon='account'
+												autoComplete='off'
 											/>
 											<CustomInputForm
 												label='Date of Birth'
@@ -407,11 +410,7 @@ const StudentEditModal = ({
 								</ScrollView>
 							</KeyboardAvoidingWrapper>
 						</S.ContentContainer>
-						{errorMessage && (
-							<S.ErrorText>
-								{errorMessage}
-							</S.ErrorText>
-						)}
+						{errorMessage && <S.ErrorText>{errorMessage}</S.ErrorText>}
 					</>
 				)}
 			</S.ModalContainer>

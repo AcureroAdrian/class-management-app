@@ -157,6 +157,7 @@ const StudentsRegisterModal = ({
 										icon='account-key'
 										autoCapitalize='characters'
 										maxLength={20}
+										autoComplete='off'
 									/>
 									<CustomInputForm
 										label='First Name'
@@ -169,6 +170,7 @@ const StudentsRegisterModal = ({
 										value={studentName}
 										editable={!loadingRegisterStudents}
 										icon='account'
+										autoComplete='off'
 									/>
 									<CustomInputForm
 										label='Last Name'
@@ -181,6 +183,7 @@ const StudentsRegisterModal = ({
 										value={studentLastName}
 										editable={!loadingRegisterStudents}
 										icon='account'
+										autoComplete='off'
 									/>
 									<CustomInputForm
 										label='Date of Birth'

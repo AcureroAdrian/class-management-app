@@ -135,6 +135,23 @@ export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 			}
 		case types.USER_LOGOUT:
 			return {}
+		case types.UPDATE_STUDENT_USER_BY_ID_SUCCESS:
+			// Update userInfo if the updated user is the current logged user
+			if (state.userInfo && state.userInfo._id === action.payload._id) {
+				return {
+					...state,
+					userInfo: {
+						...state.userInfo,
+						userId: action.payload.userId,
+						name: action.payload.name,
+						lastName: action.payload.lastName,
+						email: action.payload.email,
+						level: action.payload.level,
+						dateOfBirth: action.payload.dateOfBirth,
+					},
+				}
+			}
+			return state
 		default:
 			return state
 	}

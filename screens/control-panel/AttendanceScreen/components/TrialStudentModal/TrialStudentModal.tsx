@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, ScrollView, Switch } from 'react-native'
+import { Modal, ScrollView, Switch, View } from 'react-native'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
@@ -141,9 +141,25 @@ const TrialStudentModal = ({
 		dispatch(registerTrialStudent(trialStudentData))
 	}
 
+	// Si no está visible, no renderizar nada
+	if (!visible) {
+		return null
+	}
+
 	return (
 		<>
-			<Modal visible={visible} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
+			{/* Overlay para el modal anidado */}
+			<View
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					backgroundColor: 'rgba(0, 0, 0, 0.5)',
+					zIndex: 1000,
+				}}
+			>
 				<S.ModalContainer>
 					<ScreenHeader
 						label='Trial Student'
@@ -174,6 +190,7 @@ const TrialStudentModal = ({
 											icon='account-key'
 											autoCapitalize='characters'
 											maxLength={20}
+											autoComplete='off'
 										/>
 										<CustomInputForm
 											label='First Name'
@@ -183,6 +200,7 @@ const TrialStudentModal = ({
 											value={name}
 											editable={!loadingRegisterTrialStudent}
 											icon='account'
+											autoComplete='off'
 										/>
 										<CustomInputForm
 											label='Last Name'
@@ -192,6 +210,7 @@ const TrialStudentModal = ({
 											value={lastName}
 											editable={!loadingRegisterTrialStudent}
 											icon='account'
+											autoComplete='off'
 										/>
 										<CustomInputForm
 											label='Level'
@@ -258,17 +277,19 @@ const TrialStudentModal = ({
 						</KeyboardAvoidingWrapper>
 					</S.ContentContainer>
 				</S.ModalContainer>
-				{openLevelModal && (
-					<CustomSelectModal
-						openModal={openLevelModal}
-						closeModal={() => setOpenLevelModal(false)}
-						title='Student Levels'
-						options={levelsInitialValues}
-						selected={level || ''}
-						handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
-					/>
-				)}
-			</Modal>
+			</View>
+
+			{/* Level Selection Modal - Usando Modal real para este */}
+			{openLevelModal && (
+				<CustomSelectModal
+					openModal={openLevelModal}
+					closeModal={() => setOpenLevelModal(false)}
+					title='Student Levels'
+					options={levelsInitialValues}
+					selected={level || ''}
+					handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
+				/>
+			)}
 		</>
 	)
 }
