@@ -8,6 +8,7 @@ import {
 	PressableArea,
 	TopRow,
 	TimeContainer,
+	TimeLocationContainer,
 	TimeText,
 	StudentsContainer,
 	StudentsIcon,
@@ -20,6 +21,8 @@ import {
 	AttendanceText,
 	AttendanceCount,
 	ArrowIcon,
+	LocationBadge,
+	LocationText,
 } from './AgendaItem.styles'
 
 interface ItemProps {
@@ -49,9 +52,18 @@ const AgendaItem = (props: ItemProps) => {
 			<CardContainer borderColor={borderColor}>
 				<PressableArea onPress={() => handleOpenAttendance(item.item)} disabled={disabled}>
 					<TopRow>
-						<TimeContainer>
-							<TimeText>{startTime}</TimeText>
-						</TimeContainer>
+						<TimeLocationContainer>
+							<TimeContainer>
+								<TimeText>{startTime}</TimeText>
+							</TimeContainer>
+							{item.item.karateClass.location && (
+								<LocationBadge location={item.item.karateClass.location}>
+									<LocationText location={item.item.karateClass.location}>
+										{item.item.karateClass.location === 'spring' ? 'Spring' : item.item.karateClass.location === 'katy' ? 'Katy' : item.item.karateClass.location}
+									</LocationText>
+								</LocationBadge>
+							)}
+						</TimeLocationContainer>
 						<StudentsContainer>
 							<StudentsIcon>
 								<MaterialCommunityIcons 
@@ -82,7 +94,7 @@ const AgendaItem = (props: ItemProps) => {
 									color={colors.green} 
 								/>
 								<AttendanceCount>{presentStudents}</AttendanceCount>
-								<AttendanceText>presentes</AttendanceText>
+								<AttendanceText>present</AttendanceText>
 							</AttendanceButton>
 						)}
 
@@ -94,10 +106,9 @@ const AgendaItem = (props: ItemProps) => {
 									color={colors.red} 
 								/>
 								<AttendanceCount>{absentStudents}</AttendanceCount>
-								<AttendanceText>ausentes</AttendanceText>
+								<AttendanceText>absent</AttendanceText>
 							</AttendanceButton>
 						)}
-						
 						<ArrowIcon>
 							<MaterialCommunityIcons 
 								name='chevron-right' 

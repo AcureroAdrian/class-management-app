@@ -41,6 +41,11 @@ export const TimeContainer = styled.View`
 	border-radius: 6px;
 `
 
+export const TimeLocationContainer = styled.View`
+	flex-direction: row;
+	align-items: center;
+`
+
 export const TimeText = styled.Text`
 	color: ${colors.variants.secondary[5]};
 	font-size: 12px;
@@ -108,4 +113,27 @@ export const AttendanceCount = styled.Text`
 
 export const ArrowIcon = styled.View`
 	margin-left: auto;
+`
+
+export const LocationBadge = styled.View<{ location?: string }>`
+	background-color: ${({ location }: { location?: string }) =>
+		location === 'spring'
+			? colors.variants.primary[1]
+			: location === 'katy'
+			? colors.variants.secondary[1]
+			: colors.variants.grey[1]};
+	padding: 6px 12px;
+	border-radius: 6px;
+	margin-left: 8px;
+`
+
+export const LocationText = styled.Text<{ location?: string }>`
+	font-size: 12px;
+	font-weight: 600;
+	color: ${({ location }: { location?: string }) =>
+		location === 'spring'
+			? colors.variants.primary[5]
+			: location === 'katy'
+			? colors.variants.secondary[5]
+			: colors.variants.grey[5]};
 ` 
