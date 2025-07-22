@@ -52,7 +52,12 @@ const AssignedStudentsModal = ({
 	}, [studentsAssigned, studentUsersList])
 
 	const handleSelectStudent = (student: IStudent) => {
-		setStudentsSelected((prev) => [...prev, student])
+		setStudentsSelected((prev) => {
+			if (prev.some((s) => s._id === student._id)) {
+				return prev // Ya está, no lo agregues de nuevo
+			}
+			return [...prev, student]
+		})
 	}
 	const handleSaveStudentsSelected = () => {
 		const validIds = studentsSelected.map((student: IStudent) => student._id)
