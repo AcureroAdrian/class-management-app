@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { format } from 'date-fns'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import colors from '@/theme/colors'
@@ -37,15 +37,27 @@ const AgendaItem = (props: ItemProps) => {
 	const date = new Date()
 	date.setHours(item.startTime.hour)
 	date.setMinutes(item.startTime.minute)
-	const startTime = format(date, 'HH:mm')
+	const startTime = format(date, 'h:mm a')
 
-	// Calcular el color del borde basado en el porcentaje de asistencia
-	const totalStudents = item?.item?.karateClass?.students?.length || 0
-	const presentStudents = disabled ? 0 : (item.presents || 0)
-	const absentStudents = disabled ? totalStudents : (item.absents || 0)
-	
-	const attendancePercentage = totalStudents > 0 ? (presentStudents / totalStudents) : 0
-	const borderColor = attendancePercentage >= 0.5 ? colors.green : colors.variants.primary[3]
+	// Calcular valores de asistencia usando useMemo para optimizar el rendimiento
+	const attendanceData = useMemo(() => {
+		const totalStudents = item?.item?.attendance?.length || 0
+		const presentStudents = disabled ? 0 : (item.presents || 0)
+		const absentStudents = disabled ? totalStudents : (item.absents || 0)
+		
+		const attendancePercentage = totalStudents > 0 ? (presentStudents / totalStudents) : 0
+		const borderColor = attendancePercentage >= 0.5 ? colors.green : colors.variants.primary[3]
+
+		return {
+			totalStudents,
+			presentStudents,
+			absentStudents,
+			attendancePercentage,
+			borderColor
+		}
+	}, [item?.item?.karateClass?.students?.length, item.presents, item.absents, disabled])
+
+	const { totalStudents, presentStudents, absentStudents, borderColor } = attendanceData
 
 	return (
 		<ItemContainer>

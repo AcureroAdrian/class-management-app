@@ -85,6 +85,7 @@ const AttendanceEditModal = ({
 }) => {
 	const dispatch = useAppDispatch()
 
+	const [currentAttendance, setCurrentAttendance] = useState(attendanceData)
 	const [initialAttendance, setInitialAttendance] = useState<IAttendanceItem[]>([])
 	const [attendance, setAttendance] = useState<IAttendanceItem[]>([])
 	const [searchQuery, setSearchQuery] = useState<string>('')
@@ -106,77 +107,32 @@ const AttendanceEditModal = ({
 	)
 
 	const dayAndWeekDay = useMemo(() => {
-		if (!attendanceData?.date) return ''
+		if (!currentAttendance?.date) return ''
 		const attendanceDate = new Date(
-			attendanceData?.date?.year,
-			attendanceData?.date?.month - 1,
-			attendanceData?.date?.day,
+			currentAttendance?.date?.year,
+			currentAttendance?.date?.month - 1,
+			currentAttendance?.date?.day,
 		)
 		return format(attendanceDate, 'EEEE MMMM d', { locale: enUS })
-	}, [attendanceData?.date])
+	}, [currentAttendance?.date])
 
 	const handleSetAttendance = (data: any) => {
 		const attendanceItem: IAttendanceItem[] = []
-		// Check for existing attendance
-		if (data.attendance && data.attendance.length > 0) {
-			// Real attendance exists
 			data.attendance.forEach((studentAttendance: any) => {
-				const studentInfo = data.karateClass.students.find(
-					(student: any) => student._id === studentAttendance.student,
-				)
-
 				attendanceItem.push({
-					student: studentAttendance.student,
-					name: studentInfo?.name || 'Unknown',
-					lastName: studentInfo?.lastName || '',
+					student:  studentAttendance.student._id,
+					name: studentAttendance.student?.name || 'Unknown',
+					lastName: studentAttendance.student?.lastName || '',
 					attendanceStatus: studentAttendance.attendanceStatus,
 					observations: studentAttendance.observations || '',
 					isDayOnly: studentAttendance.isDayOnly || false,
-					isTrial: studentInfo?.isTrial || false,
-					scheduledDeletionDate: studentInfo?.scheduledDeletionDate,
+					isTrial: studentAttendance.student?.isTrial || false,
+					scheduledDeletionDate: studentAttendance.student?.scheduledDeletionDate,
 					isRecovery: studentAttendance.isRecovery || false,
 					recoveryClassId: studentAttendance.recoveryClassId,
 				})
 			})
-		} else {
-			// Virtual attendance - create from class students
-			const classStudents = data.karateClass.students || []
-			const recoveryStudents = data.karateClass.recoveryClasses || []
-
-			// Add regular class students
-			classStudents.forEach((student: any) => {
-				attendanceItem.push({
-					student: student._id,
-					name: student.name,
-					lastName: student.lastName,
-					attendanceStatus: 'absent',
-					observations: '',
-					isDayOnly: student.isDayOnly || false,
-					isTrial: student.isTrial || false,
-					scheduledDeletionDate: student.scheduledDeletionDate,
-					isRecovery: student.isRecovery || false,
-					recoveryClassId: undefined,
-				})
-			})
-
-			// Add recovery students
-			recoveryStudents.forEach((recoveryClass: any) => {
-				if (recoveryClass.student && !attendanceItem.some((item) => item.student === recoveryClass.student._id)) {
-					attendanceItem.push({
-						student: recoveryClass.student._id,
-						name: recoveryClass.student.name,
-						lastName: recoveryClass.student.lastName,
-						attendanceStatus: 'absent',
-						observations: '',
-						isDayOnly: recoveryClass.student.isDayOnly || false,
-						isTrial: recoveryClass.student.isTrial || false,
-						scheduledDeletionDate: recoveryClass.student.scheduledDeletionDate,
-						isRecovery: true,
-						recoveryClassId: recoveryClass._id,
-					})
-				}
-			})
-		}
+		
 
 		setAttendance(attendanceItem)
 		setInitialAttendance(JSON.parse(JSON.stringify(attendanceItem)))
@@ -193,15 +149,16 @@ const AttendanceEditModal = ({
 	useEffect(() => {
 		if (studentAttendanceByDayList) {
 			const updatedAttendance = studentAttendanceByDayList?.attendances.find(
-				(item: any) => item.karateClass._id === attendanceData.karateClass._id,
+				(item: any) => item.karateClass._id === currentAttendance.karateClass._id,
 			)
 			if (updatedAttendance) {
+				setCurrentAttendance(updatedAttendance)
 				handleSetAttendance(updatedAttendance)
 			}
-		} else if (attendanceData && attendanceData.karateClass) {
-			handleSetAttendance(attendanceData)
+		} else if (currentAttendance && currentAttendance.karateClass) {
+			handleSetAttendance(currentAttendance)
 		}
-	}, [studentAttendanceByDayList, attendanceData])
+	}, [studentAttendanceByDayList])
 
 	useEffect(() => {
 		if (errorRegisterStudentAttendance) {
@@ -220,9 +177,9 @@ const AttendanceEditModal = ({
 			// Refresh attendance data after successful registration
 			dispatch(
 				getStudentAttendanceByDay(
-					attendanceData?.date?.year,
-					attendanceData?.date?.month,
-					attendanceData?.date?.day,
+					currentAttendance?.date?.year,
+					currentAttendance?.date?.month,
+					currentAttendance?.date?.day,
 				),
 			)
 		}
@@ -233,9 +190,9 @@ const AttendanceEditModal = ({
 			// Refresh attendance data after successful update
 			dispatch(
 				getStudentAttendanceByDay(
-					attendanceData?.date?.year,
-					attendanceData?.date?.month,
-					attendanceData?.date?.day,
+					currentAttendance?.date?.year,
+					currentAttendance?.date?.month,
+					currentAttendance?.date?.day,
 				),
 			)
 		}
@@ -258,18 +215,18 @@ const AttendanceEditModal = ({
 		}))
 
 		const studentAttendance = {
-			karateClass: attendanceData?.karateClass?._id,
-			date: attendanceData?.date,
+			karateClass: currentAttendance?.karateClass?._id,
+			date: currentAttendance?.date,
 			attendance: validAttendance,
 		}
 
 		// Check if it's a virtual attendance (starts with 'virtual-') or no _id
-		if (attendanceData?.isVirtual || !attendanceData?._id || attendanceData?._id?.startsWith('virtual-')) {
+		if (currentAttendance?.isVirtual || !currentAttendance?._id || currentAttendance?._id?.startsWith('virtual-')) {
 			// Create new real attendance from virtual
 			dispatch(registerStudentAttendance(studentAttendance))
 		} else {
 			// Update existing real attendance
-			dispatch(updateStudentAttendanceById(attendanceData?._id, { attendance: validAttendance }))
+			dispatch(updateStudentAttendanceById(currentAttendance?._id, { attendance: validAttendance }))
 		}
 		setInitialAttendance(JSON.parse(JSON.stringify(attendance)))
 	}
@@ -278,7 +235,7 @@ const AttendanceEditModal = ({
 		setErrorMessage(null)
 		setAttendance((prev) =>
 			prev.map((item) => {
-				if (item?.student === studentId) {
+				if (String(item?.student) === String(studentId)) {
 					item.attendanceStatus = toggleBasicAttendance(item.attendanceStatus)
 				}
 				return item
@@ -293,7 +250,7 @@ const AttendanceEditModal = ({
 	const handleSaveNotes = (studentId: string, notes: string) => {
 		setAttendance((prev) =>
 			prev.map((item) => {
-				if (item?.student === studentId) {
+				if (String(item?.student) === String(studentId)) {
 					item.observations = notes
 				}
 				return item
@@ -312,7 +269,7 @@ const AttendanceEditModal = ({
 		if (selectedStudentForStatus) {
 			setAttendance((prev) =>
 				prev.map((item) => {
-					if (item?.student === selectedStudentForStatus.student) {
+					if (String(item?.student) === String(selectedStudentForStatus.student)) {
 						item.attendanceStatus = status
 					}
 					return item
@@ -364,27 +321,27 @@ const AttendanceEditModal = ({
 	const canEdit = useMemo(() => {
 		const today = new Date()
 		const attendanceDate = new Date(
-			attendanceData?.date?.year || 0,
-			attendanceData?.date?.month - 1 || 0,
-			attendanceData?.date?.day || 0,
+			currentAttendance?.date?.year || 0,
+			currentAttendance?.date?.month - 1 || 0,
+			currentAttendance?.date?.day || 0,
 			12,
 			0,
 		)
 		// Allow editing for today and future dates (not past dates)
 		return attendanceDate >= today || format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
-	}, [attendanceData])
+	}, [currentAttendance])
 
 	const isToday = useMemo(() => {
 		const today = new Date()
 		const attendanceDate = new Date(
-			attendanceData?.date?.year || 0,
-			attendanceData?.date?.month - 1 || 0,
-			attendanceData?.date?.day || 0,
+			currentAttendance?.date?.year || 0,
+			currentAttendance?.date?.month - 1 || 0,
+			currentAttendance?.date?.day || 0,
 			12,
 			0,
 		)
 		return format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
-	}, [attendanceData])
+	}, [currentAttendance])
 
 
 
@@ -404,7 +361,7 @@ const AttendanceEditModal = ({
 				<CompactHeaderContainer>
 					<ClassInfoRow>
 						<ClassDetails>
-							<ClassName>{attendanceData?.karateClass?.name}</ClassName>
+							<ClassName>{currentAttendance?.karateClass?.name}</ClassName>
 							<DayWeekText>{dayAndWeekDay}</DayWeekText>
 						</ClassDetails>
 						<AttendanceSummary>
@@ -508,7 +465,7 @@ const AttendanceEditModal = ({
 							)}
 						</>
 					)}
-					keyExtractor={(item) => item.student}
+					keyExtractor={(item) => String(item.student)}
 				/>
 				</ScrollView>
 
@@ -538,18 +495,18 @@ const AttendanceEditModal = ({
 			<AddStudentModal
 				visible={openAddStudentModal}
 				onClose={() => setOpenAddStudentModal(false)}
-				attendanceId={attendanceData?._id}
-				currentStudents={attendance.map((item) => item.student)}
-				classId={attendanceData?.karateClass?._id}
-				date={attendanceData?.date}
+				attendanceId={currentAttendance?._id}
+				currentStudents={attendance.map((item) => String(item.student))}
+				classId={currentAttendance?.karateClass?._id}
+				date={currentAttendance?.date}
 				onStudentAdded={() => {
 					// Refresh attendance data when student is added
 					// This would trigger a re-fetch of the attendance data
 					dispatch(
 						getStudentAttendanceByDay(
-							attendanceData?.date?.year,
-							attendanceData?.date?.month,
-							attendanceData?.date?.day,
+							currentAttendance?.date?.year,
+							currentAttendance?.date?.month,
+							currentAttendance?.date?.day,
 						),
 					)
 					setOpenAddStudentModal(false)

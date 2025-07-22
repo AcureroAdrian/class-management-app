@@ -286,32 +286,60 @@ const ClassReportModal = ({ openModal, closeModal }: { openModal: boolean; close
 
 					{/* Info Section */}
 					<View style={{
-						backgroundColor: colors.variants.secondary[1],
-						borderRadius: 12,
-						padding: 16,
-						borderLeftWidth: 4,
-						borderLeftColor: colors.brand
+						position: 'relative',
+						overflow: 'hidden'
 					}}>
-						<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-							<MaterialCommunityIcons name="information" size={18} color={colors.brand} />
+						{/* Accent Element */}
+						<View style={{
+							position: 'absolute',
+							top: 0,
+							right: 0,
+							width: 60,
+							height: 60,
+							backgroundColor: colors.variants.secondary[1],
+							borderBottomLeftRadius: 30,
+							opacity: 0.4,
+							zIndex: 0
+						}} />
+						
+						{/* Main Card */}
+						<View style={{
+							backgroundColor: colors.variants.secondary[0],
+							padding: 18,
+							borderRadius: 16,
+							elevation: 0,
+							shadowColor: colors.variants.secondary[2],
+							shadowOffset: { width: 0, height: 4 },
+							shadowOpacity: 0.06,
+							shadowRadius: 8,
+							borderWidth: 1,
+							borderColor: colors.variants.secondary[1],
+							position: 'relative',
+							zIndex: 1
+						}}>
+							<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
+								<MaterialCommunityIcons name="information" size={18} color={colors.brand} />
+								<Text style={{ 
+									fontSize: 15, 
+									fontWeight: '600', 
+									color: colors.variants.secondary[5],
+									marginLeft: 8,
+									letterSpacing: -0.2
+								}}>
+									Report Information
+								</Text>
+							</View>
 							<Text style={{ 
-								fontSize: 14, 
-								fontWeight: '600', 
-								color: colors.variants.secondary[5],
-								marginLeft: 8,
-								letterSpacing: -0.2
+								fontSize: 13, 
+								color: colors.variants.secondary[4],
+								lineHeight: 18,
+								letterSpacing: -0.1,
+								position: 'relative',
+								zIndex: 1
 							}}>
-								Report Information
+								This report shows attendance statistics organized by specific classes with student details
 							</Text>
 						</View>
-						<Text style={{ 
-							fontSize: 13, 
-							color: colors.variants.secondary[3],
-							lineHeight: 18,
-							letterSpacing: -0.1
-						}}>
-							This report shows attendance statistics organized by specific classes with student details
-						</Text>
 					</View>
 				</ScrollView>
 			</View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { ScrollView, FlatList, Pressable } from 'react-native'
+import { ScrollView, FlatList, Pressable, Modal, View, TouchableOpacity } from 'react-native'
 import { useSegments } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
@@ -26,6 +26,10 @@ import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
 import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
 import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
 import { formatClassSchedule } from './helpers/format-class-schedule'
+import { getNextClassDateForSorting } from './helpers/get-next-class-date'
+import { applyFilters } from './helpers/filter-classes'
+import ClassFilters from './components/ClassFilters'
+import { TDaysOfWeek, TLocation } from '@/shared/common-types'
 import * as S from './styles'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
@@ -43,6 +47,12 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const [openReserveRecoveryClassModal, setOpenReserveRecoveryClassModal] = useState<boolean>(false)
 	const [openDeleteRecoveryClassModal, setOpenDeleteRecoveryClassModal] = useState<boolean>(false)
 	const [recoveryClassIdSelected, setRecoveryClassIdSelected] = useState<string>('')
+	
+	// Filter states
+	const [selectedDays, setSelectedDays] = useState<TDaysOfWeek[]>([])
+	const [selectedTimeRange, setSelectedTimeRange] = useState<string>('all')
+	const [selectedLocation, setSelectedLocation] = useState<TLocation | 'all'>('all')
+	const [showFiltersModal, setShowFiltersModal] = useState(false)
 
 	const {
 		loadingKarateClassesByAdmin,
@@ -155,6 +165,9 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 				}),
 			)
 			setOpenReserveRecoveryClassModal(false)
+			if (role === 'student') {
+				dispatch(getkarateClassesForStudent())
+			}
 		}
 	}, [successBookingRecoveryClassById])
 
@@ -177,6 +190,9 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 				}),
 			)
 			setOpenDeleteRecoveryClassModal(false)
+			if (role === 'student') {
+				dispatch(getkarateClassesForStudent())
+			}
 		}
 	}, [successDeleteRecoveryClassById])
 
@@ -206,6 +222,31 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const handleDeleteRecoveryClass = () => {
 		dispatch(deleteRecoveryClassById(recoveryClassIdSelected))
 	}
+
+	// Filter handlers
+	const handleDayToggle = (day: TDaysOfWeek) => {
+		setSelectedDays((prev) => {
+			if (prev.includes(day)) {
+				return prev.filter((d) => d !== day)
+			} else {
+				return [...prev, day]
+			}
+		})
+	}
+
+	const handleTimeRangeChange = (range: string) => {
+		setSelectedTimeRange(range)
+	}
+
+	const handleLocationChange = (location: TLocation | 'all') => {
+		setSelectedLocation(location)
+	}
+
+	const handleClearFilters = () => {
+		setSelectedDays([])
+		setSelectedTimeRange('all')
+		setSelectedLocation('all')
+	}
 	const karateClassSelected = useMemo(() => {
 		if (!classIdSelected) return null
 
@@ -225,6 +266,24 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		return undefined
 	}, [recoveryClasses])
 
+	// Aplicar filtros y ordenar las clases por fecha (más cercana primero)
+	const filteredAndSortedKarateClasses = useMemo(() => {
+		// Aplicar filtros
+		const filteredClasses = applyFilters(karateClasses, selectedDays, selectedTimeRange, selectedLocation)
+		
+		// Ordenar por fecha
+		return filteredClasses.sort((a, b) => {
+			// Si una clase no tiene días de la semana, ponerla al final
+			if (!a.weekDays || a.weekDays.length === 0) return 1
+			if (!b.weekDays || b.weekDays.length === 0) return -1
+			
+			const dateA = getNextClassDateForSorting(a.weekDays)
+			const dateB = getNextClassDateForSorting(b.weekDays)
+			
+			return dateA.getTime() - dateB.getTime()
+		})
+	}, [karateClasses, selectedDays, selectedTimeRange, selectedLocation])
+
 	const renderClassCard = ({ item }: { item: IClass }) => (
 		<S.ClassItemContainer>
 			<S.ClassItem
@@ -239,7 +298,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 							{item.name}
 						</S.ClassName>
 						<S.ClassDescription numberOfLines={2}>
-							{item.description || 'No description available'}
+							{item.description || 'No description'}
 						</S.ClassDescription>
 					</S.ClassTitleContainer>
 					<S.ClassInfoBadge>
@@ -324,19 +383,87 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 						</S.ErrorContainer>
 					) : (
 						<>
+							{/* Modal de Filtros */}
+							<Modal
+								visible={showFiltersModal}
+								animationType='fade'
+								transparent={true}
+								onRequestClose={() => setShowFiltersModal(false)}
+							>
+								<Pressable
+									style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.18)' }}
+									onPress={() => setShowFiltersModal(false)}
+								>
+									<View style={{ width: '92%', maxWidth: 420, borderRadius: 20, overflow: 'hidden', backgroundColor: 'transparent', alignItems: 'center' }} onStartShouldSetResponder={() => true}>
+										{/* Botón de cerrar centrado */}
+										<View style={{ width: '100%', alignItems: 'center', marginTop: 16, marginBottom: 8 }}>
+											<TouchableOpacity
+												style={{
+													width: 40,
+													height: 40,
+													borderRadius: 8,
+													backgroundColor: colors.variants.secondary[1],
+													justifyContent: 'center',
+													alignItems: 'center',
+													elevation: 2,
+													shadowColor: colors.variants.secondary[4],
+													shadowOffset: { width: 0, height: 2 },
+													shadowOpacity: 0.12,
+													shadowRadius: 4,
+												}}
+												onPress={() => setShowFiltersModal(false)}
+											>
+												<MaterialCommunityIcons name='close' size={24} color={colors.variants.secondary[5]} />
+											</TouchableOpacity>
+										</View>
+										<ClassFilters
+											selectedDays={selectedDays}
+											selectedTimeRange={selectedTimeRange}
+											selectedLocation={selectedLocation}
+											onDayToggle={handleDayToggle}
+											onTimeRangeChange={handleTimeRangeChange}
+											onLocationChange={handleLocationChange}
+											onClearFilters={handleClearFilters}
+										/>
+									</View>
+								</Pressable>
+							</Modal>
+
+							{/* FAB de filtro */}
+							<TouchableOpacity
+								style={{
+									position: 'absolute',
+									bottom: 32,
+									right: 28,
+									backgroundColor: showFiltersModal || selectedDays.length > 0 || selectedTimeRange !== 'all' || selectedLocation !== 'all' ? colors.variants.primary[4] : colors.variants.secondary[2],
+									borderRadius: 28,
+									padding: 16,
+									elevation: 4,
+									shadowColor: colors.variants.secondary[2],
+									shadowOffset: { width: 0, height: 2 },
+									shadowOpacity: 0.18,
+									shadowRadius: 8,
+									zIndex: 10,
+								}}
+								onPress={() => setShowFiltersModal(true)}
+							>
+								<MaterialCommunityIcons name='filter-variant' size={28} color={colors.primary} />
+							</TouchableOpacity>
+
 							{role === 'student' && (
 								<S.StudentInfoContainer>
 									<S.StudentInfoCard>
+										<S.StudentInfoAccent />
 										<S.StudentInfoHeader>
 											<S.StudentInfoTitle>Recovery Classes</S.StudentInfoTitle>
 											<S.RecoveryCreditsContainer>
-												<MaterialCommunityIcons name='account-clock' size={16} color={colors.variants.secondary[5]} />
+												<MaterialCommunityIcons name='account-clock' size={16} color={colors.primary} />
 												<S.RecoveryCreditsText>{recoveryClassCredits}</S.RecoveryCreditsText>
 											</S.RecoveryCreditsContainer>
 										</S.StudentInfoHeader>
-										<S.ClassDescription>
+										<S.StudentInfoDescription>
 											You have {recoveryClassCredits} absences to recover in the following classes
-										</S.ClassDescription>
+										</S.StudentInfoDescription>
 										<S.ReservedInfoContainer>
 											<MaterialCommunityIcons name='star' size={16} color={colors.variants.secondary[5]} />
 											<S.ReservedText>Reserved classes are marked with a star</S.ReservedText>
@@ -347,11 +474,11 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 							<S.ListContainer>
 								<ScrollView 
 									style={{ flex: 1 }}
-									contentContainerStyle={{ paddingTop: 16, paddingBottom: 40 }}
+									contentContainerStyle={{ paddingTop: 16, paddingBottom: 85 }}
 									showsVerticalScrollIndicator={false}
 								>
 									<FlatList
-										data={karateClasses}
+										data={filteredAndSortedKarateClasses}
 										keyExtractor={(item) => item._id}
 										nestedScrollEnabled={true}
 										scrollEnabled={false}
@@ -408,8 +535,8 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 						dispatch({ type: DELETE_RECOVERY_CLASS_BY_ID_RESET }),
 					]}
 					handleDeleteRecoveryClass={handleDeleteRecoveryClass}
-					loadingDelete={loadingDeleteRecoveryClassById}
-					errorDelete={errorDeleteRecoveryClassById}
+					loadingDelete={!!loadingDeleteRecoveryClassById}
+					errorDelete={errorDeleteRecoveryClassById || ''}
 				/>
 			)}
 		</>
