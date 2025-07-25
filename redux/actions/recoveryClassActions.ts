@@ -3,7 +3,7 @@ import * as types from '../constants/recoveryClassConstants'
 import { AppStore } from '../store'
 import customAxios from '@/config/axios'
 
-export const deleteRecoveryClassById = (id: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+export const deleteRecoveryClassById = (id: string, force?: boolean) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
 	try {
 		dispatch({ type: types.DELETE_RECOVERY_CLASS_BY_ID_REQUEST })
 
@@ -17,7 +17,10 @@ export const deleteRecoveryClassById = (id: string) => async (dispatch: Dispatch
 			},
 		}
 
-		const { data } = await customAxios.delete('/api/recovery-classes/' + id, config)
+		// Si force es true, agregar el parámetro a la URL
+		const url = `/api/recovery-classes/${id}${force ? '?force=true' : ''}`
+
+		const { data } = await customAxios.delete(url, config)
 
 		dispatch({ type: types.DELETE_RECOVERY_CLASS_BY_ID_SUCCESS, payload: data })
 	} catch (error: any) {

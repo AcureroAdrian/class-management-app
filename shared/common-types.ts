@@ -9,3 +9,8 @@ export type TAttendanceStatus = 'present' | 'absent' | 'late' | 'good-behavior' 
 export type TUserRole = 'admin' | 'student' | 'teacher'
 
 export type TLocation = 'spring' | 'katy'
+
+export interface IStartTime {
+	hour: number
+	minute: number
+}

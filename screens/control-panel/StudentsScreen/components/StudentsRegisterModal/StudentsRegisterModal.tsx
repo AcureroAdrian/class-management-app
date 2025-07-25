@@ -298,6 +298,7 @@ const StudentsRegisterModal = ({
 			</S.ModalContainer>
 			{showDatePicker && (
 				<DateTimePickerModal
+					minimumDate={new Date('1900-01-01')}
 					isVisible={showDatePicker}
 					mode='date'
 					onConfirm={handleSelectDob}

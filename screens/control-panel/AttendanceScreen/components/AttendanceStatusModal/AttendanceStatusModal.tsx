@@ -16,6 +16,8 @@ import {
 	StudentName,
 	AddNoteButton,
 	AddNoteText,
+	RemoveStudentButton,
+	RemoveStudentText,
 } from './AttendanceStatusModal.styles'
 
 interface AttendanceStatusModalProps {
@@ -23,8 +25,10 @@ interface AttendanceStatusModalProps {
 	onClose: () => void
 	onSelectStatus: (status: TAttendanceStatus) => void
 	onAddNote: () => void
+	onRemoveStudent: () => void
 	currentStatus: TAttendanceStatus
 	studentName: string
+	canRemove?: boolean
 }
 
 const AttendanceStatusModal: React.FC<AttendanceStatusModalProps> = ({
@@ -32,8 +36,10 @@ const AttendanceStatusModal: React.FC<AttendanceStatusModalProps> = ({
 	onClose,
 	onSelectStatus,
 	onAddNote,
+	onRemoveStudent,
 	currentStatus,
 	studentName,
+	canRemove,
 }) => {
 	const statusOptions: Array<{
 		status: TAttendanceStatus
@@ -136,6 +142,17 @@ const AttendanceStatusModal: React.FC<AttendanceStatusModalProps> = ({
 						/>
 						<AddNoteText>Add / Edit Note</AddNoteText>
 					</AddNoteButton>
+					{canRemove && (
+						<RemoveStudentButton
+							onPress={() => {
+								onRemoveStudent()
+								onClose()
+							}}
+						>
+							<MaterialCommunityIcons name='trash-can-outline' size={20} color={'#ff3b30'} />
+							<RemoveStudentText>Remove Student</RemoveStudentText>
+						</RemoveStudentButton>
+					)}
 				</ModalContent>
 			</ModalOverlay>
 		</Modal>

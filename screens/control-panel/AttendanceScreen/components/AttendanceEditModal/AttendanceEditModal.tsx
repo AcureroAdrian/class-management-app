@@ -8,10 +8,12 @@ import {
 	registerStudentAttendance,
 	updateStudentAttendanceById,
 } from '@/redux/actions/studentAttendanceActions'
+import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
 import {
 	REGISTER_STUDENT_ATTENDANCE_RESET,
 	UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET,
 } from '@/redux/constants/studentAttendanceConstants'
+import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { format } from 'date-fns'
 import { enUS } from 'date-fns/locale'
@@ -20,6 +22,7 @@ import StudentNotesModal from '../StudentNotesModal'
 import AddStudentModal from '../AddStudentModal'
 import AttendanceStatusModal from '../AttendanceStatusModal'
 import KeyboardAvoidingWrapper from '@/components/KeyboardAvoidingWrapper/KeyboardAvoidingWrapper'
+import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import { TAttendanceStatus } from '@/shared/common-types'
 import { getMacroStatus, toggleBasicAttendance, isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
@@ -95,6 +98,10 @@ const AttendanceEditModal = ({
 	const [openAddStudentModal, setOpenAddStudentModal] = useState<boolean>(false)
 	const [openStatusModal, setOpenStatusModal] = useState<boolean>(false)
 	const [selectedStudentForStatus, setSelectedStudentForStatus] = useState<IAttendanceItem | null>(null)
+	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
+	const [studentToDelete, setStudentToDelete] = useState<IAttendanceItem | null>(null)
+
+	const { userInfo } = useAppSelector((state) => state.userLogin)
 
 	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance, successRegisterStudentAttendance } = useAppSelector(
 		(state) => state.registerStudentAttendance,
@@ -105,6 +112,11 @@ const AttendanceEditModal = ({
 	const { successStudentAttendanceByDay, studentAttendanceByDayList } = useAppSelector(
 		(state) => state.getStudentAttendanceByDay,
 	)
+	const {
+		loadingDeleteRecoveryClassById,
+		errorDeleteRecoveryClassById,
+		successDeleteRecoveryClassById,
+	} = useAppSelector((state) => state.deleteRecoveryClassById)
 
 	const dayAndWeekDay = useMemo(() => {
 		if (!currentAttendance?.date) return ''
@@ -142,6 +154,7 @@ const AttendanceEditModal = ({
 		return () => {
 			dispatch({ type: REGISTER_STUDENT_ATTENDANCE_RESET })
 			dispatch({ type: UPDATE_STUDENT_ATTENDANCE_BY_ID_RESET })
+			dispatch({ type: DELETE_RECOVERY_CLASS_BY_ID_RESET })
 			closeModal()
 		}
 	}, [])
@@ -197,6 +210,19 @@ const AttendanceEditModal = ({
 			)
 		}
 	}, [successUpdateStudentAttendanceById])
+
+	useEffect(() => {
+		if (successDeleteRecoveryClassById) {
+			// Refresh attendance data after successful removal
+			dispatch(
+				getStudentAttendanceByDay(
+					currentAttendance?.date?.year,
+					currentAttendance?.date?.month,
+					currentAttendance?.date?.day,
+				),
+			)
+		}
+	}, [successDeleteRecoveryClassById])
 
 	const handleSaveAtendance = () => {
 		setErrorMessage(null)
@@ -278,6 +304,26 @@ const AttendanceEditModal = ({
 		}
 		setOpenStatusModal(false)
 		setSelectedStudentForStatus(null)
+	}
+
+	const handleOpenDeleteModal = (student: IAttendanceItem) => {
+		setStudentToDelete(student)
+		setOpenConfirmationDeleteModal(true)
+	}
+
+	const handleConfirmDelete = () => {
+		if (studentToDelete) {
+			if (studentToDelete.recoveryClassId) {
+				// It's a makeup student, so un-book them
+				const force = true
+				dispatch(deleteRecoveryClassById(studentToDelete.recoveryClassId, force))
+			} else {
+				// It's a regular student, just remove them from the local list for this day
+				setAttendance((prev) => prev.filter((item) => item.student !== studentToDelete.student))
+			}
+		}
+		setOpenConfirmationDeleteModal(false)
+		setStudentToDelete(null)
 	}
 
 	const handleClose = () => {
@@ -452,7 +498,7 @@ const AttendanceEditModal = ({
 
 											{/* Three Dots Menu */}
 											<MoreOptionsButton onPress={() => handleOpenStatusModal(item)} disabled={!canEdit}>
-												<MaterialCommunityIcons name='dots-horizontal' size={16} color={colors.variants.grey[4]} />
+												<MaterialCommunityIcons name='dots-horizontal' size={24} color={colors.variants.grey[4]} />
 											</MoreOptionsButton>
 										</StudentActionsContainer>
 									</StudentListItemContent>
@@ -470,7 +516,7 @@ const AttendanceEditModal = ({
 				</ScrollView>
 
 				{/* Floating Add Student Button */}
-				{canEdit && (
+				{canEdit && !userInfo?.isTeacher && (
 					<FloatingButtonContainer>
 						<FloatingButton onPress={() => setOpenAddStudentModal(true)}>
 							<MaterialCommunityIcons name='account-plus' size={24} color={colors.primary} />
@@ -526,12 +572,32 @@ const AttendanceEditModal = ({
 						handleOpenNotesModal(selectedStudentForStatus)
 					}
 				}}
+				onRemoveStudent={() => {
+					if (selectedStudentForStatus) {
+						handleOpenDeleteModal(selectedStudentForStatus)
+					}
+				}}
+				canRemove={!userInfo?.isTeacher}
 				currentStatus={selectedStudentForStatus?.attendanceStatus || 'present'}
 				studentName={
 					selectedStudentForStatus
 						? `${capitalizeWords(selectedStudentForStatus.name)} ${capitalizeWords(selectedStudentForStatus.lastName)}`
 						: ''
 				}
+			/>
+
+			{/* Confirmation Delete Modal */}
+			<ConfirmationDeleteModal
+				openModal={openConfirmationDeleteModal}
+				closeModal={() => {
+					setOpenConfirmationDeleteModal(false)
+					setStudentToDelete(null)
+					dispatch({ type: DELETE_RECOVERY_CLASS_BY_ID_RESET })
+				}}
+				handleConfirm={handleConfirmDelete}
+				title={`Are you sure you want to remove ${studentToDelete?.name} ${studentToDelete?.lastName}?`}
+				loadingDelete={loadingDeleteRecoveryClassById}
+				errorDelete={errorDeleteRecoveryClassById}
 			/>
 		</Modal>
 	)

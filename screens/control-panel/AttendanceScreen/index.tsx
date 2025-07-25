@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
-import { useSegments } from 'expo-router'
+import { useFocusEffect } from 'expo-router'
 import { format } from 'date-fns'
 import { DateData } from 'react-native-calendars'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -21,7 +21,6 @@ import { AttendanceScreenContainer } from './styles'
 
 const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
-	const segments: string[] = useSegments()
 	const today = new Date()
 
 	const [currentDate, setCurrentDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
@@ -39,37 +38,53 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		loadingGetKarateClassesToAdminAttendance,
 		successGetKarateClassesToAdminAttendance,
 		karateClassesToAdminAttendance,
-	} = useAppSelector((state) => state.getKarateClassesToAdminAttendance)
+	} = useAppSelector((state) => state.getKarateClassesToAdminAttendance) || {
+		loadingGetKarateClassesToAdminAttendance: false,
+		successGetKarateClassesToAdminAttendance: false,
+		karateClassesToAdminAttendance: [],
+	}
 	const {
 		loadingStudentAttendanceByDay,
 		successStudentAttendanceByDay,
 		studentAttendanceByDayList,
 		errorStudentAttendanceByDay,
-	} = useAppSelector((state) => state.getStudentAttendanceByDay)
-	const { successRegisterStudentAttendance, studentAttendanceRegistered } = useAppSelector(
-		(state) => state.registerStudentAttendance,
-	)
-	const { successUpdateStudentAttendanceById, studentAttendanceByIdUpdated } = useAppSelector(
-		(state) => state.updateStudentAttendanceById,
-	)
+	} = useAppSelector((state) => state.getStudentAttendanceByDay) || {
+		loadingStudentAttendanceByDay: false,
+		successStudentAttendanceByDay: false,
+		studentAttendanceByDayList: {},
+		errorStudentAttendanceByDay: '',
+	}
+	const { successRegisterStudentAttendance, studentAttendanceRegistered } =
+		useAppSelector((state) => state.registerStudentAttendance) || {}
+	const { successUpdateStudentAttendanceById, studentAttendanceByIdUpdated } =
+		useAppSelector((state) => state.updateStudentAttendanceById) || {}
 	const {
 		loadingRegisterHolidayByDate,
 		successRegisterHolidayByDate,
 		holidayByDateRegistered,
 		errorRegisterHolidayByDate,
-	} = useAppSelector((state) => state.registerHolidayByDate)
-	const { loadingDeleteHolidayById, successDeleteHolidayById, errorDeleteHolidayById } = useAppSelector(
-		(state) => state.deleteHolidayById,
-	)
+	} = useAppSelector((state) => state.registerHolidayByDate) || {
+		loadingRegisterHolidayByDate: false,
+		successRegisterHolidayByDate: false,
+		holidayByDateRegistered: {} as any,
+		errorRegisterHolidayByDate: '',
+	}
+	const { loadingDeleteHolidayById, successDeleteHolidayById, errorDeleteHolidayById } =
+		useAppSelector((state) => state.deleteHolidayById) || {
+			loadingDeleteHolidayById: false,
+			successDeleteHolidayById: false,
+			errorDeleteHolidayById: ''
+		}
 
-	useEffect(() => {
-		if (segments[1] === 'attendance') {
+	useFocusEffect(
+		useCallback(() => {
 			dispatch(getKarateClassesToAdminAttendance())
-		}
-		return () => {
-			dispatch({ type: GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET })
-		}
-	}, [segments])
+
+			return () => {
+				dispatch({ type: GET_CLASSES_TO_ADMIN_ATTENDANCE_RESET })
+			}
+		}, []),
+	)
 
 	useEffect(() => {
 		if (successGetKarateClassesToAdminAttendance) {
@@ -85,7 +100,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 			setYear(year)
 			setMonth(month)
 		}
-	}, [successGetKarateClassesToAdminAttendance])
+	}, [successGetKarateClassesToAdminAttendance, karateClassesToAdminAttendance])
 
 	useEffect(() => {
 		if (month && year) {
@@ -221,23 +236,16 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 			})
 			setOpenAttendanceEditModal(false)
 		}
-	}, [successUpdateStudentAttendanceById])
+	}, [successUpdateStudentAttendanceById, studentAttendanceByIdUpdated])
 
 	useEffect(() => {
-		if (successRegisterHolidayByDate) {
-			setHolidayId(holidayByDateRegistered?._id)
-
+		if (successRegisterHolidayByDate || successDeleteHolidayById) {
+			const [year, month, day] = currentDate.split('-').map(Number)
+			dispatch(getStudentAttendanceByDay(year, month, day))
 			dispatch({ type: REGISTER_HOLIDAY_BY_DATE_RESET })
-		}
-	}, [successRegisterHolidayByDate])
-
-	useEffect(() => {
-		if (successDeleteHolidayById) {
-			setHolidayId('')
-
 			dispatch({ type: DELETE_HOLIDAY_BY_ID_RESET })
 		}
-	}, [successDeleteHolidayById])
+	}, [successRegisterHolidayByDate, successDeleteHolidayById, currentDate, dispatch])
 
 	const handleDayChange = useCallback((date: string) => {
 		setCurrentDate(date)
@@ -258,7 +266,7 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 			dispatch(deleteHolidayById(holidayId))
 		} else {
 			const [year, month, day] = currentDate.split('-').map(Number)
-			dispatch(registerHolidayByDate({ year, month, day }))
+			dispatch(registerHolidayByDate(year, month, day))
 		}
 	}, [holidayId, currentDate, dispatch])
 

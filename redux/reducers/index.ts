@@ -29,10 +29,15 @@ import {
 	getStudentAttendanceByDayReducer,
 	getStudentReportForAdminReducer,
 	registerStudentAttendanceReducer,
+	removeStudentFromAttendanceReducer,
 	updateStudentAttendanceByIdReducer,
 } from './studentAttendanceReducers'
 import { deleteRecoveryClassByIdReducer } from './recoveryClassReducers'
-import { deleteHolidayByIdReducer, registerHolidayByDateReducer } from './holidayReducers'
+import {
+	deleteHolidayByIdReducer,
+	registerHolidayByDateReducer,
+	getHolidaysReducer,
+} from './holidayReducers'
 import { resetAttendanceSystemReducer } from './systemReducers'
 
 const loginPersistConfig = {
@@ -60,11 +65,13 @@ export default combineReducers({
 	getStudentReportForAdmin: getStudentReportForAdminReducer,
 	getStudentUserById: getStudentUserByIdReducer,
 	getStudentUsers: getStudentUsersReducer,
+	getHolidays: getHolidaysReducer,
 	registerHolidayByDate: registerHolidayByDateReducer,
 	registerKarateClass: registerKarateClassReducer,
 	registerStudentAttendance: registerStudentAttendanceReducer,
 	registerStudents: registerStudentsReducer,
 	registerTrialStudent: registerTrialStudentReducer,
+	removeStudentFromAttendance: removeStudentFromAttendanceReducer,
 	resetAttendanceSystem: resetAttendanceSystemReducer,
 	updateKarateClassById: updateKarateClassByIdReducer,
 	updateStudentAttendanceById: updateStudentAttendanceByIdReducer,

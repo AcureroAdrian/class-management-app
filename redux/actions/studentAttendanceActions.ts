@@ -192,3 +192,34 @@ export const addStudentToAttendance = (dataToSend: any) => async (dispatch: Disp
 		})
 	}
 }
+
+export const removeStudentFromAttendance =
+	(attendanceId: string, studentId: string, classId?: string, date?: any) =>
+	async (dispatch: Dispatch, getState: AppStore['getState']) => {
+		try {
+			dispatch({ type: types.REMOVE_STUDENT_FROM_ATTENDANCE_REQUEST })
+
+			const {
+				userLogin: { userInfo },
+			} = getState()
+
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo?.token}`,
+				},
+			}
+
+			const { data } = await customAxios.put(
+				'/api/student-attendances/remove-student-from-attendance',
+				{ attendanceId, studentId, classId, date },
+				config,
+			)
+
+			dispatch({ type: types.REMOVE_STUDENT_FROM_ATTENDANCE_SUCCESS, payload: data })
+		} catch (error: any) {
+			dispatch({
+				type: types.REMOVE_STUDENT_FROM_ATTENDANCE_FAIL,
+				payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+			})
+		}
+	}

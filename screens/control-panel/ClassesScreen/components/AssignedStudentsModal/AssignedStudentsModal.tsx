@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { ScrollView, FlatList, Pressable } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
+import { ScrollView, FlatList, Pressable, Animated } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import { IStudent } from '../../helpers/karate-classes-interfaces'
@@ -28,6 +28,8 @@ const AssignedStudentsModal = ({
 	const [studentsSelected, setStudentsSelected] = useState<IStudent[]>([])
 	const [students, setStudents] = useState<IStudent[]>([])
 	const [openPickStudentsModal, setOpenPickStudentsModal] = useState<boolean>(false)
+	const [deletingStudentId, setDeletingStudentId] = useState<string | null>(null)
+	const animationValue = useRef(new Animated.Value(0)).current
 
 	const { loadingGetStudentUsers, studentUsersList, successGetStudentUsers, errorGetStudentUsers } = useAppSelector(
 		(state: RootState) => state.getStudentUsers,
@@ -66,6 +68,27 @@ const AssignedStudentsModal = ({
 	}
 	const handleDeleteStudent = (studentId: string) => {
 		setStudentsSelected((prev) => prev.filter((s) => s._id !== studentId))
+	}
+
+	const handleDeleteWithAnimation = (studentId: string) => {
+		setDeletingStudentId(studentId)
+		animationValue.setValue(0)
+
+		Animated.sequence([
+			Animated.timing(animationValue, {
+				toValue: 1,
+				duration: 200,
+				useNativeDriver: true,
+			}),
+			Animated.timing(animationValue, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}),
+		]).start(() => {
+			setDeletingStudentId(null)
+			handleDeleteStudent(studentId)
+		})
 	}
 
 	return (
@@ -122,16 +145,41 @@ const AssignedStudentsModal = ({
 												</S.StudentNameView>
 											</S.StudentInfoView>
 											<MaterialCommunityIcons
-												name='close'
+												name='delete'
 												size={24}
 												color={colors.variants.primary[5]}
-												onPress={() => handleDeleteStudent(item._id)}
+												onPress={() => handleDeleteWithAnimation(item._id)}
 											/>
 										</S.StudentItemContent>
 										{index + 1 !== studentsSelected.length && (
 											<S.Separator>
 												<S.SeparatorLine />
 											</S.Separator>
+										)}
+										{deletingStudentId === item._id && (
+											<Animated.View
+												style={{
+													position: 'absolute',
+													top: 0,
+													left: 0,
+													right: 0,
+													bottom: 0,
+													backgroundColor: 'rgba(239, 68, 68, 0.2)',
+													justifyContent: 'center',
+													alignItems: 'center',
+													opacity: animationValue,
+													transform: [
+														{
+															scale: animationValue.interpolate({
+																inputRange: [0, 1],
+																outputRange: [0.8, 1],
+															}),
+														},
+													],
+												}}
+											>
+												<MaterialCommunityIcons name='delete-sweep' size={40} color={colors.variants.primary[5]} />
+											</Animated.View>
 										)}
 									</S.StudentItemView>
 								)}

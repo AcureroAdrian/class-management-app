@@ -104,9 +104,9 @@ export const ActionButtonsContainer = styled.View`
 	gap: 8px;
 `
 
-export const ActionButton = styled.Pressable<{ permanent?: boolean; disabled?: boolean }>`
-	background-color: ${(props: { permanent?: boolean }) =>
-		props.permanent ? colors.variants.primary[4] : colors.variants.secondary[3]};
+export const ActionButton = styled.Pressable<{ permanent?: boolean; makeup?: boolean; disabled?: boolean }>`
+	background-color: ${(props: { permanent?: boolean; makeup?: boolean }) =>
+		props.permanent ? colors.variants.primary[4] : props.makeup ? colors.variants.secondary[5] : colors.variants.secondary[3]};
 	padding-horizontal: 15px;
 	padding-vertical: 8px;
 	border-radius: 8px;
@@ -130,6 +130,17 @@ export const EmptyListText = styled.Text`
 	color: ${colors.variants.grey[4]};
 	text-align: center;
 	margin-top: 10px;
+`
+
+export const ErrorMessage = styled.Text`
+	color: ${colors.variants.primary[5]};
+	background-color: ${colors.variants.primary[0]};
+	padding: 12px;
+	margin: 0 20px 15px;
+	border-radius: 10px;
+	text-align: center;
+	font-weight: 500;
+	font-size: 14px;
 `
 
 // Styles for Trial Student Form

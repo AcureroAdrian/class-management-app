@@ -36,6 +36,7 @@ interface IStudent {
 	isAdmin: boolean
 	isTeacher: boolean
 	isTrial: boolean
+	recoveryCredits: number
 }
 
 interface IUserLogin {

@@ -38,4 +38,5 @@ export interface IReserveRecoveryClassModalProps {
 	karateClassId: string
 	karateClassName: string
 	attendanceId: string
+	nextClassDate: Date
 }

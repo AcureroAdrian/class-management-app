@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, Modal, Pressable, ActivityIndicator } from 'react-native'
 import { format } from 'date-fns'
-import { getNextClassDate } from '../helpers/get-next-class-date'
 import { IReserveRecoveryClassModalProps } from '../helpers/karate-classes-interfaces'
 import capitalizeWords from '@/shared/capitalize-words'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
@@ -13,11 +12,11 @@ const ReserveRecoveryClassModal = ({
 	openModal,
 	closeModal,
 	startTime,
-	weekDays,
 	location,
 	karateClassId,
 	karateClassName,
 	attendanceId,
+	nextClassDate,
 }: IReserveRecoveryClassModalProps) => {
 	const dispatch = useAppDispatch()
 
@@ -39,18 +38,15 @@ const ReserveRecoveryClassModal = ({
 				studentId: userInfo?._id,
 				attendanceId,
 				date: {
-					day: nextDayForClass.getDate(),
-					month: nextDayForClass.getMonth() + 1,
-					year: nextDayForClass.getFullYear(),
+					day: nextClassDate.getDate(),
+					month: nextClassDate.getMonth() + 1,
+					year: nextClassDate.getFullYear(),
 					hour: startTime.hour,
 					minute: startTime.minute,
 				},
 			}),
 		)
 	}
-	const nextDayForClass = useMemo(() => {
-		return getNextClassDate(weekDays)
-	}, [weekDays])
 
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} transparent statusBarTranslucent={true}>
@@ -81,11 +77,11 @@ const ReserveRecoveryClassModal = ({
 					</View>
 					<View style={{ flexDirection: 'row', width: '100%', gap: 10 }}>
 						<Text style={{ fontWeight: 'bold' }}>Date:</Text>
-						<Text>{format(nextDayForClass, 'MMMM dd, EEEE ')}</Text>
+						<Text>{format(nextClassDate, 'MMMM dd, EEEE ')}</Text>
 					</View>
 					<View style={{ flexDirection: 'row', width: '100%', gap: 10 }}>
 						<Text style={{ fontWeight: 'bold' }}>Start Time:</Text>
-						<Text>{format(new Date(2025, 1, 1, startTime.hour, startTime.minute, 0), 'HH:mm aaaa')}</Text>
+						<Text>{format(new Date(2025, 1, 1, startTime.hour, startTime.minute, 0), 'hh:mm aaaa')}</Text>
 					</View>
 					<View style={{ flexDirection: 'row', width: '100%', gap: 10 }}>
 						<Text style={{ fontWeight: 'bold' }}>Location:</Text>

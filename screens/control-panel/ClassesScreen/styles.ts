@@ -171,6 +171,23 @@ export const ClassHeader = styled(View)`
     margin-bottom: 12px;
 `;
 
+export const ClassNextDate = styled(View)`
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 12px;
+	background-color: ${colors.variants.grey[1]};
+	padding: 8px 12px;
+	border-radius: 8px;
+`;
+
+export const NextDateText = styled(Text)`
+	font-size: 12px;
+	font-weight: 500;
+	color: ${colors.variants.grey[5]};
+	letter-spacing: -0.1px;
+`;
+
 export const ClassTitleContainer = styled(View)`
     flex: 1;
     margin-right: 16px;

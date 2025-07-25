@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ScrollView, FlatList, Pressable, Modal, View, TouchableOpacity } from 'react-native'
-import { useSegments } from 'expo-router'
+import { useFocusEffect, useSegments } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import ConfirmationDeleteModal from '@/components/ConfirmationDeleteModal/ConfirmationDeleteModal'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
@@ -24,13 +24,16 @@ import colors from '@/theme/colors'
 import ReserveRecoveryClassModal from './components/ReserveRecoveryClassModal'
 import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
 import { deleteRecoveryClassById } from '@/redux/actions/recoveryClassActions'
+import { getHolidays } from '@/redux/actions/holidayActions'
 import { DELETE_RECOVERY_CLASS_BY_ID_RESET } from '@/redux/constants/recoveryClassConstants'
 import { formatClassSchedule } from './helpers/format-class-schedule'
-import { getNextClassDateForSorting } from './helpers/get-next-class-date'
+import { getNextClassDate } from './helpers/get-next-class-date'
 import { applyFilters } from './helpers/filter-classes'
 import ClassFilters from './components/ClassFilters'
 import { TDaysOfWeek, TLocation } from '@/shared/common-types'
+import { IHoliday } from '@/redux/reducers/holidayReducers'
 import * as S from './styles'
+import { format } from 'date-fns'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -59,59 +62,61 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		successKarateClassesByAdmin,
 		karateClassesByAdminList,
 		errorKarateClassesByAdmin,
-	} = useAppSelector((state) => state.getKarateClassesByAdmin)
+	} = useAppSelector((state) => state.getKarateClassesByAdmin) || {}
 	const {
 		loadingKarateClassesForStudent,
 		successKarateClassesForStudent,
 		karateClassesForStudentList,
 		errorKarateClassesForStudent,
-	} = useAppSelector((state) => state.getKarateClassesForStudent)
-	const { successRegisterKarateClass, karateClassRegistered } = useAppSelector((state) => state.registerKarateClass)
-	const { successUpdateKarateClassById, karateClassByIdUpdated } = useAppSelector(
-		(state) => state.updateKarateClassById,
-	)
+	} = useAppSelector((state) => state.getKarateClassesForStudent) || {}
+	const { successRegisterKarateClass, karateClassRegistered } =
+		useAppSelector((state) => state.registerKarateClass) || {}
+	const { successUpdateKarateClassById, karateClassByIdUpdated } =
+		useAppSelector((state) => state.updateKarateClassById) || {}
 	const { loadingDeleteKarateClassById, successDeleteKarateClassById, karateClassDeleted, errorDeleteKarateClassById } =
-		useAppSelector((state) => state.deleteKarateClassById)
-	const { successBookingRecoveryClassById, recoveryClassBooked } = useAppSelector(
-		(state) => state.bookingRecoveryClassById,
-	)
+		useAppSelector((state) => state.deleteKarateClassById) || {}
+	const { successBookingRecoveryClassById, recoveryClassBooked } =
+		useAppSelector((state) => state.bookingRecoveryClassById) || {}
 	const {
 		loadingDeleteRecoveryClassById,
 		successDeleteRecoveryClassById,
 		recoveryClassDeleted,
 		errorDeleteRecoveryClassById,
-	} = useAppSelector((state) => state.deleteRecoveryClassById)
+	} = useAppSelector((state) => state.deleteRecoveryClassById) || {}
+	const { holidays = [] } = useAppSelector((state) => state.getHolidays) || {}
 
-	useEffect(() => {
-		if (segments?.length < 2) {
-			setKarateClasses([])
+	useFocusEffect(
+		useCallback(() => {
+			dispatch(getHolidays())
 			if (role === 'admin') {
 				dispatch(getkarateClassesByAdmin())
 			} else if (role === 'student') {
 				dispatch(getkarateClassesForStudent())
 			}
-		}
-		return () => {
-			dispatch({ type: GET_KARATE_CLASS_BY_ADMIN_RESET })
-			dispatch({ type: GET_KARATE_CLASSES_FOR_STUDENT_RESET })
-		}
-	}, [segments])
+
+			return () => {
+				dispatch({ type: GET_KARATE_CLASS_BY_ADMIN_RESET })
+				dispatch({ type: GET_KARATE_CLASSES_FOR_STUDENT_RESET })
+			}
+		}, [dispatch, role]),
+	)
 
 	useEffect(() => {
 		if (successKarateClassesByAdmin && karateClassesByAdminList) {
 			setDeleteId('')
 			setKarateClasses(karateClassesByAdminList)
 		}
-	}, [successKarateClassesByAdmin])
+	}, [successKarateClassesByAdmin, karateClassesByAdminList])
 
 	useEffect(() => {
 		if (successKarateClassesForStudent && karateClassesForStudentList) {
 			setDeleteId('')
-			setKarateClasses(karateClassesForStudentList.karateClasses)
+			const localClasses = karateClassesForStudentList.karateClasses
+			setKarateClasses(localClasses)
 			setRecoveryClasses(karateClassesForStudentList.absents)
 			setRecoveryCreditsAdjustment(karateClassesForStudentList.recoveryCreditsAdjustment || 0)
 		}
-	}, [successKarateClassesForStudent])
+	}, [successKarateClassesForStudent, karateClassesForStudentList, holidays])
 
 	useEffect(() => {
 		if (successRegisterKarateClass) {
@@ -270,19 +275,36 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const filteredAndSortedKarateClasses = useMemo(() => {
 		// Aplicar filtros
 		const filteredClasses = applyFilters(karateClasses, selectedDays, selectedTimeRange, selectedLocation)
-		
+
+		// Filtrar clases cuya hora de inicio ya pasó
+		const now = new Date()
+		const upcomingClasses = filteredClasses.filter((classItem) => {
+			if (!classItem.weekDays || classItem.weekDays.length === 0 || !classItem.startTime) {
+				return true // Mantener las clases que no tienen un horario definido.
+			}
+			const nextClassDate = getNextClassDate(classItem.weekDays, classItem.startTime, holidays)
+			return nextClassDate >= now
+		})
+
 		// Ordenar por fecha
-		return filteredClasses.sort((a, b) => {
+		return upcomingClasses.sort((a, b) => {
+			// Para estudiantes, mostrar primero las clases con recuperación reservada
+			if (role === 'student') {
+				const aIsBooked = !!a.recoveryClass
+				const bIsBooked = !!b.recoveryClass
+				if (aIsBooked && !bIsBooked) return -1
+				if (!aIsBooked && bIsBooked) return 1
+			}
 			// Si una clase no tiene días de la semana, ponerla al final
-			if (!a.weekDays || a.weekDays.length === 0) return 1
-			if (!b.weekDays || b.weekDays.length === 0) return -1
-			
-			const dateA = getNextClassDateForSorting(a.weekDays)
-			const dateB = getNextClassDateForSorting(b.weekDays)
-			
+			if (!a.weekDays || a.weekDays.length === 0 || !a.startTime) return 1
+			if (!b.weekDays || b.weekDays.length === 0 || !b.startTime) return -1
+
+			const dateA = getNextClassDate(a.weekDays, a.startTime, holidays)
+			const dateB = getNextClassDate(b.weekDays, b.startTime, holidays)
+
 			return dateA.getTime() - dateB.getTime()
 		})
-	}, [karateClasses, selectedDays, selectedTimeRange, selectedLocation])
+	}, [karateClasses, selectedDays, selectedTimeRange, selectedLocation, role, holidays])
 
 	const renderClassCard = ({ item }: { item: IClass }) => (
 		<S.ClassItemContainer>
@@ -315,7 +337,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 							<S.MetadataItem>
 								<MaterialCommunityIcons name='calendar-clock' size={14} color={colors.variants.grey[4]} />
 								<S.ScheduleText>
-									{formatClassSchedule(item.weekDays, item.startTime, role)}
+									{format(getNextClassDate(item.weekDays, item.startTime, holidays), "EEEE, MMMM dd 'at' hh:mm a")}
 								</S.ScheduleText>
 							</S.MetadataItem>
 						)}
@@ -524,6 +546,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 					karateClassId={karateClassSelected?._id!}
 					karateClassName={karateClassSelected?.name || ''}
 					attendanceId={attendanceIdToUse}
+					nextClassDate={getNextClassDate(karateClassSelected?.weekDays!, karateClassSelected?.startTime!, holidays)}
 				/>
 			)}
 			{openDeleteRecoveryClassModal && (

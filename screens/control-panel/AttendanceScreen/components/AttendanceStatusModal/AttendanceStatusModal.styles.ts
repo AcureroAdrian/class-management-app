@@ -57,7 +57,7 @@ export const StudentName = styled.Text`
 `
 
 export const OptionsContainer = styled.View`
-	gap: 12px;
+	gap: 2px;
 	margin-bottom: 24px;
 `
 
@@ -142,4 +142,21 @@ export const AddNoteText = styled.Text`
 	font-weight: 600;
 	color: ${colors.variants.secondary[5]};
 	letter-spacing: -0.2px;
+` 
+
+export const RemoveStudentButton = styled.Pressable`
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 12px;
+	border-radius: 8px;
+	margin-top: 10px;
+	background-color: #ff3b301a;
+`
+
+export const RemoveStudentText = styled.Text`
+	font-size: 16px;
+	font-weight: 500;
+	color: #ff3b30;
+	margin-left: 8px;
 ` 

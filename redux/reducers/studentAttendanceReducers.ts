@@ -260,3 +260,32 @@ export const getStudentReportForAdminReducer: TGetStudentReportForAdminReducer =
 			return state
 	}
 }
+
+interface IRemoveStudentFromAttendanceState {
+	loadingRemoveStudentFromAttendance?: boolean
+	successRemoveStudentFromAttendance?: boolean
+	errorRemoveStudentFromAttendance?: string
+}
+
+type TRmoveStudentFromAttendanceReducer = Reducer<IRemoveStudentFromAttendanceState, any>
+
+export const removeStudentFromAttendanceReducer: TRmoveStudentFromAttendanceReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.REMOVE_STUDENT_FROM_ATTENDANCE_REQUEST:
+			return { loadingRemoveStudentFromAttendance: true }
+		case types.REMOVE_STUDENT_FROM_ATTENDANCE_SUCCESS:
+			return {
+				loadingRemoveStudentFromAttendance: false,
+				successRemoveStudentFromAttendance: true,
+			}
+		case types.REMOVE_STUDENT_FROM_ATTENDANCE_FAIL:
+			return {
+				loadingRemoveStudentFromAttendance: false,
+				errorRemoveStudentFromAttendance: action.payload,
+			}
+		case types.REMOVE_STUDENT_FROM_ATTENDANCE_RESET:
+			return {}
+		default:
+			return state
+	}
+}
