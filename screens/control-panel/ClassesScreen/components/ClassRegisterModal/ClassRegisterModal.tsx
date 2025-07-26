@@ -84,7 +84,7 @@ const ClassRegisterModal = ({ openModal, closeModal }: { openModal: boolean; clo
 			return
 		}
 
-		const studentLimit = location?.toLowerCase() === 'katy' ? 20 : 40
+		const studentLimit = location?.toLowerCase() === 'katy' ? 30 : 40
 		if (studentsAssigned.length > studentLimit) {
 			setErrorMessage(`The number of students for ${capitalizeWords(location)} location cannot exceed ${studentLimit}.`)
 			return
