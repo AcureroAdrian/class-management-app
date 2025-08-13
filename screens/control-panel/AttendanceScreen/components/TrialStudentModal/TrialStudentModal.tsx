@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, ScrollView, Switch, View } from 'react-native'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import { format } from 'date-fns'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
@@ -37,6 +39,8 @@ const TrialStudentModal = ({
 	const [name, setName] = useState<string>('')
 	const [lastName, setLastName] = useState<string>('')
 	const [level, setLevel] = useState<TUserLevel>()
+	const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
+	const [dob, setDob] = useState<Date | undefined>(undefined)
 	const [phone, setPhone] = useState<string>('')
 	const [email, setEmail] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
@@ -49,10 +53,9 @@ const TrialStudentModal = ({
 		successRegisterTrialStudent,
 		trialStudentRegistered,
 		errorRegisterTrialStudent,
-	} = useAppSelector((state) => state.registerTrialStudent)
-	const { loadingAddStudentToAttendance, successAddStudentToAttendance } = useAppSelector(
-		(state) => state.addStudentToAttendance,
-	)
+	} = useAppSelector((state) => state.registerTrialStudent) || {}
+	const { loadingAddStudentToAttendance, successAddStudentToAttendance } =
+		useAppSelector((state) => state.addStudentToAttendance) || {}
 
 	useEffect(() => {
 		return () => {
@@ -128,7 +131,7 @@ const TrialStudentModal = ({
 			return setErrorMessage('Level is required')
 		}
 
-		const trialStudentData = {
+		const trialStudentData: any = {
 			userId: userId.toUpperCase(),
 			name: name.trim(),
 			lastName: lastName.trim(),
@@ -136,6 +139,14 @@ const TrialStudentModal = ({
 			phone,
 			email,
 			notes,
+		}
+
+		if (dob) {
+			trialStudentData.dateOfBirth = {
+				year: dob.getFullYear(),
+				month: dob.getMonth() + 1,
+				day: dob.getDate(),
+			}
 		}
 
 		dispatch(registerTrialStudent(trialStudentData))
@@ -213,6 +224,15 @@ const TrialStudentModal = ({
 											autoComplete='off'
 										/>
 										<CustomInputForm
+											label='Date of Birth'
+											placeholder='YYY - MM - DD'
+											placeholderTextColor={colors.darkLight}
+											value={dob ? format(new Date(dob), 'yyyy - MM - dd') : ''}
+											editable={false}
+											onPress={() => !loadingRegisterTrialStudent && setShowDatePicker(true)}
+											icon='calendar'
+										/>
+										<CustomInputForm
 											label='Level'
 											placeholder='novice'
 											placeholderTextColor={colors.darkLight}
@@ -288,6 +308,23 @@ const TrialStudentModal = ({
 					options={levelsInitialValues}
 					selected={level || ''}
 					handleSaveOption={(selected: string) => setLevel(selected as TUserLevel)}
+				/>
+			)}
+
+			{showDatePicker && (
+				<DateTimePickerModal
+					minimumDate={new Date('1900-01-01')}
+					isVisible={showDatePicker}
+					mode='date'
+					onConfirm={(date) => {
+						const currentDate = date || dob
+						setDob(currentDate)
+						setShowDatePicker(false)
+					}}
+					onCancel={() => setShowDatePicker(false)}
+					display='spinner'
+					date={dob}
+					maximumDate={new Date()}
 				/>
 			)}
 		</>

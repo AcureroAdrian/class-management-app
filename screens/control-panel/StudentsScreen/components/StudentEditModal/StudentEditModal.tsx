@@ -48,6 +48,7 @@ const StudentEditModal = ({
 	const [level, setLevel] = useState<TUserLevel>()
 	const [isTeacher, setIsTeacher] = useState<boolean>(false)
 	const [isAdmin, setIsAdmin] = useState<boolean>(false)
+	const [isTrial, setIsTrial] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [isDirty, setIsDirty] = useState<boolean>(false)
 
@@ -85,6 +86,7 @@ const StudentEditModal = ({
 			setLevel((studentUserById?.level as TUserLevel) || undefined)
 			setIsTeacher(studentUserById?.isTeacher || false)
 			setIsAdmin(studentUserById?.isAdmin || false)
+			setIsTrial(Boolean(studentUserById?.isTrial))
 			if (studentUserById?.dateOfBirth?.year) {
 				const dob = new Date(
 					studentUserById?.dateOfBirth?.year,
@@ -144,6 +146,7 @@ const StudentEditModal = ({
 			level,
 			isTeacher,
 			isAdmin,
+			isTrial,
 		}
 
 		if (dob) {
@@ -369,6 +372,26 @@ const StudentEditModal = ({
 									{(role === 'admin' || userInfo?.isSuper) && (
 										<S.SwitchContainer>
 											<S.SectionTitle>Permissions and Roles</S.SectionTitle>
+											{
+												Boolean(studentUserById?.isTrial) && (
+													<S.SwitchOption>
+												<S.SwitchInfo>
+													<S.SwitchLabel>Is Trial</S.SwitchLabel>
+													<S.SwitchDescription>Mark this student as trial</S.SwitchDescription>
+												</S.SwitchInfo>
+												<Switch
+													trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
+													thumbColor={isTrial ? colors.variants.primary[5] : colors.variants.grey[0]}
+													ios_backgroundColor={colors.variants.grey[2]}
+													onValueChange={() => {
+														setIsTrial(!isTrial)
+														setIsDirty(true)
+													}}
+													value={isTrial}
+														/>
+													</S.SwitchOption>
+												)}
+
 											{role === 'admin' && (
 												<S.SwitchOption>
 													<S.SwitchInfo>

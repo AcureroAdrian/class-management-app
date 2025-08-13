@@ -25,4 +25,5 @@ export interface IFullStudent extends Omit<IStudent, '_id'> {
 	avatar?: string
 	isTeacher: boolean
 	isAdmin: boolean
+	isTrial?: boolean
 }

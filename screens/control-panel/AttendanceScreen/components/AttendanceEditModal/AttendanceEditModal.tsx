@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { View, Modal, Image, Text, FlatList, Pressable, ScrollView, Alert } from 'react-native'
+import { View, Modal, Image, Text, FlatList, Pressable, ScrollView, Alert, ActivityIndicator } from 'react-native'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import capitalizeWords from '@/shared/capitalize-words'
@@ -34,6 +34,7 @@ import {
 	CompactHeaderContainer,
 	ClassInfoRow,
 	ClassDetails,
+	ClassTitleRow,
 	AttendanceSummary,
 	SummaryMini,
 	SummaryBadgeMini,
@@ -61,6 +62,7 @@ import {
 	FloatingButtonContainer,
 	FloatingButton,
 	FloatingButtonText,
+	RefreshButton,
 } from './styles'
 
 // Interface para el attendance item
@@ -101,22 +103,33 @@ const AttendanceEditModal = ({
 	const [openConfirmationDeleteModal, setOpenConfirmationDeleteModal] = useState<boolean>(false)
 	const [studentToDelete, setStudentToDelete] = useState<IAttendanceItem | null>(null)
 
-	const { userInfo } = useAppSelector((state) => state.userLogin)
+	const { userInfo } = useAppSelector((state) => state.userLogin) || { userInfo: undefined }
 
-	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance, successRegisterStudentAttendance } = useAppSelector(
-		(state) => state.registerStudentAttendance,
-	)
-	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById, successUpdateStudentAttendanceById } = useAppSelector(
-		(state) => state.updateStudentAttendanceById,
-	)
-	const { successStudentAttendanceByDay, studentAttendanceByDayList } = useAppSelector(
+	const { loadingRegisterStudentAttendance, errorRegisterStudentAttendance, successRegisterStudentAttendance } =
+		useAppSelector((state) => state.registerStudentAttendance) || {
+			loadingRegisterStudentAttendance: false,
+			errorRegisterStudentAttendance: '',
+			successRegisterStudentAttendance: false,
+		}
+	const { loadingUpdateStudentAttendanceById, errorUpdateStudentAttendanceById, successUpdateStudentAttendanceById } =
+		useAppSelector((state) => state.updateStudentAttendanceById) || {
+			loadingUpdateStudentAttendanceById: false,
+			errorUpdateStudentAttendanceById: '',
+			successUpdateStudentAttendanceById: false,
+		}
+	const { loadingStudentAttendanceByDay, successStudentAttendanceByDay, studentAttendanceByDayList } = useAppSelector(
 		(state) => state.getStudentAttendanceByDay,
-	)
-	const {
-		loadingDeleteRecoveryClassById,
-		errorDeleteRecoveryClassById,
-		successDeleteRecoveryClassById,
-	} = useAppSelector((state) => state.deleteRecoveryClassById)
+	) || {
+		loadingStudentAttendanceByDay: false,
+		successStudentAttendanceByDay: false,
+		studentAttendanceByDayList: undefined,
+	}
+	const { loadingDeleteRecoveryClassById, errorDeleteRecoveryClassById, successDeleteRecoveryClassById } =
+		useAppSelector((state) => state.deleteRecoveryClassById) || {
+			loadingDeleteRecoveryClassById: false,
+			errorDeleteRecoveryClassById: '',
+			successDeleteRecoveryClassById: false,
+		}
 
 	const dayAndWeekDay = useMemo(() => {
 		if (!currentAttendance?.date) return ''
@@ -130,21 +143,20 @@ const AttendanceEditModal = ({
 
 	const handleSetAttendance = (data: any) => {
 		const attendanceItem: IAttendanceItem[] = []
-			data.attendance.forEach((studentAttendance: any) => {
-				attendanceItem.push({
-					student:  studentAttendance.student._id,
-					name: studentAttendance.student?.name || 'Unknown',
-					lastName: studentAttendance.student?.lastName || '',
-					attendanceStatus: studentAttendance.attendanceStatus,
-					observations: studentAttendance.observations || '',
-					isDayOnly: studentAttendance.isDayOnly || false,
-					isTrial: studentAttendance.student?.isTrial || false,
-					scheduledDeletionDate: studentAttendance.student?.scheduledDeletionDate,
-					isRecovery: studentAttendance.isRecovery || false,
-					recoveryClassId: studentAttendance.recoveryClassId,
-				})
+		data.attendance.forEach((studentAttendance: any) => {
+			attendanceItem.push({
+				student: studentAttendance.student._id,
+				name: studentAttendance.student?.name || 'Unknown',
+				lastName: studentAttendance.student?.lastName || '',
+				attendanceStatus: studentAttendance.attendanceStatus,
+				observations: studentAttendance.observations || '',
+				isDayOnly: studentAttendance.isDayOnly || false,
+				isTrial: studentAttendance.student?.isTrial || false,
+				scheduledDeletionDate: studentAttendance.student?.scheduledDeletionDate,
+				isRecovery: studentAttendance.isRecovery || false,
+				recoveryClassId: studentAttendance.recoveryClassId,
 			})
-		
+		})
 
 		setAttendance(attendanceItem)
 		setInitialAttendance(JSON.parse(JSON.stringify(attendanceItem)))
@@ -355,11 +367,12 @@ const AttendanceEditModal = ({
 	}, [attendance])
 	const filteredAttendance = useMemo(() => {
 		if (!searchQuery.trim()) return attendance.sort((a, b) => a?.name?.localeCompare(b?.name))
-		
+
 		return attendance
-			.filter(item => 
-				item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+			.filter(
+				(item) =>
+					item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+					item.lastName.toLowerCase().includes(searchQuery.toLowerCase()),
 			)
 			.sort((a, b) => a?.name?.localeCompare(b?.name))
 	}, [attendance, searchQuery])
@@ -389,8 +402,6 @@ const AttendanceEditModal = ({
 		return format(today, 'yyyy-MM-dd') === format(attendanceDate, 'yyyy-MM-dd')
 	}, [currentAttendance])
 
-
-
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={handleClose} statusBarTranslucent={true}>
 			<ModalContainer>
@@ -407,9 +418,30 @@ const AttendanceEditModal = ({
 				<CompactHeaderContainer>
 					<ClassInfoRow>
 						<ClassDetails>
-							<ClassName>{currentAttendance?.karateClass?.name}</ClassName>
+							<ClassTitleRow>
+								<ClassName>{currentAttendance?.karateClass?.name}</ClassName>
+							</ClassTitleRow>
 							<DayWeekText>{dayAndWeekDay}</DayWeekText>
 						</ClassDetails>
+                        <RefreshButton
+							onPress={() => {
+								if (!currentAttendance?.date) return
+								dispatch(
+									getStudentAttendanceByDay(
+										currentAttendance?.date?.year,
+										currentAttendance?.date?.month,
+										currentAttendance?.date?.day,
+									),
+								)
+							}}
+                            disabled={loadingStudentAttendanceByDay}
+						>
+                            {loadingStudentAttendanceByDay ? (
+                                <ActivityIndicator size='small' color={colors.variants.secondary[5]} />
+                            ) : (
+                                <MaterialCommunityIcons name='refresh' size={24} color={colors.variants.secondary[5]} />
+                            )}
+						</RefreshButton>
 						<AttendanceSummary>
 							<SummaryMini>
 								{Boolean(presents) && (
@@ -435,7 +467,7 @@ const AttendanceEditModal = ({
 						<SearchInputContainer>
 							<MaterialCommunityIcons name='magnify' size={20} color={colors.variants.grey[3]} />
 							<SearchInput
-								placeholder="Search student..."
+								placeholder='Search student...'
 								placeholderTextColor={colors.variants.grey[3]}
 								value={searchQuery}
 								onChangeText={setSearchQuery}
@@ -456,63 +488,56 @@ const AttendanceEditModal = ({
 						scrollEnabled={false}
 						data={filteredAttendance}
 						renderItem={({ item, index }) => (
-						<>
-							<StudentListItem
-								onPress={() => handleSelectStudent(item.student)}
-								disabled={!canEdit || loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
-							>
-								<StudentListItemContainer>
-									<StudentListItemContent>
-										<StudentInfoContainer>
-											<StudentAvatar
-												source={require('@/assets/img/default-avatar.png')}
-												resizeMode='contain'
-											/>
-											<StudentTextContainer>
-												<StudentName numberOfLines={1}>
-													{capitalizeWords(item.name)}
-												</StudentName>
-												<StudentLastName numberOfLines={1}>
-													{capitalizeWords(item?.lastName)}
-												</StudentLastName>
+							<>
+								<StudentListItem
+									onPress={() => handleSelectStudent(item.student)}
+									disabled={!canEdit || loadingRegisterStudentAttendance || loadingUpdateStudentAttendanceById}
+								>
+									<StudentListItemContainer>
+										<StudentListItemContent>
+											<StudentInfoContainer>
+												<StudentAvatar source={require('@/assets/img/default-avatar.png')} resizeMode='contain' />
+												<StudentTextContainer>
+													<StudentName numberOfLines={1}>{capitalizeWords(item.name)}</StudentName>
+													<StudentLastName numberOfLines={1}>{capitalizeWords(item?.lastName)}</StudentLastName>
 
-												{/* Badges Container */}
-												<StudentBadgesContainer>
-													{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
-													{item.isDayOnly && <Badge {...BADGE_CONFIG.dayOnly} />}
-													{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
-													{item.isRecovery && <Badge {...BADGE_CONFIG.recovery} />}
-												</StudentBadgesContainer>
-											</StudentTextContainer>
-										</StudentInfoContainer>
-										<StudentActionsContainer>
-											{/* Notes Indicator */}
-											{item.observations && (
-												<NotesIndicator>
-													<MaterialCommunityIcons name='pencil' size={14} color={colors.variants.primary[5]} />
-												</NotesIndicator>
-											)}
+													{/* Badges Container */}
+													<StudentBadgesContainer>
+														{item.isTrial && <Badge {...BADGE_CONFIG.trial} />}
+														{item.isDayOnly && <Badge {...BADGE_CONFIG.dayOnly} />}
+														{item.scheduledDeletionDate && <Badge {...BADGE_CONFIG.scheduledDeletion} />}
+														{item.isRecovery && <Badge {...BADGE_CONFIG.recovery} />}
+													</StudentBadgesContainer>
+												</StudentTextContainer>
+											</StudentInfoContainer>
+											<StudentActionsContainer>
+												{/* Notes Indicator */}
+												{item.observations && (
+													<NotesIndicator>
+														<MaterialCommunityIcons name='pencil' size={14} color={colors.variants.primary[5]} />
+													</NotesIndicator>
+												)}
 
-											{/* Attendance Status Icon */}
-											<StatusIcon status={item.attendanceStatus} size={24} />
+												{/* Attendance Status Icon */}
+												<StatusIcon status={item.attendanceStatus} size={24} />
 
-											{/* Three Dots Menu */}
-											<MoreOptionsButton onPress={() => handleOpenStatusModal(item)} disabled={!canEdit}>
-												<MaterialCommunityIcons name='dots-horizontal' size={24} color={colors.variants.grey[4]} />
-											</MoreOptionsButton>
-										</StudentActionsContainer>
-									</StudentListItemContent>
-								</StudentListItemContainer>
-							</StudentListItem>
-							{index + 1 !== filteredAttendance.length && (
-								<Separator>
-									<SeparatorLine />
-								</Separator>
-							)}
-						</>
-					)}
-					keyExtractor={(item) => String(item.student)}
-				/>
+												{/* Three Dots Menu */}
+												<MoreOptionsButton onPress={() => handleOpenStatusModal(item)} disabled={!canEdit}>
+													<MaterialCommunityIcons name='dots-horizontal' size={24} color={colors.variants.grey[4]} />
+												</MoreOptionsButton>
+											</StudentActionsContainer>
+										</StudentListItemContent>
+									</StudentListItemContainer>
+								</StudentListItem>
+								{index + 1 !== filteredAttendance.length && (
+									<Separator>
+										<SeparatorLine />
+									</Separator>
+								)}
+							</>
+						)}
+						keyExtractor={(item) => String(item.student)}
+					/>
 				</ScrollView>
 
 				{/* Floating Add Student Button */}

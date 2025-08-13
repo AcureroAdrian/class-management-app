@@ -156,7 +156,8 @@ const FilterButton = styled.Pressable<{ selected: boolean }>`
 	justify-content: center;
 	width: 40px;
 	height: 40px;
-	background-color: ${(props: { selected: boolean }) => props.selected ? colors.variants.secondary[2] : 'transparent'};
+	background-color: ${(props: { selected: boolean }) =>
+		props.selected ? colors.variants.secondary[2] : 'transparent'};
 	border-radius: 20px;
 `
 
@@ -241,12 +242,12 @@ const BadgeRow = styled.View`
 `
 
 const StatusBadge = styled.View`
-	background-color: #FFF3CD;
+	background-color: #fff3cd;
 	padding-horizontal: 4px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #F0E68C;
+	border-color: #f0e68c;
 `
 
 const StatusBadgeText = styled.Text`
@@ -256,16 +257,16 @@ const StatusBadgeText = styled.Text`
 `
 
 const DayBadge = styled.View`
-	background-color: #E1F5FE;
+	background-color: #e1f5fe;
 	padding-horizontal: 4px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #B3E5FC;
+	border-color: #b3e5fc;
 `
 
 const DayBadgeText = styled.Text`
-	color: #01579B;
+	color: #01579b;
 	font-size: 8px;
 	font-weight: 700;
 `
@@ -310,6 +311,7 @@ const StudentReportDetailsModal = ({
 		} else {
 			result = studentReports.filter((report) => report.attendanceStatus === filter)
 		}
+
 		setReportsFiltered(result)
 	}, [filter, studentReports])
 	const presents = useMemo(() => {
@@ -355,27 +357,17 @@ const StudentReportDetailsModal = ({
 					iconName='chart-pie'
 				/>
 				<ContentContainer>
-					<ScrollView 
-						showsVerticalScrollIndicator={false}
-						contentContainerStyle={{ paddingBottom: 40 }}
-					>
+					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
 						{/* Student Header Card */}
 						<StudentHeaderCard>
 							<StudentInfoRow>
-								<StudentAvatar
-									source={require('@/assets/img/default-avatar.png')}
-									resizeMode='contain'
-								/>
+								<StudentAvatar source={require('@/assets/img/default-avatar.png')} resizeMode='contain' />
 								<StudentNameContainer>
-									<StudentName>
-										{capitalizeWords(studentReports?.[0]?.student?.name)}
-									</StudentName>
-									<StudentLastName>
-										{capitalizeWords(studentReports?.[0]?.student?.lastName)}
-									</StudentLastName>
+									<StudentName>{capitalizeWords(studentReports?.[0]?.student?.name)}</StudentName>
+									<StudentLastName>{capitalizeWords(studentReports?.[0]?.student?.lastName)}</StudentLastName>
 								</StudentNameContainer>
 							</StudentInfoRow>
-							
+
 							{/* Student Badges */}
 							<BadgesRow>
 								{studentReports?.[0]?.student?.isTrial && (
@@ -465,15 +457,15 @@ const StudentReportDetailsModal = ({
 												</DateText>
 											</ReportColumn>
 											<ReportColumn width={50}>
-												<AntDesign 
-													name={getStatusIcon(item.attendanceStatus) as any} 
-													size={20} 
-													color={getStatusColor(item.attendanceStatus)} 
+												<AntDesign
+													name={getStatusIcon(item.attendanceStatus) as any}
+													size={20}
+													color={getStatusColor(item.attendanceStatus)}
 												/>
 											</ReportColumn>
 											<ReportColumnMain>
 												<ClassNameText>{item.karateClassName}</ClassNameText>
-												
+
 												{/* Badges */}
 												<BadgeRow>
 													{item.student.isTrial && (
@@ -486,14 +478,17 @@ const StudentReportDetailsModal = ({
 															<DayBadgeText>DAY</DayBadgeText>
 														</DayBadge>
 													)}
+													{item.isRecovery && (
+														<StatusBadge>
+															<StatusBadgeText>RECOVERY</StatusBadgeText>
+														</StatusBadge>
+													)}
 												</BadgeRow>
-												
+
 												{/* Observations */}
 												{item.observations && (
 													<ObservationCard>
-														<ObservationText>
-															"Note: {item.observations}"
-														</ObservationText>
+														<ObservationText>"Note: {item.observations}"</ObservationText>
 													</ObservationCard>
 												)}
 											</ReportColumnMain>

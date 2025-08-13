@@ -88,6 +88,9 @@ const StudentsScreen = ({ role }: { role: TUserRole }) => {
 						if (student._id === studentUserByIdUpdated?._id) {
 							student.name = studentUserByIdUpdated?.name
 							student.lastName = studentUserByIdUpdated?.lastName
+							student.isTrial = Boolean(studentUserByIdUpdated?.isTrial)
+							student.isAdmin = Boolean(studentUserByIdUpdated?.isAdmin)
+							student.isTeacher = Boolean(studentUserByIdUpdated?.isTeacher)
 						}
 						return student
 					}),

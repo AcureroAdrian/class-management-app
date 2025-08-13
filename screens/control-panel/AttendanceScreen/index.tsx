@@ -6,7 +6,6 @@ import { DateData } from 'react-native-calendars'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CalendarComponent from './components/CalendarComponent'
 import AttendanceEditModal from './components/AttendanceEditModal'
-import StudentNotesModal from './components/StudentNotesModal'
 import generateMarkDatesByMonth from './helpers/generate-mark-days-by-month'
 import { TDaysOfWeek, TUserRole } from '@/shared/common-types'
 import { getKarateClassesToAdminAttendance } from '@/redux/actions/karateClassActions'
@@ -256,6 +255,12 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 		setYear(date.year)
 	}, [])
 
+	const refreshData = useCallback(() => {
+		const [year, month, day] = currentDate.split('-').map(Number)
+		dispatch(getKarateClassesToAdminAttendance())
+		dispatch(getStudentAttendanceByDay(year, month, day))
+	}, [currentDate, dispatch])
+
 	const handleOpenAttendance = useCallback((attendance: any) => {
 		setAttendanceData(attendance)
 		setOpenAttendanceEditModal(true)
@@ -273,7 +278,14 @@ const AttendanceScreen = ({ role }: { role: TUserRole }) => {
 	return (
 		<>
 			<AttendanceScreenContainer>
-				<ScreenHeader label='Attendance' />
+				<ScreenHeader
+					label='Attendance'
+					labelButton='Refresh'
+					iconName='refresh'
+					handleOnPress={refreshData}
+					loadingButtonAction={loadingGetKarateClassesToAdminAttendance || loadingStudentAttendanceByDay}
+					disabledButton={loadingGetKarateClassesToAdminAttendance || loadingStudentAttendanceByDay}
+				/>
 				<CalendarComponent
 					role={role}
 					currentDate={currentDate}

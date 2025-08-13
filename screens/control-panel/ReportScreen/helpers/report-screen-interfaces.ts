@@ -62,4 +62,5 @@ export interface IStudentReport {
 	attendanceStatus: TAttendanceStatus
 	observations?: string
 	isDayOnly?: boolean
+	isRecovery?: boolean
 }

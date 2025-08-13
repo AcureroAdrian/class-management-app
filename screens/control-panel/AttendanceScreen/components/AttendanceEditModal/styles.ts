@@ -26,6 +26,12 @@ export const ClassDetails = styled.View`
 	align-items: flex-start;
 `
 
+export const ClassTitleRow = styled.View`
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+`
+
 export const ClassName = styled.Text`
 	font-size: 18px;
 	font-weight: 700;
@@ -207,6 +213,20 @@ export const MoreOptionsButton = styled.Pressable<{ disabled?: boolean }>`
 	border-width: 1px;
 	border-color: ${colors.variants.grey[1]};
 	opacity: ${(props: { disabled?: boolean }) => (props.disabled ? 0.5 : 1)};
+`
+
+export const RefreshButton = styled.Pressable<{ disabled?: boolean }>`
+	padding: 8px;
+	border-radius: 24px;
+	background-color: ${colors.variants.grey[0]};
+	border-width: 1px;
+	border-color: ${colors.variants.grey[1]};
+	justify-content: center;
+	align-items: center;
+	width: 48px;
+	height: 48px;
+	opacity: ${(props: { disabled?: boolean }) => (props.disabled ? 0.5 : 1)};
+	margin-right: 10px;
 `
 
 export const Separator = styled.View`
