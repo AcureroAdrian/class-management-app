@@ -445,7 +445,7 @@ const StudentReportDetailsModal = ({
 									<AntDesign name='check' size={24} color={getStatusColor('present')} />
 								</FilterButton>
 								<FilterButton selected={filter === 'good-behavior'} onPress={() => setFilter('good-behavior')}>
-									<AntDesign name='smile-circle' size={24} color={getStatusColor('good-behavior')} />
+									<AntDesign name='smile' size={24} color={getStatusColor('good-behavior')} />
 								</FilterButton>
 								<FilterButton selected={filter === 'bad-behavior'} onPress={() => setFilter('bad-behavior')}>
 									<AntDesign name='frown' size={24} color={getStatusColor('bad-behavior')} />
