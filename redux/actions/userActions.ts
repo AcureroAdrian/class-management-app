@@ -43,7 +43,7 @@ export const getStudentUsers =
 
 			const {
 				userLogin: { userInfo },
-			} = getState()
+			} = getState() as any
 
 			const config = {
 				headers: {
@@ -68,7 +68,7 @@ export const registerStudents = (dataToSend: any) => async (dispatch: Dispatch, 
 
 		const {
 			userLogin: { userInfo },
-		} = getState()
+		} = getState() as any
 
 		const config = {
 			headers: {
@@ -93,7 +93,7 @@ export const getStudentUserById = (studentId: string) => async (dispatch: Dispat
 
 		const {
 			userLogin: { userInfo },
-		} = getState()
+		} = getState() as any
 
 		const config = {
 			headers: {
@@ -119,7 +119,7 @@ export const updateStudentUserById =
 
 			const {
 				userLogin: { userInfo },
-			} = getState()
+			} = getState() as any
 
 			const config = {
 				headers: {
@@ -145,7 +145,7 @@ export const deleteStudentUserById =
 
 			const {
 				userLogin: { userInfo },
-			} = getState()
+			} = getState() as any
 
 			const config = {
 				headers: {
@@ -173,7 +173,7 @@ export const registerTrialStudent = (dataToSend: any) => async (dispatch: Dispat
 
 		const {
 			userLogin: { userInfo },
-		} = getState()
+		} = getState() as any
 
 		const config = {
 			headers: {
@@ -199,7 +199,7 @@ export const adjustStudentRecoveryCredits =
 
 			const {
 				userLogin: { userInfo },
-			} = getState()
+			} = getState() as any
 
 			const config = {
 				headers: {
@@ -218,3 +218,28 @@ export const adjustStudentRecoveryCredits =
 			})
 		}
 	}
+
+export const getStudentCredits = (studentId: string) => async (dispatch: Dispatch, getState: AppStore['getState']) => {
+	try {
+		dispatch({ type: types.GET_STUDENT_CREDITS_REQUEST })
+
+		const {
+			userLogin: { userInfo },
+		} = getState() as any
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo?.token}`,
+			},
+		}
+
+		const { data } = await customAxios.get(`/api/users/${studentId}/credits`, config)
+
+		dispatch({ type: types.GET_STUDENT_CREDITS_SUCCESS, payload: data })
+	} catch (error: any) {
+		dispatch({
+			type: types.GET_STUDENT_CREDITS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		})
+	}
+}

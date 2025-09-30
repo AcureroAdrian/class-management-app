@@ -51,6 +51,10 @@ const getStudentDataToUpdate = (oldStudent: IFullStudent, newStudent: IFullStude
 		dataToUpdate.isTrial = Boolean(newStudent.isTrial)
 	}
 
+	if (oldStudent.enrollmentPlan?.toLowerCase().trim() !== newStudent.enrollmentPlan?.toLowerCase().trim()) {
+		dataToUpdate.enrollmentPlan = newStudent.enrollmentPlan
+	}
+
 	return { needUpdate: Boolean(Object.keys(dataToUpdate).length), dataToUpdate }
 }
 

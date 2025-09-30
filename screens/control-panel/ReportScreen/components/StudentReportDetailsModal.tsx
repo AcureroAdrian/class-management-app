@@ -241,17 +241,44 @@ const BadgeRow = styled.View`
 	margin-bottom: 4px;
 `
 
-const StatusBadge = styled.View`
-	background-color: #fff3cd;
+const StatusBadge = styled.View<{ variant?: 'trial' | 'overflow' | 'downgrade' }>`
+	background-color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#fce4ec'
+			case 'downgrade':
+				return '#e8f5e9'
+			default:
+				return '#fff3cd'
+		}
+	}};
 	padding-horizontal: 4px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #f0e68c;
+	border-color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#f8bbd0'
+			case 'downgrade':
+				return '#c8e6c9'
+			default:
+				return '#f0e68c'
+		}
+	}};
 `
 
-const StatusBadgeText = styled.Text`
-	color: #856404;
+const StatusBadgeText = styled.Text<{ variant?: 'trial' | 'overflow' | 'downgrade' }>`
+	color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#ad1457'
+			case 'downgrade':
+				return '#2e7d32'
+			default:
+				return '#856404'
+		}
+	}};
 	font-size: 8px;
 	font-weight: 700;
 `
@@ -345,6 +372,10 @@ const StudentReportDetailsModal = ({
 		return result
 	}, [presents, absents, total])
 
+	useEffect(() => {
+		console.log('studentReports', studentReports)
+	}, [studentReports])
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<ModalContainer>
@@ -371,8 +402,8 @@ const StudentReportDetailsModal = ({
 							{/* Student Badges */}
 							<BadgesRow>
 								{studentReports?.[0]?.student?.isTrial && (
-									<StatusBadge>
-										<StatusBadgeText>TRIAL STUDENT</StatusBadgeText>
+									<StatusBadge variant='trial'>
+										<StatusBadgeText variant='trial'>TRIAL STUDENT</StatusBadgeText>
 									</StatusBadge>
 								)}
 							</BadgesRow>
@@ -457,11 +488,19 @@ const StudentReportDetailsModal = ({
 												</DateText>
 											</ReportColumn>
 											<ReportColumn width={50}>
-												<AntDesign
-													name={getStatusIcon(item.attendanceStatus) as any}
-													size={20}
-													color={getStatusColor(item.attendanceStatus)}
-												/>
+												{item.attendanceStatus != 'sick' ? (
+													<AntDesign
+														name={getStatusIcon(item.attendanceStatus) as any}
+														size={20}
+														color={getStatusColor(item.attendanceStatus)}
+													/>
+												) : (
+													<FontAwesome
+														name={getStatusIcon(item.attendanceStatus) as any}
+														size={20}
+														color={getStatusColor(item.attendanceStatus)}
+													/>
+												)}
 											</ReportColumn>
 											<ReportColumnMain>
 												<ClassNameText>{item.karateClassName}</ClassNameText>
@@ -481,6 +520,15 @@ const StudentReportDetailsModal = ({
 													{item.isRecovery && (
 														<StatusBadge>
 															<StatusBadgeText>RECOVERY</StatusBadgeText>
+														</StatusBadge>
+													)}
+													{item.isOverflowAbsence && (
+														<StatusBadge variant={item.overflowReason === 'plan-downgrade' ? 'downgrade' : 'overflow'}>
+															<StatusBadgeText
+																variant={item.overflowReason === 'plan-downgrade' ? 'downgrade' : 'overflow'}
+															>
+																{item.overflowReason === 'plan-downgrade' ? 'NOT COUNTED DUE TO PLAN' : 'OVERFLOW'}
+															</StatusBadgeText>
 														</StatusBadge>
 													)}
 												</BadgeRow>

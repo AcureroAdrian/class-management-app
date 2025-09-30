@@ -1,4 +1,4 @@
-import { TAttendanceStatus } from '@/shared/common-types'
+import { TAttendanceStatus, TOverflowReason } from '@/shared/common-types'
 
 export interface IStudent {
 	_id: string
@@ -63,4 +63,6 @@ export interface IStudentReport {
 	observations?: string
 	isDayOnly?: boolean
 	isRecovery?: boolean
+	isOverflowAbsence?: boolean
+	overflowReason?: TOverflowReason
 }

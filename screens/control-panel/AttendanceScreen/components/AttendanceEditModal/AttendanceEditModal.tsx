@@ -378,6 +378,8 @@ const AttendanceEditModal = ({
 	}, [attendance, searchQuery])
 
 	const canEdit = useMemo(() => {
+		if (userInfo?.isSuper) return true
+
 		const today = new Date()
 		const attendanceDate = new Date(
 			currentAttendance?.date?.year || 0,

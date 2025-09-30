@@ -51,6 +51,8 @@ const StudentEditModal = ({
 	const [isTrial, setIsTrial] = useState<boolean>(false)
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [isDirty, setIsDirty] = useState<boolean>(false)
+	const [enrollmentPlan, setEnrollmentPlan] = useState<'Basic' | 'Optimum' | 'Plus' | 'Advanced'>('Basic')
+	const [openPlanModal, setOpenPlanModal] = useState<boolean>(false)
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingGetStudentUserById, successGetStudentUserById, studentUserById, errorGetStudentUserById } =
@@ -87,6 +89,7 @@ const StudentEditModal = ({
 			setIsTeacher(studentUserById?.isTeacher || false)
 			setIsAdmin(studentUserById?.isAdmin || false)
 			setIsTrial(Boolean(studentUserById?.isTrial))
+			setEnrollmentPlan((studentUserById?.enrollmentPlan as any) || 'Basic')
 			if (studentUserById?.dateOfBirth?.year) {
 				const dob = new Date(
 					studentUserById?.dateOfBirth?.year,
@@ -147,6 +150,7 @@ const StudentEditModal = ({
 			isTeacher,
 			isAdmin,
 			isTrial,
+			enrollmentPlan,
 		}
 
 		if (dob) {
@@ -284,6 +288,15 @@ const StudentEditModal = ({
 												onPress={() => !loadingUpdateStudentUserById && setOpenLevelModal(true)}
 												icon='karate'
 											/>
+											<CustomInputForm
+												label='Enrollment Plan'
+												placeholder='Optimum'
+												placeholderTextColor={colors.darkLight}
+												value={enrollmentPlan}
+												editable={false}
+												onPress={() => !loadingUpdateStudentUserById && setOpenPlanModal(true)}
+												icon='account-switch'
+											/>
 										</S.FormGroup>
 									</S.FormSection>
 
@@ -372,25 +385,24 @@ const StudentEditModal = ({
 									{(role === 'admin' || userInfo?.isSuper) && (
 										<S.SwitchContainer>
 											<S.SectionTitle>Permissions and Roles</S.SectionTitle>
-											{
-												Boolean(studentUserById?.isTrial) && (
-													<S.SwitchOption>
-												<S.SwitchInfo>
-													<S.SwitchLabel>Is Trial</S.SwitchLabel>
-													<S.SwitchDescription>Mark this student as trial</S.SwitchDescription>
-												</S.SwitchInfo>
-												<Switch
-													trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
-													thumbColor={isTrial ? colors.variants.primary[5] : colors.variants.grey[0]}
-													ios_backgroundColor={colors.variants.grey[2]}
-													onValueChange={() => {
-														setIsTrial(!isTrial)
-														setIsDirty(true)
-													}}
-													value={isTrial}
-														/>
-													</S.SwitchOption>
-												)}
+											{Boolean(studentUserById?.isTrial) && (
+												<S.SwitchOption>
+													<S.SwitchInfo>
+														<S.SwitchLabel>Is Trial</S.SwitchLabel>
+														<S.SwitchDescription>Mark this student as trial</S.SwitchDescription>
+													</S.SwitchInfo>
+													<Switch
+														trackColor={{ false: colors.variants.grey[2], true: colors.variants.primary[4] }}
+														thumbColor={isTrial ? colors.variants.primary[5] : colors.variants.grey[0]}
+														ios_backgroundColor={colors.variants.grey[2]}
+														onValueChange={() => {
+															setIsTrial(!isTrial)
+															setIsDirty(true)
+														}}
+														value={isTrial}
+													/>
+												</S.SwitchOption>
+											)}
 
 											{role === 'admin' && (
 												<S.SwitchOption>
@@ -456,6 +468,19 @@ const StudentEditModal = ({
 					selected={level || ''}
 					handleSaveOption={(selected: string) => {
 						setLevel(selected as TUserLevel)
+						setIsDirty(true)
+					}}
+				/>
+			)}
+			{openPlanModal && (
+				<CustomSelectModal
+					openModal={openPlanModal}
+					closeModal={() => setOpenPlanModal(false)}
+					title='Enrollment Plan'
+					options={['Basic', 'Optimum', 'Plus', 'Advanced']}
+					selected={enrollmentPlan}
+					handleSaveOption={(selected: string) => {
+						setEnrollmentPlan(selected as any)
 						setIsDirty(true)
 					}}
 				/>
