@@ -1,6 +1,26 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
-  }
+	"extends": "expo/tsconfig.base",
+	"compilerOptions": {
+		"strict": true,
+		"paths": {
+			"@/*": ["./*"]
+		},
+		"plugins": [
+			{
+				"name": "typescript-styled-plugin",
+				"lint": {
+					"validProperties": [
+						"padding-vertical",
+						"padding-horizontal",
+						"shadow-color",
+						"shadow-offset",
+						"shadow-radius",
+						"shadow-opacity",
+						"elevation"
+					]
+				}
+			}
+		]
+	},
+	"include": ["**/*.ts", "**/*.tsx"]
 }
