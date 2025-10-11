@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView } from 'react-native'
 import { format } from 'date-fns'
 import { AntDesign } from '@expo/vector-icons'
@@ -9,6 +9,7 @@ import colors from '@/theme/colors'
 import { isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { exportClassReportToCSV } from '@/shared/export-helpers'
 
 const ClassReportByClassIdDetailsModal = ({
 	openModal,
@@ -19,10 +20,25 @@ const ClassReportByClassIdDetailsModal = ({
 	closeModal: () => void
 	classReports: IClassReport[]
 }) => {
+	const [isExporting, setIsExporting] = useState(false)
+
+	const handleExport = async () => {
+		setIsExporting(true)
+		await exportClassReportToCSV(classReports)
+		setIsExporting(false)
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, backgroundColor: colors.primary }}>
-				<ScreenHeader label='Report Details' showBackButton={true} handleBack={closeModal} />
+				<ScreenHeader 
+					label='Report Details' 
+					showBackButton={true} 
+					handleBack={closeModal}
+					handleOnPress={handleExport}
+					labelButton={isExporting ? 'Exporting...' : 'Download'}
+					iconName='download'
+				/>
 				
 				<ScrollView 
 					style={{ flex: 1 }}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView } from 'react-native'
 import { format } from 'date-fns'
 import { AntDesign } from '@expo/vector-icons'
@@ -10,6 +10,7 @@ import { isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import styled from 'styled-components/native'
+import { exportDailyReportToCSV } from '@/shared/export-helpers'
 
 // Styled Components
 const ModalContainer = styled.View`
@@ -240,10 +241,25 @@ const DailyReportDetailsModal = ({
 	closeModal: () => void
 	reports: IDailyReport[]
 }) => {
+	const [isExporting, setIsExporting] = useState(false)
+
+	const handleExport = async () => {
+		setIsExporting(true)
+		await exportDailyReportToCSV(reports)
+		setIsExporting(false)
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<ModalContainer>
-				<ScreenHeader label='Daily Reports' showBackButton={true} handleBack={closeModal} />
+				<ScreenHeader 
+					label='Daily Reports' 
+					showBackButton={true} 
+					handleBack={closeModal}
+					handleOnPress={handleExport}
+					labelButton={isExporting ? 'Exporting...' : 'Download'}
+					iconName='download'
+				/>
 				<ContentContainer
 					showsVerticalScrollIndicator={false}
 					contentContainerStyle={{ paddingBottom: 40 }}

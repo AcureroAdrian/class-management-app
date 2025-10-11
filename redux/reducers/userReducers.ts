@@ -328,6 +328,14 @@ interface IGetStudentCreditsState {
 		totalCredits: number
 		creditsFromAbsences: number
 		adjustment: number
+		adjustmentTotal: number
+		adjustmentUsed: number
+		bookedCount: number
+		adjustmentBookedCount: number
+		absencesCount: number
+		consumedAbsences: number
+		pendingAbsences: number
+		poolCredits: number
 		plan: string
 		maxPending: number
 		isFrozen: boolean

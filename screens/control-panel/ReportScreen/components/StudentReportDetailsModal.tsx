@@ -10,6 +10,7 @@ import colors from '@/theme/colors'
 import { TAttendanceStatus } from '@/shared/common-types'
 import { isStudentPresent, getStatusColor, getStatusIcon } from '@/shared/attendance-helpers'
 import styled from 'styled-components/native'
+import { exportStudentReportToCSV } from '@/shared/export-helpers'
 
 // Styled Components
 const ModalContainer = styled.View`
@@ -326,6 +327,7 @@ const StudentReportDetailsModal = ({
 	const [showChart, setShowChart] = useState<boolean>(true)
 	const [filter, setFilter] = useState<'all' | 'present' | 'absent' | TAttendanceStatus>('all')
 	const [reportsFiltered, setReportsFiltered] = useState<IStudentReport[]>([])
+	const [isExporting, setIsExporting] = useState(false)
 
 	useEffect(() => {
 		let result: IStudentReport[] = []
@@ -376,6 +378,12 @@ const StudentReportDetailsModal = ({
 		console.log('studentReports', studentReports)
 	}, [studentReports])
 
+	const handleExport = async () => {
+		setIsExporting(true)
+		await exportStudentReportToCSV(studentReports)
+		setIsExporting(false)
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<ModalContainer>
@@ -383,9 +391,9 @@ const StudentReportDetailsModal = ({
 					label='Student Report'
 					showBackButton={true}
 					handleBack={closeModal}
-					handleOnPress={() => setShowChart(!showChart)}
-					labelButton='Chart'
-					iconName='chart-pie'
+					handleOnPress={handleExport}
+					labelButton={isExporting ? 'Exporting...' : 'Download'}
+					iconName='download'
 				/>
 				<ContentContainer>
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>

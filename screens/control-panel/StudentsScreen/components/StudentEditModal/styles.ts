@@ -182,4 +182,22 @@ export const CreditButtonMinus = styled(CreditButton)`
 export const CreditButtonPlus = styled(CreditButton)`
 	background-color: ${colors.variants.secondary[0]};
 	border: 1px solid ${colors.variants.secondary[2]};
+`
+
+export const CreditsDetailButton = styled.TouchableOpacity`
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	margin-top: 16px;
+	padding: 12px;
+	background-color: ${colors.variants.info[1]};
+	border-radius: 8px;
+	border: 1px solid ${colors.variants.info[3]};
+`
+
+export const CreditsDetailButtonText = styled.Text`
+	font-size: 14px;
+	font-weight: 600;
+	color: ${colors.variants.info[6]};
+	margin-left: 8px;
 ` 

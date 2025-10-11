@@ -7,6 +7,7 @@ import Loader from '@/components/Loader/Loader'
 import ScreenHeader from '@/components/ScreenHeader/ScreenHeader'
 import CustomInputForm from '@/components/CustomInputForm/CustomInputForm'
 import CustomSelectModal from '@/components/CustomSelectModal/CustomSelectModal'
+import StudentCreditsDetailModal from '@/components/StudentCreditsDetailModal'
 import { IFullStudent } from '../../helpers/students-interfaces'
 import getStudentDataToUpdate from '../../helpers/get-student-data-to-update'
 import { levelsInitialValues } from '../../helpers/student-screen-initial-values'
@@ -53,6 +54,7 @@ const StudentEditModal = ({
 	const [isDirty, setIsDirty] = useState<boolean>(false)
 	const [enrollmentPlan, setEnrollmentPlan] = useState<'Basic' | 'Optimum' | 'Plus' | 'Advanced'>('Basic')
 	const [openPlanModal, setOpenPlanModal] = useState<boolean>(false)
+	const [showCreditsDetailModal, setShowCreditsDetailModal] = useState<boolean>(false)
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingGetStudentUserById, successGetStudentUserById, studentUserById, errorGetStudentUserById } =
@@ -378,6 +380,10 @@ const StudentEditModal = ({
 													</S.CreditButtonPlus>
 												</S.CreditsActions>
 											</S.CreditsContent>
+											<S.CreditsDetailButton onPress={() => setShowCreditsDetailModal(true)}>
+												<MaterialCommunityIcons name='information' size={20} color={colors.variants.info[5]} />
+												<S.CreditsDetailButtonText>Ver Detalles Completos</S.CreditsDetailButtonText>
+											</S.CreditsDetailButton>
 										</S.CreditsContainer>
 									)}
 
@@ -483,6 +489,14 @@ const StudentEditModal = ({
 						setEnrollmentPlan(selected as any)
 						setIsDirty(true)
 					}}
+				/>
+			)}
+			{showCreditsDetailModal && (
+				<StudentCreditsDetailModal
+					visible={showCreditsDetailModal}
+					onClose={() => setShowCreditsDetailModal(false)}
+					studentId={studentId}
+					studentName={`${capitalizeWords(name)} ${capitalizeWords(lastName)}`}
 				/>
 			)}
 		</Modal>
