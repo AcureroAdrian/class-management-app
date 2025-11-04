@@ -180,12 +180,12 @@ const BadgesRow = styled.View`
 `
 
 const StatusBadge = styled.View`
-	background-color: #FFF3CD;
+	background-color: #fff3cd;
 	padding-horizontal: 6px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #F0E68C;
+	border-color: #f0e68c;
 `
 
 const StatusBadgeText = styled.Text`
@@ -195,16 +195,16 @@ const StatusBadgeText = styled.Text`
 `
 
 const DayBadge = styled.View`
-	background-color: #E1F5FE;
+	background-color: #e1f5fe;
 	padding-horizontal: 6px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #B3E5FC;
+	border-color: #b3e5fc;
 `
 
 const DayBadgeText = styled.Text`
-	color: #01579B;
+	color: #01579b;
 	font-size: 8px;
 	font-weight: 700;
 `
@@ -252,18 +252,15 @@ const DailyReportDetailsModal = ({
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<ModalContainer>
-				<ScreenHeader 
-					label='Daily Reports' 
-					showBackButton={true} 
+				<ScreenHeader
+					label='Daily Reports'
+					showBackButton={true}
 					handleBack={closeModal}
 					handleOnPress={handleExport}
 					labelButton={isExporting ? 'Exporting...' : 'Download'}
 					iconName='download'
 				/>
-				<ContentContainer
-					showsVerticalScrollIndicator={false}
-					contentContainerStyle={{ paddingBottom: 40 }}
-				>
+				<ContentContainer showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
 					<FlatList
 						nestedScrollEnabled={true}
 						scrollEnabled={false}
@@ -275,25 +272,25 @@ const DailyReportDetailsModal = ({
 									<DateIconContainer>
 										<MaterialCommunityIcons name='calendar' size={20} color={colors.view.primary} />
 									</DateIconContainer>
-									<DateTitle>
-										{format(new Date(item._id), 'MMMM dd, yyyy')}
-									</DateTitle>
+									<DateTitle>{format(new Date(item._id), 'MMMM dd, yyyy')}</DateTitle>
 								</DateHeader>
-								
+
 								<FlatList
 									data={item.karateClasses}
 									keyExtractor={(classItem) => classItem._id}
 									renderItem={({ item: classItem }) => {
-										const presents = classItem.attendance.filter((student) => isStudentPresent(student.attendanceStatus))?.length
-										const absents = classItem.attendance.filter((student) => !isStudentPresent(student.attendanceStatus))?.length
+										const presents = classItem.attendance.filter((student) =>
+											isStudentPresent(student.attendanceStatus),
+										)?.length
+										const absents = classItem.attendance.filter(
+											(student) => !isStudentPresent(student.attendanceStatus),
+										)?.length
 										return (
 											<ClassCard>
 												<ClassHeader>
-													<ClassTitle numberOfLines={1}>
-														{classItem.karateClassName}
-													</ClassTitle>
+													<ClassTitle numberOfLines={1}>{classItem.karateClassName}</ClassTitle>
 												</ClassHeader>
-												
+
 												<StatsRow>
 													{Boolean(presents) && (
 														<StatContainer>
@@ -313,7 +310,7 @@ const DailyReportDetailsModal = ({
 													)}
 													<TotalText>Total: {classItem.attendance.length}</TotalText>
 												</StatsRow>
-												
+
 												<StudentsContainer>
 													<FlatList
 														data={classItem.attendance}
@@ -328,15 +325,11 @@ const DailyReportDetailsModal = ({
 																		resizeMode='contain'
 																	/>
 																	<StudentInfoContainer>
-																		<StudentName>
-																			{capitalizeWords(student.student.name)}
-																		</StudentName>
-																		<StudentLastName>
-																			{capitalizeWords(student.student.lastName)}
-																		</StudentLastName>
-																		
+																		<StudentName>{capitalizeWords(student.student.name)}</StudentName>
+																		<StudentLastName>{capitalizeWords(student.student.lastName)}</StudentLastName>
+
 																		{/* Badges */}
-																		{(student.student.isTrial || student.isDayOnly) && (
+																		{(student.student.isTrial || student.isDayOnly || student.isRecovery) && (
 																			<BadgesRow>
 																				{student.student.isTrial && (
 																					<StatusBadge>
@@ -348,28 +341,34 @@ const DailyReportDetailsModal = ({
 																						<DayBadgeText>DAY</DayBadgeText>
 																					</DayBadge>
 																				)}
+																				{student.isRecovery && (
+																					<StatusBadge>
+																						<StatusBadgeText>RECOVERY</StatusBadgeText>
+																					</StatusBadge>
+																				)}
 																			</BadgesRow>
 																		)}
-																		
+
 																		{/* Observations */}
 																		{student.observations && (
 																			<ObservationCard>
-																				<ObservationText>
-																					"Note: {student.observations}"
-																				</ObservationText>
+																				<ObservationText>"Note: {student.observations}"</ObservationText>
 																			</ObservationCard>
 																		)}
 																	</StudentInfoContainer>
 																	<StatusContainer>
-																		<StatusIcon 
-																			status={student.attendanceStatus} 
-																			size={24} 
-																		/>
+																		<StatusIcon status={student.attendanceStatus} size={24} />
 																	</StatusContainer>
 																</StudentItem>
 																{/* Only show separator if not the last item */}
 																{index < classItem.attendance.length - 1 && (
-																	<View style={{ height: 1, backgroundColor: colors.variants.secondary[1], marginHorizontal: 20 }} />
+																	<View
+																		style={{
+																			height: 1,
+																			backgroundColor: colors.variants.secondary[1],
+																			marginHorizontal: 20,
+																		}}
+																	/>
 																)}
 															</>
 														)}

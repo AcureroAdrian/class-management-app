@@ -22,8 +22,6 @@ export const registerHolidayByDate =
 				userLogin: { userInfo } = {},
 			} = getState()
 
-			console.log({ year, month, day })
-
 			const { data } = await api.post(
 				'/api/holidays',
 				{ year, month, day },

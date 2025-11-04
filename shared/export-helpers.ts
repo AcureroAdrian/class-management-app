@@ -32,7 +32,7 @@ export const exportDailyReportToCSV = async (reports: IDailyReport[]): Promise<v
 	try {
 		// Preparar los datos del CSV
 		const csvData: any[][] = [
-			['Date', 'Class Name', 'Student Name', 'Student Last Name', 'Status', 'Trial', 'Day Only', 'Observations']
+			['Date', 'Class Name', 'Student Name', 'Student Last Name', 'Status', 'Trial', 'Day Only', 'Recovery', 'Observations']
 		]
 
 		reports.forEach((report) => {
@@ -48,6 +48,7 @@ export const exportDailyReportToCSV = async (reports: IDailyReport[]): Promise<v
 						student.attendanceStatus,
 						student.student.isTrial ? 'Yes' : 'No',
 						student.isDayOnly ? 'Yes' : 'No',
+						student.isRecovery ? 'Yes' : 'No',
 						student.observations || ''
 					])
 				})
@@ -178,7 +179,7 @@ export const exportClassReportToCSV = async (classReports: IClassReport[]): Prom
 	try {
 		// Preparar los datos del CSV
 		const csvData: any[][] = [
-			['Class Name', 'Date', 'Student Name', 'Student Last Name', 'Status', 'Trial', 'Day Only', 'Observations']
+			['Class Name', 'Date', 'Student Name', 'Student Last Name', 'Status', 'Trial', 'Day Only', 'Recovery', 'Observations']
 		]
 
 		classReports.forEach((classReport) => {
@@ -197,6 +198,7 @@ export const exportClassReportToCSV = async (classReports: IClassReport[]): Prom
 						student.attendanceStatus,
 						student.student.isTrial ? 'Yes' : 'No',
 						student.isDayOnly ? 'Yes' : 'No',
+						student.isRecovery ? 'Yes' : 'No',
 						student.observations || ''
 					])
 				})

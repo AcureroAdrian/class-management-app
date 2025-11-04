@@ -374,10 +374,6 @@ const StudentReportDetailsModal = ({
 		return result
 	}, [presents, absents, total])
 
-	useEffect(() => {
-		console.log('studentReports', studentReports)
-	}, [studentReports])
-
 	const handleExport = async () => {
 		setIsExporting(true)
 		await exportStudentReportToCSV(studentReports)

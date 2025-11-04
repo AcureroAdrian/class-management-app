@@ -252,17 +252,17 @@ const ClassReportByClassIdDetailsModal = ({
 																	{/* Student Badges */}
 																	<View style={{ flexDirection: 'row', gap: 4 }}>
 																																			{item.student.isTrial && (
-																		<View style={{ 
-																			backgroundColor: '#FFF3CD', 
-																			paddingHorizontal: 6, 
-																			paddingVertical: 2, 
+																		<View style={{
+																			backgroundColor: '#FFF3CD',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
 																			borderRadius: 6,
 																			borderWidth: 1,
 																			borderColor: '#F0E68C'
 																		}}>
-																			<Text style={{ 
-																				color: '#856404', 
-																				fontSize: 8, 
+																			<Text style={{
+																				color: '#856404',
+																				fontSize: 8,
 																				fontWeight: '700'
 																			}}>
 																				TRIAL
@@ -270,20 +270,38 @@ const ClassReportByClassIdDetailsModal = ({
 																		</View>
 																	)}
 																	{item.isDayOnly && (
-																		<View style={{ 
-																			backgroundColor: '#E1F5FE', 
-																			paddingHorizontal: 6, 
-																			paddingVertical: 2, 
+																		<View style={{
+																			backgroundColor: '#E1F5FE',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
 																			borderRadius: 6,
 																			borderWidth: 1,
 																			borderColor: '#B3E5FC'
 																		}}>
-																			<Text style={{ 
-																				color: '#01579B', 
-																				fontSize: 8, 
+																			<Text style={{
+																				color: '#01579B',
+																				fontSize: 8,
 																				fontWeight: '700'
 																			}}>
 																				DAY
+																			</Text>
+																		</View>
+																	)}
+																	{item.isRecovery && (
+																		<View style={{
+																			backgroundColor: '#fff3cd',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
+																			borderRadius: 4,
+																			borderWidth: 1,
+																			borderColor: '#f0e68c'
+																		}}>
+																			<Text style={{
+																				color: '#856404',
+																				fontSize: 8,
+																				fontWeight: '700'
+																			}}>
+																				RECOVERY
 																			</Text>
 																		</View>
 																	)}

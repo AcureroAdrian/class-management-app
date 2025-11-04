@@ -24,6 +24,7 @@ export interface IDailyReport {
 			attendanceStatus: TAttendanceStatus
 			observations?: string
 			isDayOnly?: boolean
+			isRecovery?: boolean
 		}[]
 	}[]
 }
@@ -44,6 +45,7 @@ export interface IClassReport {
 			attendanceStatus: TAttendanceStatus
 			observations?: string
 			isDayOnly?: boolean
+			isRecovery?: boolean
 		}[]
 	}[]
 }
