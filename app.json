@@ -2,7 +2,7 @@
   "expo": {
     "name": "Kokoro OSS",
     "slug": "class-management-app",
-    "version": "1.0.4",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -26,6 +26,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
+      "versionCode": 1,
       "package": "com.miyagikeinternational.kokoro"
     },
     "web": {
@@ -33,7 +34,8 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "extra": {
       "router": {},

@@ -1,6 +1,6 @@
 import { Reducer } from 'redux'
 import * as types from '../constants/userConstants'
-import { TUserLevel } from '@/shared/common-types'
+import { TUserLevel, TEnrollmentPlan } from '@/shared/common-types'
 
 interface IUser {
 	_id: string
@@ -12,6 +12,7 @@ interface IUser {
 		month: number
 		day: number
 	}
+	enrollmentPlan?: TEnrollmentPlan
 	level?: TUserLevel
 	email?: string
 	phone?: string
@@ -46,6 +47,7 @@ interface IUserLogin {
 	name: string
 	lastName: string
 	email: string
+	enrollmentPlan?: TEnrollmentPlan
 	level: string
 	dateOfBirth: {
 		year: number
@@ -147,6 +149,7 @@ export const userLoginReducer: TUserLoginReducer = (state = {}, action) => {
 						name: action.payload.name,
 						lastName: action.payload.lastName,
 						email: action.payload.email,
+						enrollmentPlan: action.payload.enrollmentPlan,
 						level: action.payload.level,
 						dateOfBirth: action.payload.dateOfBirth,
 					},
@@ -310,6 +313,56 @@ export const adjustRecoveryCreditsReducer: TAdjustRecoveryCreditsReducer = (stat
 				errorAdjustRecoveryCredits: action.payload,
 			}
 		case types.ADJUST_RECOVERY_CREDITS_RESET:
+			return {}
+		default:
+			return state
+	}
+}
+
+// Get Student Credits Reducer types
+interface IGetStudentCreditsState {
+	loadingGetStudentCredits?: boolean
+	successGetStudentCredits?: boolean
+	studentCredits?: {
+		studentId: string
+		totalCredits: number
+		creditsFromAbsences: number
+		adjustment: number
+		adjustmentTotal: number
+		adjustmentUsed: number
+		bookedCount: number
+		adjustmentBookedCount: number
+		absencesCount: number
+		consumedAbsences: number
+		pendingAbsences: number
+		poolCredits: number
+		plan: string
+		maxPending: number
+		isFrozen: boolean
+	}
+	errorGetStudentCredits?: string
+}
+
+interface IGetStudentCreditsAction {
+	type: string
+	payload?: any
+}
+
+type TGetStudentCreditsReducer = (state: IGetStudentCreditsState, action: IGetStudentCreditsAction) => IGetStudentCreditsState
+
+export const getStudentCreditsReducer: TGetStudentCreditsReducer = (state = {}, action) => {
+	switch (action.type) {
+		case types.GET_STUDENT_CREDITS_REQUEST:
+			return { loadingGetStudentCredits: true }
+		case types.GET_STUDENT_CREDITS_SUCCESS:
+			return { 
+				loadingGetStudentCredits: false, 
+				successGetStudentCredits: true, 
+				studentCredits: action.payload 
+			}
+		case types.GET_STUDENT_CREDITS_FAIL:
+			return { loadingGetStudentCredits: false, errorGetStudentCredits: action.payload }
+		case types.GET_STUDENT_CREDITS_RESET:
 			return {}
 		default:
 			return state

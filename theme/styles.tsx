@@ -1,6 +1,7 @@
 import styled from 'styled-components/native'
 import Constants from 'expo-constants'
 import colors from './colors'
+import { SafeAreaView } from "react-native-safe-area-context"
 
 const StatusBarHeight = Constants.statusBarHeight
 
@@ -75,7 +76,7 @@ export const CenterContainer = styled.View`
 	justify-content: center;
 	align-items: center;
 `
-export const SafeAreaViewStyled = styled.SafeAreaView`
+export const SafeAreaViewStyled = styled(SafeAreaView)`
 	flex: 1;
 `
 export const StyledCustomTextInput = styled.TextInput`

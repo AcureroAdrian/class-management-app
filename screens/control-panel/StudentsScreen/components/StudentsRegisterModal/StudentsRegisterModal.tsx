@@ -42,6 +42,8 @@ const StudentsRegisterModal = ({
 	const [openLevelModal, setOpenLevelModal] = useState<boolean>(false)
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 	const [isDirty, setIsDirty] = useState<boolean>(false)
+	const [enrollmentPlan, setEnrollmentPlan] = useState<'Basic' | 'Optimum' | 'Plus' | 'Advanced'>('Basic')
+	const [openPlanModal, setOpenPlanModal] = useState<boolean>(false)
 
 	const { userInfo } = useAppSelector((state) => state.userLogin)
 	const { loadingRegisterStudents, errorRegisterStudents } = useAppSelector((state) => state.registerStudents)
@@ -81,6 +83,7 @@ const StudentsRegisterModal = ({
 			isTeacher,
 			isAdmin,
 			isTrial: false,
+			enrollmentPlan,
 		}
 
 		if (dob) {
@@ -203,6 +206,15 @@ const StudentsRegisterModal = ({
 										onPress={() => !loadingRegisterStudents && setOpenLevelModal(true)}
 										icon='karate'
 									/>
+									<CustomInputForm
+										label='Enrollment Plan'
+										placeholder='Optimum'
+										placeholderTextColor={colors.darkLight}
+										value={enrollmentPlan}
+										editable={false}
+										onPress={() => !loadingRegisterStudents && setOpenPlanModal(true)}
+										icon='account-switch'
+									/>
 								</S.FormGroup>
 							</S.FormSection>
 
@@ -317,6 +329,19 @@ const StudentsRegisterModal = ({
 					selected={level || ''}
 					handleSaveOption={(selected: string) => {
 						setLevel(selected as TUserLevel)
+						setIsDirty(true)
+					}}
+				/>
+			)}
+			{openPlanModal && (
+				<CustomSelectModal
+					openModal={openPlanModal}
+					closeModal={() => setOpenPlanModal(false)}
+					title='Enrollment Plan'
+					options={['Basic', 'Optimum', 'Plus', 'Advanced']}
+					selected={enrollmentPlan}
+					handleSaveOption={(selected: string) => {
+						setEnrollmentPlan(selected as any)
 						setIsDirty(true)
 					}}
 				/>

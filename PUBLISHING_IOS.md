@@ -48,8 +48,8 @@ Durante este proceso, `eas-cli` te pedirá tu Apple ID y una contraseña especí
 
 ### Resumen del Flujo Completo
 
-1.  `npx eas login` (solo la primera vez)
-2.  `eas build --platform ios --profile production` (esperar a que termine)
-3.  `eas submit --platform ios --latest` (subir a TestFlight)
+1.  `bunx eas-cli login` (solo la primera vez)
+2.  `bunx eas-cli build --platform ios --profile production` (esperar a que termine)
+3.  `bunx eas-cli submit --platform ios --latest` (subir a TestFlight)
 
 Después del paso 3, deberás esperar a que Apple procese la compilación (normalmente unos minutos) y luego podrás distribuirla a tus testers desde la app de App Store Connect o el sitio web. 

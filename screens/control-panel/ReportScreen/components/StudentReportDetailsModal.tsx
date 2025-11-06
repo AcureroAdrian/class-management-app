@@ -10,6 +10,7 @@ import colors from '@/theme/colors'
 import { TAttendanceStatus } from '@/shared/common-types'
 import { isStudentPresent, getStatusColor, getStatusIcon } from '@/shared/attendance-helpers'
 import styled from 'styled-components/native'
+import { exportStudentReportToCSV } from '@/shared/export-helpers'
 
 // Styled Components
 const ModalContainer = styled.View`
@@ -241,17 +242,44 @@ const BadgeRow = styled.View`
 	margin-bottom: 4px;
 `
 
-const StatusBadge = styled.View`
-	background-color: #fff3cd;
+const StatusBadge = styled.View<{ variant?: 'trial' | 'overflow' | 'downgrade' }>`
+	background-color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#fce4ec'
+			case 'downgrade':
+				return '#e8f5e9'
+			default:
+				return '#fff3cd'
+		}
+	}};
 	padding-horizontal: 4px;
 	padding-vertical: 2px;
 	border-radius: 4px;
 	border-width: 1px;
-	border-color: #f0e68c;
+	border-color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#f8bbd0'
+			case 'downgrade':
+				return '#c8e6c9'
+			default:
+				return '#f0e68c'
+		}
+	}};
 `
 
-const StatusBadgeText = styled.Text`
-	color: #856404;
+const StatusBadgeText = styled.Text<{ variant?: 'trial' | 'overflow' | 'downgrade' }>`
+	color: ${(props: { variant?: 'trial' | 'overflow' | 'downgrade' }) => {
+		switch (props.variant) {
+			case 'overflow':
+				return '#ad1457'
+			case 'downgrade':
+				return '#2e7d32'
+			default:
+				return '#856404'
+		}
+	}};
 	font-size: 8px;
 	font-weight: 700;
 `
@@ -299,6 +327,7 @@ const StudentReportDetailsModal = ({
 	const [showChart, setShowChart] = useState<boolean>(true)
 	const [filter, setFilter] = useState<'all' | 'present' | 'absent' | TAttendanceStatus>('all')
 	const [reportsFiltered, setReportsFiltered] = useState<IStudentReport[]>([])
+	const [isExporting, setIsExporting] = useState(false)
 
 	useEffect(() => {
 		let result: IStudentReport[] = []
@@ -345,6 +374,12 @@ const StudentReportDetailsModal = ({
 		return result
 	}, [presents, absents, total])
 
+	const handleExport = async () => {
+		setIsExporting(true)
+		await exportStudentReportToCSV(studentReports)
+		setIsExporting(false)
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<ModalContainer>
@@ -352,9 +387,9 @@ const StudentReportDetailsModal = ({
 					label='Student Report'
 					showBackButton={true}
 					handleBack={closeModal}
-					handleOnPress={() => setShowChart(!showChart)}
-					labelButton='Chart'
-					iconName='chart-pie'
+					handleOnPress={handleExport}
+					labelButton={isExporting ? 'Exporting...' : 'Download'}
+					iconName='download'
 				/>
 				<ContentContainer>
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -371,8 +406,8 @@ const StudentReportDetailsModal = ({
 							{/* Student Badges */}
 							<BadgesRow>
 								{studentReports?.[0]?.student?.isTrial && (
-									<StatusBadge>
-										<StatusBadgeText>TRIAL STUDENT</StatusBadgeText>
+									<StatusBadge variant='trial'>
+										<StatusBadgeText variant='trial'>TRIAL STUDENT</StatusBadgeText>
 									</StatusBadge>
 								)}
 							</BadgesRow>
@@ -414,7 +449,7 @@ const StudentReportDetailsModal = ({
 									<AntDesign name='check' size={24} color={getStatusColor('present')} />
 								</FilterButton>
 								<FilterButton selected={filter === 'good-behavior'} onPress={() => setFilter('good-behavior')}>
-									<AntDesign name='smile-circle' size={24} color={getStatusColor('good-behavior')} />
+									<AntDesign name='smile' size={24} color={getStatusColor('good-behavior')} />
 								</FilterButton>
 								<FilterButton selected={filter === 'bad-behavior'} onPress={() => setFilter('bad-behavior')}>
 									<AntDesign name='frown' size={24} color={getStatusColor('bad-behavior')} />
@@ -457,11 +492,19 @@ const StudentReportDetailsModal = ({
 												</DateText>
 											</ReportColumn>
 											<ReportColumn width={50}>
-												<AntDesign
-													name={getStatusIcon(item.attendanceStatus) as any}
-													size={20}
-													color={getStatusColor(item.attendanceStatus)}
-												/>
+												{item.attendanceStatus != 'sick' ? (
+													<AntDesign
+														name={getStatusIcon(item.attendanceStatus) as any}
+														size={20}
+														color={getStatusColor(item.attendanceStatus)}
+													/>
+												) : (
+													<FontAwesome
+														name={getStatusIcon(item.attendanceStatus) as any}
+														size={20}
+														color={getStatusColor(item.attendanceStatus)}
+													/>
+												)}
 											</ReportColumn>
 											<ReportColumnMain>
 												<ClassNameText>{item.karateClassName}</ClassNameText>
@@ -481,6 +524,15 @@ const StudentReportDetailsModal = ({
 													{item.isRecovery && (
 														<StatusBadge>
 															<StatusBadgeText>RECOVERY</StatusBadgeText>
+														</StatusBadge>
+													)}
+													{item.isOverflowAbsence && (
+														<StatusBadge variant={item.overflowReason === 'plan-downgrade' ? 'downgrade' : 'overflow'}>
+															<StatusBadgeText
+																variant={item.overflowReason === 'plan-downgrade' ? 'downgrade' : 'overflow'}
+															>
+																{item.overflowReason === 'plan-downgrade' ? 'NOT COUNTED DUE TO PLAN' : 'OVERFLOW'}
+															</StatusBadgeText>
 														</StatusBadge>
 													)}
 												</BadgeRow>

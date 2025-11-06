@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Modal, FlatList, Image, ScrollView } from 'react-native'
 import { format } from 'date-fns'
 import { AntDesign } from '@expo/vector-icons'
@@ -9,6 +9,7 @@ import colors from '@/theme/colors'
 import { isStudentPresent } from '@/shared/attendance-helpers'
 import StatusIcon from '@/shared/StatusIcon'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { exportClassReportToCSV } from '@/shared/export-helpers'
 
 const ClassReportByClassIdDetailsModal = ({
 	openModal,
@@ -19,10 +20,25 @@ const ClassReportByClassIdDetailsModal = ({
 	closeModal: () => void
 	classReports: IClassReport[]
 }) => {
+	const [isExporting, setIsExporting] = useState(false)
+
+	const handleExport = async () => {
+		setIsExporting(true)
+		await exportClassReportToCSV(classReports)
+		setIsExporting(false)
+	}
+
 	return (
 		<Modal visible={openModal} animationType='fade' onRequestClose={closeModal} statusBarTranslucent={true}>
 			<View style={{ flex: 1, backgroundColor: colors.primary }}>
-				<ScreenHeader label='Report Details' showBackButton={true} handleBack={closeModal} />
+				<ScreenHeader 
+					label='Report Details' 
+					showBackButton={true} 
+					handleBack={closeModal}
+					handleOnPress={handleExport}
+					labelButton={isExporting ? 'Exporting...' : 'Download'}
+					iconName='download'
+				/>
 				
 				<ScrollView 
 					style={{ flex: 1 }}
@@ -236,17 +252,17 @@ const ClassReportByClassIdDetailsModal = ({
 																	{/* Student Badges */}
 																	<View style={{ flexDirection: 'row', gap: 4 }}>
 																																			{item.student.isTrial && (
-																		<View style={{ 
-																			backgroundColor: '#FFF3CD', 
-																			paddingHorizontal: 6, 
-																			paddingVertical: 2, 
+																		<View style={{
+																			backgroundColor: '#FFF3CD',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
 																			borderRadius: 6,
 																			borderWidth: 1,
 																			borderColor: '#F0E68C'
 																		}}>
-																			<Text style={{ 
-																				color: '#856404', 
-																				fontSize: 8, 
+																			<Text style={{
+																				color: '#856404',
+																				fontSize: 8,
 																				fontWeight: '700'
 																			}}>
 																				TRIAL
@@ -254,20 +270,38 @@ const ClassReportByClassIdDetailsModal = ({
 																		</View>
 																	)}
 																	{item.isDayOnly && (
-																		<View style={{ 
-																			backgroundColor: '#E1F5FE', 
-																			paddingHorizontal: 6, 
-																			paddingVertical: 2, 
+																		<View style={{
+																			backgroundColor: '#E1F5FE',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
 																			borderRadius: 6,
 																			borderWidth: 1,
 																			borderColor: '#B3E5FC'
 																		}}>
-																			<Text style={{ 
-																				color: '#01579B', 
-																				fontSize: 8, 
+																			<Text style={{
+																				color: '#01579B',
+																				fontSize: 8,
 																				fontWeight: '700'
 																			}}>
 																				DAY
+																			</Text>
+																		</View>
+																	)}
+																	{item.isRecovery && (
+																		<View style={{
+																			backgroundColor: '#fff3cd',
+																			paddingHorizontal: 6,
+																			paddingVertical: 2,
+																			borderRadius: 4,
+																			borderWidth: 1,
+																			borderColor: '#f0e68c'
+																		}}>
+																			<Text style={{
+																				color: '#856404',
+																				fontSize: 8,
+																				fontWeight: '700'
+																			}}>
+																				RECOVERY
 																			</Text>
 																		</View>
 																	)}

@@ -5,6 +5,7 @@ export interface IStudent {
 	userId: string
 	name: string
 	lastName: string
+	enrollmentPlan?: 'Basic' | 'Optimum' | 'Plus' | 'Advanced'
 	scheduledDeletionDate?: string
 	isAdmin: boolean
 	isTeacher: boolean

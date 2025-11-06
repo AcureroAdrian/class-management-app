@@ -19,7 +19,7 @@ import {
 	GET_KARATE_CLASS_BY_ADMIN_RESET,
 	GET_KARATE_CLASSES_FOR_STUDENT_RESET,
 } from '@/redux/constants/karateClassConstants'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { useAppDispatch, useAppSelector, RootState } from '@/redux/store'
 import colors from '@/theme/colors'
 import ReserveRecoveryClassModal from './components/ReserveRecoveryClassModal'
 import DeleteRecoveryClassModal from './components/DeleteRecoveryClassModal'
@@ -34,6 +34,7 @@ import { TDaysOfWeek, TLocation } from '@/shared/common-types'
 import { IHoliday } from '@/redux/reducers/holidayReducers'
 import * as S from './styles'
 import { format } from 'date-fns'
+import { getStudentCredits } from '@/redux/actions/userActions'
 
 const ClassesScreen = ({ role }: { role: TUserRole }) => {
 	const dispatch = useAppDispatch()
@@ -84,6 +85,8 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		errorDeleteRecoveryClassById,
 	} = useAppSelector((state) => state.deleteRecoveryClassById) || {}
 	const { holidays = [] } = useAppSelector((state) => state.getHolidays) || {}
+	const { userInfo } = useAppSelector((state) => state.userLogin) || {}
+	const { successGetStudentCredits, studentCredits } = useAppSelector((state: RootState) => state.getStudentCredits) || {}
 
 	useFocusEffect(
 		useCallback(() => {
@@ -92,13 +95,14 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 				dispatch(getkarateClassesByAdmin())
 			} else if (role === 'student') {
 				dispatch(getkarateClassesForStudent())
+				if (userInfo?._id) dispatch(getStudentCredits(userInfo._id))
 			}
 
 			return () => {
 				dispatch({ type: GET_KARATE_CLASS_BY_ADMIN_RESET })
 				dispatch({ type: GET_KARATE_CLASSES_FOR_STUDENT_RESET })
 			}
-		}, [dispatch, role]),
+		}, [dispatch, role, userInfo?._id]),
 	)
 
 	useEffect(() => {
@@ -172,6 +176,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenReserveRecoveryClassModal(false)
 			if (role === 'student') {
 				dispatch(getkarateClassesForStudent())
+				if (userInfo?._id) dispatch(getStudentCredits(userInfo._id))
 			}
 		}
 	}, [successBookingRecoveryClassById])
@@ -197,6 +202,7 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 			setOpenDeleteRecoveryClassModal(false)
 			if (role === 'student') {
 				dispatch(getkarateClassesForStudent())
+				if (userInfo?._id) dispatch(getStudentCredits(userInfo._id))
 			}
 		}
 	}, [successDeleteRecoveryClassById])
@@ -259,9 +265,8 @@ const ClassesScreen = ({ role }: { role: TUserRole }) => {
 		return classSelected
 	}, [classIdSelected])
 	const recoveryClassCredits = useMemo(() => {
-		const unbookedAbsences = (recoveryClasses || []).filter((e) => !e?.recoveryClass)?.length
-		return unbookedAbsences + recoveryCreditsAdjustment
-	}, [recoveryClasses, recoveryCreditsAdjustment])
+		return studentCredits?.totalCredits || 0
+	}, [studentCredits?.totalCredits])
 
 	const attendanceIdToUse = useMemo(() => {
 		const unbookedAbsences = (recoveryClasses || []).filter((e) => !e?.recoveryClass)

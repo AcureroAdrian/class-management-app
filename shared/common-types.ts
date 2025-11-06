@@ -8,6 +8,10 @@ export type TAttendanceStatus = 'present' | 'absent' | 'late' | 'good-behavior' 
 
 export type TUserRole = 'admin' | 'student' | 'teacher'
 
+export type TEnrollmentPlan = 'Basic' | 'Optimum' | 'Plus' | 'Advanced'
+
+export type TOverflowReason = 'plan-cap' | 'plan-downgrade'
+
 export type TLocation = 'spring' | 'katy'
 
 export interface IStartTime {

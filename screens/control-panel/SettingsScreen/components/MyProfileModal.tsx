@@ -9,6 +9,7 @@ import { updateStudentUserById } from '@/redux/actions/userActions'
 import { UPDATE_STUDENT_USER_BY_ID_RESET } from '@/redux/constants/userConstants'
 import colors from '@/theme/colors'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { TEnrollmentPlan } from '@/shared/common-types'
 
 const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeModal: () => void }) => {
 	const dispatch = useAppDispatch()
@@ -267,6 +268,14 @@ const MyProfileModal = ({ openModal, closeModal }: { openModal: boolean; closeMo
 								value={capitalizeWords(userInfo.level || '')}
 								editable={false}
 								icon='karate'
+							/>
+							<CustomInputForm
+								label='Enrollment Plan'
+								placeholder='Optimum'
+								placeholderTextColor={colors.darkLight}
+								value={userInfo.enrollmentPlan || 'Basic'}
+								editable={false}
+								icon='account-group'
 							/>
 							<CustomInputForm
 								label='Email'

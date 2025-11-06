@@ -14,7 +14,8 @@
     "production": {
       "autoIncrement": true,
       "releaseChannel": "stable",
-      "environment": "production"
+      "environment": "production",
+      "distribution": "store"
     }
   },
   "submit": {
@@ -22,6 +23,10 @@
       "ios": {
         "appleId": "Miyagiken.adm@gmail.com",
         "ascAppId": "6748192663"
+      },
+      "android": {
+        "track": "production",
+        "releaseStatus": "completed"
       }
     }
   }
