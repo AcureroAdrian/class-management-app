@@ -96,7 +96,7 @@ const StudentCreditsDetailModal: React.FC<StudentCreditsDetailModalProps> = ({
 						<S.Section>
 							<S.SectionHeader>
 								<MaterialCommunityIcons name='calendar-remove' size={24} color={colors.variants.error[5]} />
-								<S.SectionTitle>Absences This Year</S.SectionTitle>
+								<S.SectionTitle>Absences (All Time)</S.SectionTitle>
 							</S.SectionHeader>
 							<S.Card>
 								<S.BreakdownRow>
